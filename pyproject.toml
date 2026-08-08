@@ -1,0 +1,9 @@
+[project]
+name = "bkyz"
+version = "0.1.0"
+dependencies = [
+    "flask",
+    "flask_sqlalchemy",
+    "flask_migrate",
+    "requests",
+]
