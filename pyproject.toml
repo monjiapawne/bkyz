@@ -6,4 +6,8 @@ dependencies = [
     "flask_sqlalchemy",
     "flask_migrate",
     "requests",
+    "spectree",
 ]
+
+[tool.ruff]
+line-length = 120
