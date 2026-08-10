@@ -1,14 +1,12 @@
 import logging
 
 import requests
-
 from flask import Blueprint, request
 from sqlalchemy import select
 
 from app import db
 from app.errors import APIError, NotFound
 from app.models import Author, Book, ShelfBook, get_or_create
-from app.services.isbn import lookup_isbn
 
 logger = logging.getLogger(__name__)
 
@@ -58,12 +56,17 @@ def create_book():
 @bp.patch("/<int:book_id>")
 def update_book(book_id: int):
     """Modify a book's metadata."""
+    PATCHABLE = {"title", "number_of_pages", "publish_data", "authors"}
 
     if not (book := db.session.get(Book, book_id)):
         raise NotFound(f"book {book_id} does not exist")
 
     changes = request.get_json()
     for f, v in changes.items():
+        if f not in PATCHABLE:
+            raise APIError(f"unknown or read-only field: {f}")
+        if f == "authors":
+            v = [get_or_create(Author, name=n.strip()) for n in v.split(",") if n.strip()]
         setattr(book, f, v)
 
     db.session.commit()
@@ -89,6 +92,7 @@ def delete_book(book_id: int):
 
     logger.info(f"deleted book id={book.id} title={book.title!r}")
     return "", 204
+
 
 def lookup_isbn(isbn: str) -> dict:
     url = f"https://openlibrary.org/isbn/{isbn}"

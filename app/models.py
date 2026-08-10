@@ -1,6 +1,6 @@
 import enum
 
-from sqlalchemy import Column, Enum, ForeignKey, Table, select, String
+from sqlalchemy import Column, Enum, ForeignKey, String, Table, select
 from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
 
 from app import db
@@ -62,7 +62,7 @@ class Shelf(db.Model):
     __tablename__ = "shelves"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str]
+    name: Mapped[str] = mapped_column(String(255))
 
     user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"))
     user: Mapped["User | None"] = relationship(back_populates="shelves")
@@ -74,7 +74,7 @@ class User(db.Model):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(unique=True)
+    name: Mapped[str] = mapped_column(String(30), unique=True)
 
     shelves: Mapped[list["Shelf"]] = relationship(back_populates="user")
 
