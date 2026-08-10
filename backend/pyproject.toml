@@ -1,6 +1,7 @@
 [project]
 name = "bkyz"
 version = "0.1.0"
+requries-python = ">=3.13"
 dependencies = [
     "flask",
     "flask_sqlalchemy",
