@@ -2,44 +2,67 @@ import logging
 
 import requests
 from flask import Blueprint, request
+from pydantic import BaseModel, ConfigDict, model_validator
 from sqlalchemy import select
 
-from app import db
+from app import db, spec
 from app.errors import APIError, NotFound
 from app.models import Author, Book, ShelfBook, get_or_create
 
 logger = logging.getLogger(__name__)
 
-bp = Blueprint("books", __name__)
+books = Blueprint("books", __name__)
 
 
-@bp.get("/")
+@books.get("/")
 def list_books():
     """List all books."""
     return [b.to_dict() for b in db.session.scalars(select(Book))]
 
 
-@bp.post("/")
-def create_book():
+class BookIn(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    title: str | None = None
+    authors: str | None = None
+    """Comma seperated author names."""
+    number_of_pages: int = 1
+    isbn: str | None = None
+
+    @model_validator(mode="after")
+    def title_or_isbn(self):
+        if not (self.title or self.isbn):
+            raise APIError("Provide either a title or isbn")
+        return self
+
+
+@books.post("/")
+@spec.validate(json=BookIn)
+def create_book(json: BookIn):
     """Add a book to the library.
 
-    If an ISBN is provided, metadata is auto-filled and existing
-    books are returned instead of duplicated (200 vs 201).
-    """
-    b = request.get_json()
+    If an ISBN is provided, metadata is auto-filled.
 
-    if isbn := Book.normalize_isbn(b.get("isbn")):
+    TODO: fix implementation
+    """
+    b = json.model_dump(exclude_none=True)
+    if isbn := Book.normalize_isbn(json.isbn):
         if existing := db.session.scalar(select(Book).where(Book.isbn == isbn)):
             return existing.to_dict(), 200
         b = lookup_isbn(isbn) | b
 
     title = b.get("title")
+
     if not title:
         raise APIError("title is required")
 
+    authors = b.get("authors", [])
+    if not authors:
+        authors = [n for n in b.get("authors", "").split(",") if n.strip()]
+
     book = Book(
         title=title,
-        authors=[get_or_create(Author, name=n.strip()) for n in b.get("authors", "").split(",") if n.strip()],
+        authors=[get_or_create(Author, name=a.strip()) for a in authors],
         number_of_pages=b.get("number_of_pages"),
         publish_date=b.get("publish_date"),
         isbn=isbn,
@@ -53,9 +76,12 @@ def create_book():
     return book.to_dict(), 201
 
 
-@bp.patch("/<int:book_id>")
+@books.patch("/<int:book_id>")
 def update_book(book_id: int):
-    """Modify a book's metadata."""
+    """Modify a book's metadata.
+
+    TODO: fix implementation
+    """
     PATCHABLE = {"title", "number_of_pages", "publish_data", "authors"}
 
     if not (book := db.session.get(Book, book_id)):
@@ -73,7 +99,7 @@ def update_book(book_id: int):
     return book.to_dict()
 
 
-@bp.delete("/<int:book_id>")
+@books.delete("/<int:book_id>")
 def delete_book(book_id: int):
     """Delete a book.
 
@@ -96,5 +122,14 @@ def delete_book(book_id: int):
 
 def lookup_isbn(isbn: str) -> dict:
     url = f"https://openlibrary.org/isbn/{isbn}"
-    r = requests.get(url, headers={"accept": "application/json"})
-    return r.json() if r.ok else {}
+    headers = {"accept": "application/json"}
+    r = requests.get(url, headers=headers)
+    res = r.json() if r.ok else {}
+    if authors_dict := res.get("authors"):
+        res["authors"] = []
+        for author in authors_dict:
+            author_id = author["key"].split("/")[-1]
+            a = requests.get(f"https://openlibrary.org/authors/{author_id}.json", headers=headers).json()
+            res["authors"].append(a.get("name"))
+
+    return res

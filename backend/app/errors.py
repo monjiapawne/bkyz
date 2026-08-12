@@ -6,3 +6,7 @@ class APIError(Exception):
 
 class NotFound(APIError):
     status = 404
+
+
+class AuthenticationError(APIError):
+    status = 401

@@ -1,11 +1,12 @@
 [project]
 name = "bkyz"
 version = "0.1.0"
-requries-python = ">=3.13"
+requires-python = ">=3.13"
 dependencies = [
     "flask",
     "flask_sqlalchemy",
     "flask_migrate",
+    "flask-login",
     "requests",
     "spectree",
 ]
@@ -14,6 +15,4 @@ dependencies = [
 line-length = 120
 
 [dependency-groups]
-test = [
-    "pytest"
-]
+test = ["pytest"]

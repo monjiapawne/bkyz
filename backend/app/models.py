@@ -2,6 +2,7 @@ import enum
 
 from sqlalchemy import Column, Enum, ForeignKey, String, Table, select
 from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
+from werkzeug.security import check_password_hash, generate_password_hash
 
 from app import db
 
@@ -70,15 +71,6 @@ class Shelf(db.Model):
     shelf_books: Mapped[list["ShelfBook"]] = relationship(back_populates="shelf")
 
 
-class User(db.Model):
-    __tablename__ = "users"
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(30), unique=True)
-
-    shelves: Mapped[list["Shelf"]] = relationship(back_populates="user")
-
-
 class Medium(enum.Enum):
     pdf = "pdf"
     oreilly = "oreilly"
@@ -98,6 +90,27 @@ class ShelfBook(db.Model):
 
     shelf: Mapped["Shelf"] = relationship(back_populates="shelf_books")
     book: Mapped["Book"] = relationship()
+
+
+class User(db.Model):
+    __tablename__ = "users"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    username: Mapped[str] = mapped_column(String(30), unique=True)
+    password_hash: Mapped[str] = mapped_column(String(128))
+
+    shelves: Mapped[list["Shelf"]] = relationship(back_populates="user")
+
+    @property
+    def password(self):
+        raise AttributeError("password is not a readable attribute")
+
+    @password.setter
+    def password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def verify_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
 
 def get_or_create[T](model: type[T], **filters) -> T:
