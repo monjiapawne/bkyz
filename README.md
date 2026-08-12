@@ -3,7 +3,7 @@
 ## Backend
 
 ```sh
-cd frontend
+cd backend
 uv venv
 source .venv/bin/activate
 uv sync
@@ -19,7 +19,7 @@ pytest
 ## Frontend
 
 ```sh
-cd backend
+cd frontend
 npm run dev
 ```
 
