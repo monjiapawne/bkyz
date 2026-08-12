@@ -8,7 +8,8 @@ from sqlalchemy import MetaData
 
 from .errors import APIError
 
-# Disable logging of requests like: 127.0.0.1 - - [08/Aug/2026 10:13:40] "GET /api/v1/books/ HTTP/1.1" 200 -
+# Disable logging of requests like:
+# 127.0.0.1 - - [08/Aug/2026 10:13:40] "GET /api/v1/books/ HTTP/1.1" 200
 logging.getLogger("werkzeug").setLevel(logging.ERROR)
 logging.basicConfig(
     level=logging.INFO,
@@ -26,12 +27,12 @@ naming_convention = {
 
 db = SQLAlchemy(metadata=MetaData(naming_convention=naming_convention))
 migrate = Migrate()
-spec = SpecTree("flask", title="bkyz API", version="0.1.0", path="api/docs")
+spec = SpecTree("flask", title="bkyz API", version="0.1.0", path="api/docs", naming_strategy=lambda m: m.__name__)
 
 
-def create_app():
+def create_app(config_object="config.Config"):
     app = Flask(__name__)
-    app.config.from_object("config.Config")
+    app.config.from_object(config_object)
 
     db.init_app(app)
     migrate.init_app(app, db)
@@ -43,7 +44,16 @@ def create_app():
     from app.api import api
 
     app.register_blueprint(api, url_prefix="/api/v1")
-    if app.config["DEBUG"]:
-        spec.register(app)
+
+    config_docs(app)
 
     return app
+
+
+def config_docs(app):
+    """Register API docs, grouping endpoints by blueprint."""
+    if app.config["DEBUG"]:
+        for endpoint, view in app.view_functions.items():
+            view.tags = endpoint.split(".")[1:-1]
+        spec.register(app)
+        app.add_url_rule("/api/docs", "docs", app.view_functions["openapi_api/docs_swagger"])
