@@ -3,10 +3,14 @@
 ## Backend
 
 ```sh
+# Setup
 cd backend
 uv venv
 source .venv/bin/activate
 uv sync
+
+# Upgrade database
+flask db upgrade
 
 # Run
 flask run
