@@ -10,4 +10,4 @@ class Config:
 class TestingConfig(Config):
     TESTING = True
     DEBUG = False
-    SQLALCHEMY_DATABASE_URI = os.environ.get("TEST_DATABASE_URL", "sqlite://")
+    SQLALCHEMY_DATABASE_URI = os.environ.get("TEST_DATABASE_URL", "sqlite://")  # in memory sqlite for testing

@@ -26,15 +26,17 @@ class Book(db.Model):
 
     authors: Mapped[list["Author"]] = relationship(secondary=book_authors, back_populates="books")
 
+    @classmethod
+    def lookup_by_isbn(cls, isbn: str | None) -> "Book | None":
+        if not (isbn := cls.normalize_isbn(isbn)):
+            return None
+        return db.session.scalar(select(cls).where(cls.isbn == isbn))
+
     @staticmethod
     def normalize_isbn(raw: str | None) -> str | None:
         if raw is None:
             return None
         return raw.replace("-", "").replace(" ", "").upper() or None
-
-    @validates("isbn")
-    def _validate_isbn(self, key: str, value: str | None) -> str | None:
-        return self.normalize_isbn(value)
 
     def to_dict(self):
         return {
