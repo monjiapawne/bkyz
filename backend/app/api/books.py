@@ -2,7 +2,7 @@ import logging
 
 import requests
 from flask import Blueprint, request
-from pydantic import BaseModel, ConfigDict, model_validator
+from pydantic import BaseModel, ConfigDict, model_validator, Field
 from sqlalchemy import select
 from spectree import Response
 
@@ -24,8 +24,8 @@ def list_books():
 class BookIn(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
 
-    title: str | None = None
-    authors: str | None = None
+    title: str | None = Field(None, examples=["Just For Fun"])
+    authors: str | None = Field(None, examples=["Linus Torvalds, David Diamond"])
     """Comma seperated author names."""
     number_of_pages: int = 1
     isbn: str | None = None
