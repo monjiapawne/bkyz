@@ -4,6 +4,7 @@ import requests
 from flask import Blueprint, request
 from pydantic import BaseModel, ConfigDict, model_validator
 from sqlalchemy import select
+from spectree import Response
 
 from app import db, spec
 from app.errors import APIError, NotFound
@@ -35,39 +36,57 @@ class BookIn(BaseModel):
             raise APIError("Provide either a title or isbn")
         return self
 
+    @model_validator(mode="after")
+    def check_isbn(self):
+        if self.isbn is None:
+            return self
+
+        self.isbn = Book.normalize_isbn(self.isbn)
+
+        if len(self.isbn) not in (10, 13):
+            raise APIError(f"ISBN {self.isbn!r} format is invalid")
+
+        return self
+
+class BookOut(BaseModel):
+    id: int
+    title: str
+    authors: list[str]
+    number_of_pages: int
+    publish_date: str | None = None
+    isbn: str | None = None
 
 @books.post("/")
-@spec.validate(json=BookIn)
+@spec.validate(json=BookIn, resp=Response(HTTP_200=BookOut, HTTP_201=BookOut))
 def create_book(json: BookIn):
     """Add a book to the library.
 
     If an ISBN is provided, metadata is auto-filled.
-
-    TODO: fix implementation
     """
-    b = json.model_dump(exclude_none=True)
+    book = json.model_dump(exclude_none=True)
     if isbn := Book.normalize_isbn(json.isbn):
-        if existing := db.session.scalar(select(Book).where(Book.isbn == isbn)):
+        if existing := Book.lookup_by_isbn(isbn):
             return existing.to_dict(), 200
-        b = lookup_isbn(isbn) | b
 
-    title = b.get("title")
+        # Merge the two looked up, input fields taking priority
+        book = lookup_isbn(isbn) | book
 
+    # Extract the fields
+    title = book.get("title")
     if not title:
         raise APIError("title is required")
 
-    authors = b.get("authors", [])
-    if not authors:
-        authors = [n for n in b.get("authors", "").split(",") if n.strip()]
+    authors = book.get("authors") or []
+    if isinstance(authors, str):
+        authors = [n for n in book.get("authors", "").split(",") if n.strip()]
 
     book = Book(
         title=title,
         authors=[get_or_create(Author, name=a.strip()) for a in authors],
-        number_of_pages=b.get("number_of_pages"),
-        publish_date=b.get("publish_date"),
+        number_of_pages=book.get("number_of_pages"),
+        publish_date=book.get("publish_date"),
         isbn=isbn,
     )
-
     db.session.add(book)
     db.session.commit()
 
