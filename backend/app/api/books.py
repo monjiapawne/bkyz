@@ -2,13 +2,14 @@ import logging
 
 import requests
 from flask import Blueprint
+from flask_login import current_user
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 from spectree import Response
 from sqlalchemy import select
 
 from app import db, spec
 from app.errors import APIError, NotFound
-from app.models import Book, ShelfBook
+from app.models import Book, ShelfBook, User
 
 logger = logging.getLogger(__name__)
 
@@ -18,6 +19,8 @@ books = Blueprint("books", __name__)
 @books.get("/")
 def list_books():
     """List all books."""
+    user: User = current_user
+    logger.info(f"request made by user: {user.username!r}")
     return [b.to_json() for b in db.session.scalars(select(Book))]
 
 
@@ -125,12 +128,7 @@ def delete_book(book_id: int):
     if not (book := Book.get_by_id(book_id)):
         raise NotFound(f"book id:{book_id} does not exist")
 
-    in_use = db.session.scalar(
-        select(ShelfBook)
-        .where(ShelfBook.book_id == book_id)
-    )  # fmt: skip
-
-    if in_use:
+    if ShelfBook.get_by_book_id(book_id):
         raise APIError("book is on shelves and cannot be delete", status=409)
 
     db.session.delete(book)

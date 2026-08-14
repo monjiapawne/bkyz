@@ -124,6 +124,13 @@ class ShelfBook(db.Model):
     shelf: Mapped["Shelf"] = relationship(back_populates="shelf_books")
     book: Mapped["Book"] = relationship()
 
+    @classmethod
+    def get_by_book_id(cls, book_id: str) -> "ShelfBook | None":
+        return db.session.scalar(
+            select(cls)
+            .where(cls.book_id == book_id)
+        )  # fmt: skip
+
 
 class User(UserMixin, db.Model):
     __tablename__ = "users"

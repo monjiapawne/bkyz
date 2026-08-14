@@ -43,21 +43,13 @@ def create_app(config_object="config.Config"):
     def handle_api_error(e: APIError):
         return {"error": e.message}, e.status
 
-    login_manager.init_app(app)
-    from app.models import User
-
-    @login_manager.user_loader
-    def load_user(user_id: str):
-        return db.session.get(User, int(user_id))
-
-    @login_manager.unauthorized_handler
-    def unauthorized():
-        return {"error": "authenticated required"}, 401
+    config_flask_login(app)
 
     from app.api import api
 
     app.register_blueprint(api, url_prefix="/api/v1")
 
+    # must be after blueprints are registered
     config_docs(app)
 
     return app
@@ -70,3 +62,16 @@ def config_docs(app):
             view.tags = endpoint.split(".")[1:-1]
         spec.register(app)
         app.add_url_rule("/api/docs", "docs", app.view_functions["openapi_api/docs_swagger"])
+
+
+def config_flask_login(app):
+    login_manager.init_app(app)
+    from app.models import User
+
+    @login_manager.user_loader
+    def load_user(user_id: str):
+        return db.session.get(User, int(user_id))
+
+    @login_manager.unauthorized_handler
+    def unauthorized():
+        return {"error": "authenticated required"}, 401
