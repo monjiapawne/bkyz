@@ -3,10 +3,13 @@ class APIError(Exception):
         self.message = message
         self.status = status
 
+class BadRequest(APIError):
+    status = 400
+
+class AuthenticationError(APIError):
+    status = 401
 
 class NotFound(APIError):
     status = 404
 
 
-class AuthenticationError(APIError):
-    status = 401
