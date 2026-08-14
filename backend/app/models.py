@@ -1,8 +1,9 @@
 import enum
 
+from flask_login import UserMixin
 from sqlalchemy import Column, Enum, ForeignKey, String, Table, select
-from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from app import db
@@ -33,7 +34,7 @@ class Book(db.Model):
 
     @authors.inplace.setter
     def authors(self, value: "str | list[str] | list[Author] | None") -> None:
-        self._authors = Author.from_string(value)   
+        self._authors = Author.from_string(value)
 
     @classmethod
     def get_by_id(cls, book_id: int | None) -> "Book | None":
@@ -48,7 +49,7 @@ class Book(db.Model):
         return db.session.scalar(
             select(cls).
             where(cls.isbn == isbn)
-        ) # fmt: skip
+        )  # fmt: skip
 
     @staticmethod
     def normalize_isbn(raw: str | None) -> str | None:
@@ -124,7 +125,7 @@ class ShelfBook(db.Model):
     book: Mapped["Book"] = relationship()
 
 
-class User(db.Model):
+class User(UserMixin, db.Model):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -146,10 +147,7 @@ class User(db.Model):
 
     @classmethod
     def get_user(cls, username: str | None) -> "User | None":
-        return db.session.scalar(
-            select(cls).
-            where(cls.username == username)
-        ) # no: fix
+        return db.session.scalar(select(cls).where(cls.username == username))  # no: fix
 
     def to_json(self):
         return {

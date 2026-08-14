@@ -2,9 +2,12 @@ import os
 
 
 class Config:
+    DEBUG = True
     SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL", "sqlite:///bkyz.db")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    DEBUG = True
+    SECRET_KEY = os.environ.get("SECRET_KEY", "please_change_me_only_for_dev")
+    SESSION_COOKIE_SAMESITE = "Lax"
+    SESSION_COOKIE_SECURE = not DEBUG
 
 
 class TestingConfig(Config):

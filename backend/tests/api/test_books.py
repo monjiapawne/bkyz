@@ -1,5 +1,6 @@
 URL = "/api/v1/books/"
 
+
 def test_post_book_with_title(client):
     r = client.post(URL, json={"title": "Dune"})
     assert r.status_code == 201
@@ -22,6 +23,7 @@ def test_post_book_with_no_title(client):
 def test_post_book_with_author(client):
     r = client.post(URL, json={"title": "Dune", "authors": "hello, world"})
     assert r.get_json()["authors"] == ["hello", "world"]
+
 
 def test_patch_book(client):
     r = client.post(URL, json={"title": "Dune"})

@@ -1,6 +1,7 @@
 import logging
 
 from flask import Flask
+from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from spectree import SpecTree
@@ -27,6 +28,7 @@ naming_convention = {
 
 db = SQLAlchemy(metadata=MetaData(naming_convention=naming_convention))
 migrate = Migrate()
+login_manager = LoginManager()
 spec = SpecTree("flask", title="bkyz API", version="0.1.0", path="api/docs", naming_strategy=lambda m: m.__name__)
 
 
@@ -40,6 +42,17 @@ def create_app(config_object="config.Config"):
     @app.errorhandler(APIError)
     def handle_api_error(e: APIError):
         return {"error": e.message}, e.status
+
+    login_manager.init_app(app)
+    from app.models import User
+
+    @login_manager.user_loader
+    def load_user(user_id: str):
+        return db.session.get(User, int(user_id))
+
+    @login_manager.unauthorized_handler
+    def unauthorized():
+        return {"error": "authenticated required"}, 401
 
     from app.api import api
 

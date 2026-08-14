@@ -1,14 +1,14 @@
 import logging
 
 import requests
-from flask import Blueprint, request
+from flask import Blueprint
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 from spectree import Response
 from sqlalchemy import select
 
 from app import db, spec
 from app.errors import APIError, NotFound
-from app.models import Author, Book, ShelfBook
+from app.models import Book, ShelfBook
 
 logger = logging.getLogger(__name__)
 
@@ -92,6 +92,7 @@ def create_book(json: BookIn):
 
     return book.to_json(), 201
 
+
 class BookPatch(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -99,6 +100,7 @@ class BookPatch(BaseModel):
     authors: str | None = None
     number_of_pages: int | None = None
     publish_date: str | None = None
+
 
 @books.patch("/<int:book_id>")
 @spec.validate(json=BookPatch)
