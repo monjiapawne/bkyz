@@ -1,7 +1,8 @@
 import enum
 
 from sqlalchemy import Column, Enum, ForeignKey, String, Table, select
-from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.ext.hybrid import hybrid_property
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from app import db
@@ -24,13 +25,30 @@ class Book(db.Model):
     publish_date: Mapped[str | None]
     isbn: Mapped[str | None] = mapped_column(String(13), unique=True)
 
-    authors: Mapped[list["Author"]] = relationship(secondary=book_authors, back_populates="books")
+    _authors: Mapped[list["Author"]] = relationship(secondary=book_authors, back_populates="books")
+
+    @hybrid_property
+    def authors(self) -> list["Author"]:
+        return self._authors
+
+    @authors.inplace.setter
+    def authors(self, value: "str | list[str] | list[Author] | None") -> None:
+        self._authors = Author.from_string(value)   
 
     @classmethod
-    def lookup_by_isbn(cls, isbn: str | None) -> "Book | None":
+    def get_by_id(cls, book_id: int | None) -> "Book | None":
+        if book_id is None:
+            return None
+        return db.session.get(cls, book_id)
+
+    @classmethod
+    def get_by_isbn(cls, isbn: str | None) -> "Book | None":
         if not (isbn := cls.normalize_isbn(isbn)):
             return None
-        return db.session.scalar(select(cls).where(cls.isbn == isbn))
+        return db.session.scalar(
+            select(cls).
+            where(cls.isbn == isbn)
+        ) # fmt: skip
 
     @staticmethod
     def normalize_isbn(raw: str | None) -> str | None:
@@ -38,7 +56,7 @@ class Book(db.Model):
             return None
         return raw.replace("-", "").replace(" ", "").upper() or None
 
-    def to_dict(self):
+    def to_json(self):
         return {
             "id": self.id,
             "title": self.title,
@@ -57,8 +75,20 @@ class Author(db.Model):
 
     books: Mapped[list["Book"]] = relationship(
         secondary=book_authors,
-        back_populates="authors",
+        back_populates="_authors",
     )
+
+    @classmethod
+    def from_string(cls, raw: str | list[str] | None) -> list["Author"]:
+        if not raw:
+            return []
+
+        if isinstance(raw, str):
+            names = raw.split(",")
+        else:
+            names = raw
+
+        return [get_or_create(cls, name=n.strip()) for n in names]
 
 
 class Shelf(db.Model):
@@ -114,8 +144,27 @@ class User(db.Model):
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
 
+    @classmethod
+    def get_user(cls, username: str | None) -> "User | None":
+        return db.session.scalar(
+            select(cls).
+            where(cls.username == username)
+        ) # no: fix
+
+    def to_json(self):
+        return {
+            "id": self.id,
+            "username": self.username,
+        }
+
 
 def get_or_create[T](model: type[T], **filters) -> T:
+    """Generic function to get and possibly create an object in the database
+
+    Args:
+        model: model type to search for
+        filters: kwags to optionally filter to the query
+    """
     obj = db.session.scalar(select(model).filter_by(**filters))
     if obj is None:
         obj = model(**filters)
