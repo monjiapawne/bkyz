@@ -1,4 +1,7 @@
-URL = "/api/v1/books/"
+import pytest
+from requests.exceptions import ConnectTimeout
+
+URL = "/api/v1/books"
 
 
 def test_post_book_with_title(client):
@@ -15,9 +18,12 @@ def test_post_book_with_no_title(client):
     assert r.status_code == 400
 
 
-# def test_create_book_with_isbn(client):
-#     r = client.post(URL, json={"isbn": "1718503547"})
-#     assert r.get_json()["title"] == "Linux Basics for Hackers"
+def test_create_book_with_isbn(client):
+    r = client.post(URL, json={"isbn": "1718503547"})
+    if r.status_code == 503:
+        pytest.skip("ISBN lookup timed out")
+
+    assert r.get_json()["title"] == "Linux Basics for Hackers"
 
 
 def test_post_book_with_author(client):
@@ -27,13 +33,14 @@ def test_post_book_with_author(client):
 
 def test_patch_book(client):
     r = client.post(URL, json={"title": "Dune"})
+    print(r.get_json())
     book_id = str(r.get_json()["id"])
-    r = client.patch(URL + book_id, json={"title": "NotDune"})
+    r = client.patch(f"{URL}/{book_id}", json={"title": "NotDune"})
     assert r.get_json()["title"] == "NotDune"
 
 
 def test_patch_book_invalid_fields(client):
     r = client.post(URL, json={"title": "Dune"})
     book_id = str(r.get_json()["id"])
-    r = client.patch(URL + book_id, json={"title": "NotDune", "fake_field": "value"})
+    r = client.patch(f"{URL}/{book_id}", json={"title": "NotDune", "fake_field": "value"})
     assert r.status_code == 422

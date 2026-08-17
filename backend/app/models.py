@@ -19,7 +19,10 @@ book_authors = Table(
 
 
 class CRUDMixin:
-    """Generic CRUD methods mix-in."""
+    """Generic CRUD methods mix-in.
+
+    Wrappers around plain database calls, to keep database out of view layer.
+    """
 
     @classmethod
     def get_one(cls, *criteria: ColumnExpressionArgument) -> Self | None:

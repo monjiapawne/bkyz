@@ -77,15 +77,13 @@ def create_book(json: BookIn):
     if not title:
         raise APIError("title is required")
 
-    book = Book(
+    book = Book.create(
         title=title,
         authors=book.get("authors"),
         number_of_pages=book.get("number_of_pages"),
         publish_date=book.get("publish_date"),
         isbn=isbn,
     )
-    db.session.add(book)
-    db.session.commit()
 
     logger.info(f"book created id={book.id} title={book.title!r}")
 
@@ -126,13 +124,17 @@ def delete_book(book_id: int):
 def lookup_isbn(isbn: str) -> dict:
     url = f"https://openlibrary.org/isbn/{isbn}"
     headers = {"accept": "application/json"}
-    r = requests.get(url, headers=headers)
-    res = r.json() if r.ok else {}
-    if authors_dict := res.get("authors"):
-        res["authors"] = []
-        for author in authors_dict:
-            author_id = author["key"].split("/")[-1]
-            a = requests.get(f"https://openlibrary.org/authors/{author_id}.json", headers=headers).json()
-            res["authors"].append(a.get("name"))
+    try:
+        r = requests.get(url, headers=headers, timeout=1)
+        res = r.json() if r.ok else {}
+        if authors_dict := res.get("authors"):
+            res["authors"] = []
+            for author in authors_dict:
+                author_id = author["key"].split("/")[-1]
+                a = requests.get(f"https://openlibrary.org/authors/{author_id}.json", headers=headers, timeout=1).json()
+                res["authors"].append(a.get("name"))
+    except requests.RequestException as e:
+        logger.warning(f"isbn lookup failed isbn={isbn}")
+        raise APIError("ISBN lookup is unavailable", 503) from e
 
     return res
