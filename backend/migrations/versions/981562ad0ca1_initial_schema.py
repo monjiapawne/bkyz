@@ -1,8 +1,8 @@
 """initial schema
 
-Revision ID: 3643a2dbdf64
+Revision ID: 981562ad0ca1
 Revises:
-Create Date: 2026-08-09 14:07:15.946451
+Create Date: 2026-08-16 19:51:44.104076
 
 """
 
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision = "3643a2dbdf64"
+revision = "981562ad0ca1"
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -27,36 +27,34 @@ def upgrade():
     op.create_table(
         "books",
         sa.Column("id", sa.Integer(), nullable=False),
-        sa.Column("title", sa.String(), nullable=False),
+        sa.Column("title", sa.String(length=255), nullable=False),
         sa.Column("number_of_pages", sa.Integer(), server_default="0", nullable=False),
         sa.Column("publish_date", sa.String(), nullable=True),
-        sa.Column("isbn", sa.String(), nullable=True),
+        sa.Column("isbn", sa.String(length=13), nullable=True),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_books")),
         sa.UniqueConstraint("isbn", name=op.f("uq_books_isbn")),
     )
     op.create_table(
         "users",
         sa.Column("id", sa.Integer(), nullable=False),
-        sa.Column("name", sa.String(), nullable=False),
+        sa.Column("username", sa.String(length=30), nullable=False),
+        sa.Column("password_hash", sa.String(length=128), nullable=False),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_users")),
-        sa.UniqueConstraint("name", name=op.f("uq_users_name")),
+        sa.UniqueConstraint("username", name=op.f("uq_users_username")),
     )
     op.create_table(
         "book_authors",
         sa.Column("book_id", sa.Integer(), nullable=False),
         sa.Column("author_id", sa.Integer(), nullable=False),
-        sa.ForeignKeyConstraint(
-            ["author_id"],
-            ["authors.id"],
-            name=op.f("fk_book_authors_author_id_authors"),
-        ),
+        sa.ForeignKeyConstraint(["author_id"], ["authors.id"], name=op.f("fk_book_authors_author_id_authors")),
         sa.ForeignKeyConstraint(["book_id"], ["books.id"], name=op.f("fk_book_authors_book_id_books")),
         sa.PrimaryKeyConstraint("book_id", "author_id", name=op.f("pk_book_authors")),
     )
     op.create_table(
         "shelves",
         sa.Column("id", sa.Integer(), nullable=False),
-        sa.Column("name", sa.String(), nullable=False),
+        sa.Column("name", sa.String(length=30), nullable=False),
+        sa.Column("description", sa.String(length=255), nullable=False),
         sa.Column("user_id", sa.Integer(), nullable=True),
         sa.ForeignKeyConstraint(["user_id"], ["users.id"], name=op.f("fk_shelves_user_id_users")),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_shelves")),
@@ -65,11 +63,7 @@ def upgrade():
         "shelf_books",
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("current_page", sa.Integer(), server_default="1", nullable=False),
-        sa.Column(
-            "medium",
-            sa.Enum("pdf", "oreilly", "physical", "audio", name="medium"),
-            nullable=True,
-        ),
+        sa.Column("medium", sa.Enum("pdf", "oreilly", "physical", "audio", name="medium"), nullable=True),
         sa.Column("shelf_id", sa.Integer(), nullable=True),
         sa.Column("book_id", sa.Integer(), nullable=True),
         sa.ForeignKeyConstraint(["book_id"], ["books.id"], name=op.f("fk_shelf_books_book_id_books")),

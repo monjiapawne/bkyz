@@ -2,11 +2,11 @@ from flask import Blueprint
 from flask_login import login_user
 from pydantic import BaseModel, Field
 
-from app import db, spec
-from app.errors import APIError, AuthenticationError
+from app import spec
+from app.errors import APIError, AuthenticationError, NotFound
 from app.models import User
 
-auth = Blueprint("auth", __name__)
+users = Blueprint("users", __name__)
 
 
 class LoginIn(BaseModel):
@@ -15,10 +15,11 @@ class LoginIn(BaseModel):
     remember_me: bool = False
 
 
-@auth.post("/login")
+@users.post("/login")
 @spec.validate(json=LoginIn)
 def login(json: LoginIn):
-    user = User.get_user(json.username)
+    """Login as a user."""
+    user = User.get_one(User.username == json.username)
     if not user or not user.verify_password(json.password):
         raise AuthenticationError("Invalid username or password", 401)
 
@@ -31,17 +32,26 @@ class RegisterIn(BaseModel):
     password: str = Field(min_length=8, max_length=128)
 
 
-@auth.post("/register")
+@users.post("/register")
 @spec.validate(json=RegisterIn)
 def register(json: RegisterIn):
-    if User.get_user(json.username):
+    """Register a user."""
+    if User.get_one(User.id == json.username):
         raise APIError("Username already taken", 409)
 
-    user = User(
+    user = User.create(
         username=json.username,
         password=json.password,
     )
-    db.session.add(user)
-    db.session.commit()
 
     return user.to_json(), 201
+
+
+@users.get("<int:user_id>")
+def user_info(user_id: int):
+    """Get a user's info."""
+    user = User.get_one(User.id == user_id)
+    if user is None:
+        raise NotFound("user not found")
+
+    return user.to_json(), 200

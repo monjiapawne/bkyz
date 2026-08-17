@@ -6,6 +6,7 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from spectree import SpecTree
 from sqlalchemy import MetaData
+from werkzeug.exceptions import HTTPException
 
 from .errors import APIError
 
@@ -39,9 +40,7 @@ def create_app(config_object="config.Config"):
     db.init_app(app)
     migrate.init_app(app, db)
 
-    @app.errorhandler(APIError)
-    def handle_api_error(e: APIError):
-        return {"error": e.message}, e.status
+    config_error_handlers(app)
 
     config_flask_login(app)
 
@@ -75,3 +74,20 @@ def config_flask_login(app):
     @login_manager.unauthorized_handler
     def unauthorized():
         return {"error": "authenticated required"}, 401
+
+
+def config_error_handlers(app):
+    @app.errorhandler(APIError)
+    def handle_api_error(e: APIError):
+        return {"error": e.message}, e.status
+
+    @app.errorhandler(HTTPException)
+    def handle_http_error(e: HTTPException):
+        return {"error": e.description}, e.code
+
+    @app.errorhandler(Exception)
+    def handle_server_error(e: Exception):
+        app.logger.exception("unhandled exception")
+        if app.config["DEBUG"]:
+            raise e
+        return {"error": "internal server error"}, 500

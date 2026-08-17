@@ -1,7 +1,8 @@
 import enum
+from typing import Self
 
 from flask_login import UserMixin
-from sqlalchemy import Column, Enum, ForeignKey, String, Table, select
+from sqlalchemy import Column, ColumnExpressionArgument, Enum, ForeignKey, String, Table, select
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -17,7 +18,51 @@ book_authors = Table(
 )
 
 
-class Book(db.Model):
+class CRUDMixin:
+    """Generic CRUD methods mix-in."""
+
+    @classmethod
+    def get_one(cls, *criteria: ColumnExpressionArgument) -> Self | None:
+        return db.session.scalar(
+            select(cls).
+            where(*criteria)
+        )  # fmt: skip
+
+    @classmethod
+    def get_all(cls, *criteria: ColumnExpressionArgument) -> list[Self] | None:
+        return list(db.session.scalars(
+            select(cls).
+            where(*criteria)
+        ))  # fmt: skip
+
+    @classmethod
+    def get_by_id(cls, id: int | None) -> Self | None:
+        if id is None:
+            return None
+        return db.session.get(cls, id)
+
+    @classmethod
+    def delete_by_id(cls, id: int | None) -> bool:
+        if (obj := cls.get_by_id(id)) is None:
+            return False
+        obj.delete()
+        return True
+
+    @classmethod
+    def create(cls, **kwargs) -> Self:
+        return cls(**kwargs)._save()
+
+    def delete(self) -> None:
+        db.session.delete(self)
+        db.session.commit()
+
+    def _save(self) -> Self:
+        db.session.add(self)
+        db.session.commit()
+        return self
+
+
+class Book(CRUDMixin, db.Model):
     __tablename__ = "books"
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -34,7 +79,12 @@ class Book(db.Model):
 
     @authors.inplace.setter
     def authors(self, value: "str | list[str] | list[Author] | None") -> None:
+        # Using a protected attribute, so we can create a setter and getter
         self._authors = Author.from_string(value)
+
+    @classmethod
+    def get(cls, **filters) -> "list[Book] | None":
+        return db.session.scalars(select(cls).where(**filters))
 
     @classmethod
     def get_by_id(cls, book_id: int | None) -> "Book | None":
@@ -68,7 +118,7 @@ class Book(db.Model):
         }
 
 
-class Author(db.Model):
+class Author(CRUDMixin, db.Model):
     __tablename__ = "authors"
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -89,19 +139,38 @@ class Author(db.Model):
         else:
             names = raw
 
-        return [get_or_create(cls, name=n.strip()) for n in names]
+        res = []
+        for n in names:
+            if (obj := db.session.scalar(select(cls).filter_by(name=n.strip()))) is None:
+                obj = cls(name=n.strip())
+                db.session.add(obj)
+                db.session.flush()
+            res.append(obj)
+
+        return res
 
 
-class Shelf(db.Model):
+class Shelf(CRUDMixin, db.Model):
+    """A grouper of ShelfBooks under a user."""
+
     __tablename__ = "shelves"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(255))
+    name: Mapped[str] = mapped_column(String(30))
+    description: Mapped[str] = mapped_column(String(255))
 
     user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"))
     user: Mapped["User | None"] = relationship(back_populates="shelves")
 
     shelf_books: Mapped[list["ShelfBook"]] = relationship(back_populates="shelf")
+
+    def to_json(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "user_id": self.user_id,
+        }  # fmt: skip
 
 
 class Medium(enum.Enum):
@@ -111,7 +180,7 @@ class Medium(enum.Enum):
     audio = "audio"
 
 
-class ShelfBook(db.Model):
+class ShelfBook(CRUDMixin, db.Model):
     __tablename__ = "shelf_books"
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -132,7 +201,7 @@ class ShelfBook(db.Model):
         )  # fmt: skip
 
 
-class User(UserMixin, db.Model):
+class User(CRUDMixin, UserMixin, db.Model):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -152,27 +221,8 @@ class User(UserMixin, db.Model):
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
 
-    @classmethod
-    def get_user(cls, username: str | None) -> "User | None":
-        return db.session.scalar(select(cls).where(cls.username == username))  # no: fix
-
     def to_json(self):
         return {
             "id": self.id,
             "username": self.username,
         }
-
-
-def get_or_create[T](model: type[T], **filters) -> T:
-    """Generic function to get and possibly create an object in the database
-
-    Args:
-        model: model type to search for
-        filters: kwags to optionally filter to the query
-    """
-    obj = db.session.scalar(select(model).filter_by(**filters))
-    if obj is None:
-        obj = model(**filters)
-        db.session.add(obj)
-        db.session.flush()
-    return obj
