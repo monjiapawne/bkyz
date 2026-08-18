@@ -1,10 +1,11 @@
 import logging
 
 from flask import Flask
+from flask_cors import CORS
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
-from flask_cors import CORS
+from pydantic import ValidationError
 from spectree import SpecTree
 from sqlalchemy import MetaData
 from werkzeug.exceptions import HTTPException
@@ -31,8 +32,14 @@ naming_convention = {
 db = SQLAlchemy(metadata=MetaData(naming_convention=naming_convention))
 migrate = Migrate()
 login_manager = LoginManager()
-spec = SpecTree("flask", title="bkyz API", version="0.1.0", path="api/docs", naming_strategy=lambda m: m.__name__)
 
+def reshape_validation(req, resp, req_validation_error: ValidationError, instance):
+    if req_validation_error:
+        err = req_validation_error.errors()[0]        # first failure
+        field = err["loc"][-1]
+        raise APIError(f"{field}: {err['msg']}", 422)
+
+spec = SpecTree("flask", title="bkyz API", version="0.1.0", path="api/docs", naming_strategy=lambda m: m.__name__, before=reshape_validation)
 
 def create_app(config_object="config.Config"):
     app = Flask(__name__)
@@ -59,7 +66,7 @@ def config_docs(app):
     """Register API docs, grouping endpoints by blueprint."""
     if app.config["DEBUG"]:
         for endpoint, view in app.view_functions.items():
-            view.tags = endpoint.split(".")[1:-1]
+            view.tags = [bp.name] if (bp := app.blueprints.get(endpoint.rpartition(".")[0])) else []
         spec.register(app)
         app.add_url_rule("/api/docs", "docs", app.view_functions["openapi_api/docs_swagger"])
 

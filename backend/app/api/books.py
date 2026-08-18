@@ -17,7 +17,7 @@ books = Blueprint("books", __name__)
 @books.get("")
 def list_books():
     """List all books."""
-    return [b.to_json() for b in Book.get_all()]
+    return {"books": [b.to_json() for b in Book.get_all()]}
 
 
 class BookIn(BaseModel):
@@ -26,13 +26,13 @@ class BookIn(BaseModel):
     title: str | None = Field(None, examples=["Just For Fun"])
     authors: str | None = Field(None, examples=["Linus Torvalds, David Diamond"])
     """Comma seperated author names."""
-    number_of_pages: int = 1
+    number_of_pages: int | None = None
     isbn: str | None = None
 
     @model_validator(mode="after")
     def title_or_isbn(self):
         if not (self.title or self.isbn):
-            raise APIError("Provide either a title or isbn")
+            raise ValueError("Provide either a title or isbn")
         return self
 
     @model_validator(mode="after")
@@ -43,7 +43,7 @@ class BookIn(BaseModel):
         self.isbn = Book.normalize_isbn(self.isbn)
 
         if len(self.isbn) not in (10, 13):
-            raise APIError(f"ISBN {self.isbn!r} format is invalid")
+            raise ValueError(f"ISBN {self.isbn!r} format is invalid")
 
         return self
 
@@ -64,7 +64,8 @@ def create_book(json: BookIn):
 
     If an ISBN is provided, metadata is auto-filled.
     """
-    book = json.model_dump(exclude_none=True)
+    book: BookIn = json.model_dump(exclude_none=True)
+
     if isbn := Book.normalize_isbn(json.isbn):
         if existing := Book.get_by_isbn(isbn):
             return existing.to_json(), 200

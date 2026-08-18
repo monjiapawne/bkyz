@@ -6,7 +6,7 @@ from app import spec
 from app.errors import NotFound
 from app.models import Playlist
 
-playlist = Blueprint("playlist", __name__)
+playlist = Blueprint("playlists", __name__)
 
 
 @playlist.get("")
@@ -27,9 +27,8 @@ class PlaylistIn(BaseModel):
             # This should should check the db and make a logic name
             # like, Page 1. For now just simple.
             self.name = "Unnamed"
-        self.description =  self.description or "Empty."
+        self.description = self.description or "Empty."
         return self
-
 
 
 @playlist.post("")
