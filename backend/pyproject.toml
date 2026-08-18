@@ -7,6 +7,7 @@ dependencies = [
     "flask_sqlalchemy",
     "flask_migrate",
     "flask-login",
+    "flask-cors",
     "requests",
     "spectree",
 ]
