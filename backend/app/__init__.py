@@ -4,6 +4,7 @@ from flask import Flask
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
 from spectree import SpecTree
 from sqlalchemy import MetaData
 from werkzeug.exceptions import HTTPException
@@ -41,7 +42,6 @@ def create_app(config_object="config.Config"):
     migrate.init_app(app, db)
 
     config_error_handlers(app)
-
     config_flask_login(app)
 
     from app.api import api
@@ -91,3 +91,7 @@ def config_error_handlers(app):
         if app.config["DEBUG"]:
             raise e
         return {"error": "internal server error"}, 500
+
+
+def config_cors(app):
+    CORS(app, supports_credentials=True, origins=app.config.get("CORS_ALLOW_LIST", []))
