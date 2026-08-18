@@ -153,19 +153,19 @@ class Author(CRUDMixin, db.Model):
         return res
 
 
-class Shelf(CRUDMixin, db.Model):
-    """A grouper of ShelfBooks under a user."""
+class Playlist(CRUDMixin, db.Model):
+    """A group of tracks."""
 
-    __tablename__ = "shelves"
+    __tablename__ = "playlists"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(30))
     description: Mapped[str] = mapped_column(String(255))
 
     user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"))
-    user: Mapped["User | None"] = relationship(back_populates="shelves")
+    user: Mapped["User | None"] = relationship(back_populates="playlists")
 
-    shelf_books: Mapped[list["ShelfBook"]] = relationship(back_populates="shelf")
+    tracks: Mapped[list["Track"]] = relationship(back_populates="playlist")
 
     def to_json(self):
         return {
@@ -183,21 +183,21 @@ class Medium(enum.Enum):
     audio = "audio"
 
 
-class ShelfBook(CRUDMixin, db.Model):
-    __tablename__ = "shelf_books"
+class Track(CRUDMixin, db.Model):
+    __tablename__ = "tracks"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     current_page: Mapped[int] = mapped_column(server_default="1")
     medium: Mapped[Medium | None] = mapped_column(Enum(Medium))
 
-    shelf_id: Mapped[int | None] = mapped_column(ForeignKey("shelves.id"))
+    playlist_id: Mapped[int | None] = mapped_column(ForeignKey("playlists.id"))
     book_id: Mapped["Book | None"] = mapped_column(ForeignKey("books.id"))
 
-    shelf: Mapped["Shelf"] = relationship(back_populates="shelf_books")
+    playlist: Mapped["Playlist"] = relationship(back_populates="tracks")
     book: Mapped["Book"] = relationship()
 
     @classmethod
-    def get_by_book_id(cls, book_id: str) -> "ShelfBook | None":
+    def get_by_book_id(cls, book_id: str) -> "Track | None":
         return db.session.scalar(
             select(cls)
             .where(cls.book_id == book_id)
@@ -211,7 +211,7 @@ class User(CRUDMixin, UserMixin, db.Model):
     username: Mapped[str] = mapped_column(String(30), unique=True)
     password_hash: Mapped[str] = mapped_column(String(128))
 
-    shelves: Mapped[list["Shelf"]] = relationship(back_populates="user")
+    playlists: Mapped[list["Playlist"]] = relationship(back_populates="user")
 
     @property
     def password(self):

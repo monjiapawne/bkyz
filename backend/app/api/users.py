@@ -1,5 +1,5 @@
 from flask import Blueprint
-from flask_login import login_user
+from flask_login import login_user, login_required, current_user
 from pydantic import BaseModel, Field
 
 from app import spec
@@ -55,3 +55,12 @@ def user_info(user_id: int):
         raise NotFound("user not found")
 
     return user.to_json(), 200
+
+@users.get("")
+@login_required
+def current_user_info():
+    """Get the current logged in user's info.
+    
+    Userful to ensure your logged in.
+    """
+    return User.get_by_id(current_user.id).to_json()

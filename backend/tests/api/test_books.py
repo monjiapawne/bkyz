@@ -1,8 +1,5 @@
 import pytest
-from requests.exceptions import ConnectTimeout
-
 URL = "/api/v1/books"
-
 
 def test_post_book_with_title(client):
     r = client.post(URL, json={"title": "Dune"})
@@ -33,7 +30,6 @@ def test_post_book_with_author(client):
 
 def test_patch_book(client):
     r = client.post(URL, json={"title": "Dune"})
-    print(r.get_json())
     book_id = str(r.get_json()["id"])
     r = client.patch(f"{URL}/{book_id}", json={"title": "NotDune"})
     assert r.get_json()["title"] == "NotDune"
