@@ -46,8 +46,14 @@ def upgrade():
         "book_authors",
         sa.Column("book_id", sa.Integer(), nullable=False),
         sa.Column("author_id", sa.Integer(), nullable=False),
-        sa.ForeignKeyConstraint(["author_id"], ["authors.id"], name=op.f("fk_book_authors_author_id_authors")),
-        sa.ForeignKeyConstraint(["book_id"], ["books.id"], name=op.f("fk_book_authors_book_id_books")),
+        sa.ForeignKeyConstraint(
+            ["author_id"],
+            ["authors.id"],
+            name=op.f("fk_book_authors_author_id_authors"),
+        ),
+        sa.ForeignKeyConstraint(
+            ["book_id"], ["books.id"], name=op.f("fk_book_authors_book_id_books")
+        ),
         sa.PrimaryKeyConstraint("book_id", "author_id", name=op.f("pk_book_authors")),
     )
     op.create_table(
@@ -56,18 +62,30 @@ def upgrade():
         sa.Column("name", sa.String(length=30), nullable=False),
         sa.Column("description", sa.String(length=255), nullable=False),
         sa.Column("user_id", sa.Integer(), nullable=True),
-        sa.ForeignKeyConstraint(["user_id"], ["users.id"], name=op.f("fk_playlists_user_id_users")),
+        sa.ForeignKeyConstraint(
+            ["user_id"], ["users.id"], name=op.f("fk_playlists_user_id_users")
+        ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_playlists")),
     )
     op.create_table(
         "tracks",
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("current_page", sa.Integer(), server_default="1", nullable=False),
-        sa.Column("medium", sa.Enum("pdf", "oreilly", "physical", "audio", name="medium"), nullable=True),
+        sa.Column(
+            "medium",
+            sa.Enum("pdf", "oreilly", "physical", "audio", name="medium"),
+            nullable=True,
+        ),
         sa.Column("playlist_id", sa.Integer(), nullable=True),
         sa.Column("book_id", sa.Integer(), nullable=True),
-        sa.ForeignKeyConstraint(["book_id"], ["books.id"], name=op.f("fk_tracks_book_id_books")),
-        sa.ForeignKeyConstraint(["playlist_id"], ["playlists.id"], name=op.f("fk_tracks_playlist_id_playlists")),
+        sa.ForeignKeyConstraint(
+            ["book_id"], ["books.id"], name=op.f("fk_tracks_book_id_books")
+        ),
+        sa.ForeignKeyConstraint(
+            ["playlist_id"],
+            ["playlists.id"],
+            name=op.f("fk_tracks_playlist_id_playlists"),
+        ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_tracks")),
     )
     # ### end Alembic commands ###

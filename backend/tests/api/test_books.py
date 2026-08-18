@@ -40,5 +40,7 @@ def test_patch_book(client):
 def test_patch_book_invalid_fields(client):
     r = client.post(URL, json={"title": "Dune"})
     book_id = str(r.get_json()["id"])
-    r = client.patch(f"{URL}/{book_id}", json={"title": "NotDune", "fake_field": "value"})
+    r = client.patch(
+        f"{URL}/{book_id}", json={"title": "NotDune", "fake_field": "value"}
+    )
     assert r.status_code == 422

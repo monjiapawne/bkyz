@@ -2,7 +2,15 @@ import enum
 from typing import Self
 
 from flask_login import UserMixin
-from sqlalchemy import Column, ColumnExpressionArgument, Enum, ForeignKey, String, Table, select
+from sqlalchemy import (
+    Column,
+    ColumnExpressionArgument,
+    Enum,
+    ForeignKey,
+    String,
+    Table,
+    select,
+)
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -74,7 +82,9 @@ class Book(CRUDMixin, db.Model):
     publish_date: Mapped[str | None]
     isbn: Mapped[str | None] = mapped_column(String(13), unique=True)
 
-    _authors: Mapped[list["Author"]] = relationship(secondary=book_authors, back_populates="books")
+    _authors: Mapped[list["Author"]] = relationship(
+        secondary=book_authors, back_populates="books"
+    )
 
     @hybrid_property
     def authors(self) -> list["Author"]:
@@ -134,7 +144,9 @@ class Author(CRUDMixin, db.Model):
 
         res = []
         for n in names:
-            if (obj := db.session.scalar(select(cls).filter_by(name=n.strip()))) is None:
+            if (
+                obj := db.session.scalar(select(cls).filter_by(name=n.strip()))
+            ) is None:
                 obj = cls(name=n.strip())
                 db.session.add(obj)
                 db.session.flush()
