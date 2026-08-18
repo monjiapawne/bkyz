@@ -36,7 +36,9 @@ class PlaylistIn(BaseModel):
 @spec.validate(json=PlaylistIn)
 def add_shelf(json: PlaylistIn):
     """Adds a new Playlist to the logged user."""
-    playlist = Playlist.create(name=json.name, description=json.description, user_id=current_user.id)
+    playlist = Playlist.create(
+        name=json.name, description=json.description, user_id=current_user.id
+    )
     return playlist.to_json(), 201
 
 

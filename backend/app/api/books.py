@@ -132,7 +132,11 @@ def lookup_isbn(isbn: str) -> dict:
             res["authors"] = []
             for author in authors_dict:
                 author_id = author["key"].split("/")[-1]
-                a = requests.get(f"https://openlibrary.org/authors/{author_id}.json", headers=headers, timeout=1).json()
+                a = requests.get(
+                    f"https://openlibrary.org/authors/{author_id}.json",
+                    headers=headers,
+                    timeout=1,
+                ).json()
                 res["authors"].append(a.get("name"))
     except requests.RequestException as e:
         logger.warning(f"isbn lookup failed isbn={isbn}")

@@ -13,7 +13,9 @@ tracks = Blueprint("tracks", __name__)
 @login_required
 def list_tracks(playlist_id: int):
     """List all tracks of a playlist."""
-    playlist = Playlist.get_one(Playlist.id == playlist_id, Playlist.user_id == current_user.id)
+    playlist = Playlist.get_one(
+        Playlist.id == playlist_id, Playlist.user_id == current_user.id
+    )
     if playlist is None:
         raise NotFound(f"No Playlist found with id: {playlist_id}")
 
@@ -29,7 +31,9 @@ def get_track(playlist_id: int, track_id: int):
         Track.id == track_id,
     )
     if not track:
-        raise NotFound(f"Track id: {track_id} was not found in Playlist id: {playlist_id}")
+        raise NotFound(
+            f"Track id: {track_id} was not found in Playlist id: {playlist_id}"
+        )
 
     return track.to_json(), 200
 
@@ -46,7 +50,9 @@ class TrackIn(BaseModel):
 def create_track(playlist_id: int, json: TrackIn):
     """Creates a track and adds it to the parent playlist."""
     # Ensure playlist exists
-    playlist = Playlist.get_one(Playlist.id == playlist_id, Playlist.user_id == current_user.id)
+    playlist = Playlist.get_one(
+        Playlist.id == playlist_id, Playlist.user_id == current_user.id
+    )
     track = Track.create(
         playlist_id=playlist.id,
         book_id=json.book_id,

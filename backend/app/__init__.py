@@ -33,13 +33,23 @@ db = SQLAlchemy(metadata=MetaData(naming_convention=naming_convention))
 migrate = Migrate()
 login_manager = LoginManager()
 
+
 def reshape_validation(req, resp, req_validation_error: ValidationError, instance):
     if req_validation_error:
-        err = req_validation_error.errors()[0]        # first failure
+        err = req_validation_error.errors()[0]  # first failure
         field = err["loc"][-1]
         raise APIError(f"{field}: {err['msg']}", 422)
 
-spec = SpecTree("flask", title="bkyz API", version="0.1.0", path="api/docs", naming_strategy=lambda m: m.__name__, before=reshape_validation)
+
+spec = SpecTree(
+    "flask",
+    title="bkyz API",
+    version="0.1.0",
+    path="api/docs",
+    naming_strategy=lambda m: m.__name__,
+    before=reshape_validation,
+)
+
 
 def create_app(config_object="config.Config"):
     app = Flask(__name__)
@@ -66,9 +76,15 @@ def config_docs(app):
     """Register API docs, grouping endpoints by blueprint."""
     if app.config["DEBUG"]:
         for endpoint, view in app.view_functions.items():
-            view.tags = [bp.name] if (bp := app.blueprints.get(endpoint.rpartition(".")[0])) else []
+            view.tags = (
+                [bp.name]
+                if (bp := app.blueprints.get(endpoint.rpartition(".")[0]))
+                else []
+            )
         spec.register(app)
-        app.add_url_rule("/api/docs", "docs", app.view_functions["openapi_api/docs_swagger"])
+        app.add_url_rule(
+            "/api/docs", "docs", app.view_functions["openapi_api/docs_swagger"]
+        )
 
 
 def config_flask_login(app):
