@@ -1,0 +1,50 @@
+from flask import Blueprint
+from flask_login import current_user, login_required
+from pydantic import BaseModel, Field, model_validator
+
+from app import spec
+from app.errors import NotFound
+from app.models import Playlist
+
+playlist = Blueprint("playlist", __name__)
+
+
+@playlist.get("")
+@login_required
+def get_all_playlists():
+    """Get all playlists of the logged in user."""
+    playlists = Playlist.get_all(Playlist.user_id == current_user.id)
+    return [s.to_json() for s in playlists]
+
+
+class PlaylistIn(BaseModel):
+    name: str | None = Field(None, examples=["Future"])
+    description: str | None = Field(None, examples=["Future books I'll read..."])
+
+    @model_validator(mode="after")
+    def validate(self):
+        if self.name is None:
+            # This should should check the db and make a logic name
+            # like, Page 1. For now just simple.
+            self.name = "Unnamed"
+        self.description =  self.description or "Empty."
+        return self
+
+
+
+@playlist.post("")
+@login_required
+@spec.validate(json=PlaylistIn)
+def add_shelf(json: PlaylistIn):
+    """Adds a new Playlist to the logged user."""
+    playlist = Playlist.create(name=json.name, description=json.description, user_id=current_user.id)
+    return playlist.to_json(), 201
+
+
+@playlist.delete("<int:playlist_id>")
+@login_required
+def delete_shelf(playlist_id: int):
+    """Delete a Playlist."""
+    if not Playlist.delete_by_id(playlist_id):
+        raise NotFound(f"No Playlist found with id: {playlist_id}")
+    return "", 204
