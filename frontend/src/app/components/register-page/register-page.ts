@@ -32,7 +32,7 @@ export class RegisterPage {
             },
             error: (err) => {
               console.log(err);
-              this.invalidLoginErrorMessage.set("Invalid username or password")
+              this.invalidLoginErrorMessage.set(err['error']['error'])
             }
           })
     }
