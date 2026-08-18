@@ -9,15 +9,24 @@ import { User } from '../interfaces/user';
 export class Auth {
   private apiURL = environment.apiUrl;
 
-  constructor(private httpClient: HttpClient){}
+  constructor(private httpClient: HttpClient) { }
 
-  register(username: string, password: string){
+  register(username: string, password: string) {
     const body = {
       "username": username,
       "password": password
     }
 
     return this.httpClient.post<User>(this.apiURL + '/user/register', body);
+  }
+
+  login(username: string, password: string) {
+    const body = {
+      "username": username,
+      "password": password
+    }
+
+    return this.httpClient.post<User>(this.apiURL + '/user/login', body);
   }
 
 }
