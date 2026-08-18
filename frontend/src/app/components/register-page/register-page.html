@@ -1,15 +1,15 @@
 <div class="flex justify-center items-center min-h-screen">
-    <form class="bg-[#BB99FF] border-2 rounded-2xl border-[#d4bffda6] p-10">
+    <form class="bg-[#cfcece38] border-2 rounded-2xl border-[#969696a6] p-10">
 
         <h1 class="font-bold text-5xl text-center mb-10 text-[rgb(26,26,26)]" >Register</h1>
-        <input class="bg-[#b38dff] rounded-lg p-2 mt-2 w-80 focus:outline-0" placeholder="Username" type="text">
+        <input name="usernameInput" class="bg-[#ffffff] rounded-lg p-2 mt-2 w-80 focus:outline-0 border border-[#8080808c]" placeholder="Username" type="text" [(ngModel)]="username">
 
-        <hr class="my-2 h-px bg-[#7e55d1]/20 border-[#d4bffd0c] border">
+        <hr class="my-2 h-px bg-[#7e55d1]/20 border-[#69696923] border">
 
-        <input class="block bg-[#b38dff] rounded-lg p-2 mt-2 w-80 focus:outline-0" placeholder="Password" type="password">
-        <input class="block bg-[#b38dff] rounded-lg p-2 mt-2 w-80 focus:outline-0" placeholder="Confirm Password" type="password">
+        <input name="passwordInput" class="block bg-[#ffffff] rounded-lg p-2 mt-2 w-80 focus:outline-0 border border-[#8080808c]" placeholder="Password" type="password" [(ngModel)]="password">
+        <input name="confirmPasswordInput" class="block bg-[#ffffff] rounded-lg p-2 mt-2 w-80 focus:outline-0 border border-[#8080808c]" placeholder="Confirm Password" type="password">
 
-        <button class="bg-[#7e55d1] text-[#ecd7ff] block mx-auto rounded-xl mt-8 px-4 p-2">Register</button>
+        <button class="bg-[#5457ff] text-[#ffffff] block mx-auto rounded-xl mt-8 px-4 p-2" (click)="attemptRegistration()">Register</button>
     </form>
 </div>
 
