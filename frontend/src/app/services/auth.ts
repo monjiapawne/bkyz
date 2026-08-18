@@ -17,7 +17,7 @@ export class Auth {
       "password": password
     }
 
-    return this.httpClient.post<User>(this.apiURL + '/register', body);
+    return this.httpClient.post<User>(this.apiURL + '/user/register', body);
   }
 
 }
