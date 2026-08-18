@@ -9,12 +9,20 @@
                 d="M12 7.333C12 5.5 10.5 4 8.667 4H2v12h6.708C12 16 12 19.334 12 19.334m0-12C12 5.5 13.5 4 15.333 4H22v12h-6.667C12 16 12 19.334 12 19.334m0-12v12m1.875 1.124A2.58 2.58 0 0 1 16.167 19H21m-10.875 1.458A2.54 2.54 0 0 0 7.833 19H3" />
         </svg>
         <h1 class="font-bold text-5xl text-center mb-10 text-[rgb(26,26,26)]">Login</h1>
-        <input class="bg-[#ffffff] rounded-lg p-2 mt-2 w-80 focus:outline-0 border border-[#8080808c]"
-            placeholder="Username" type="text">
+        @if(invalidLoginErrorMessage())
+        {
+        <div class="text-xs max-w-xs text-center text-[#ff2929] mb-6">{{
+            invalidLoginErrorMessage() }}</div>
+        }
+        <input name="usernameInput"
+            class="bg-[#ffffff] rounded-lg p-2 mt-2 w-80 focus:outline-0 border border-[#8080808c]"
+            placeholder="Username" type="text" [(ngModel)]="username">
 
-        <input class="block bg-[#ffffff] rounded-lg p-2 mt-2 w-80 focus:outline-0 border border-[#8080808c]"
-            placeholder="Password" type="password">
-        <button class="bg-[#5457ff] text-[#ffffff] block mx-auto rounded-xl mt-8 px-4 p-2 cursor-pointer">Sign
+        <input name="passwordInput"
+            class="block bg-[#ffffff] rounded-lg p-2 mt-2 w-80 focus:outline-0 border border-[#8080808c]"
+            placeholder="Password" type="password" [(ngModel)]="password">
+        <button (click)="attemptLogin()"
+            class="bg-[#5457ff] text-[#ffffff] block mx-auto rounded-xl mt-8 px-4 p-2 cursor-pointer">Sign
             in</button>
         <h2 class="block text-base text-center justify-center mt-6 text-[rgb(26,26,26)]">Don't have an account?</h2>
         <a routerLink="/register" routerLinkActive="active"
