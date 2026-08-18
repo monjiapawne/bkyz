@@ -1,0 +1,46 @@
+/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+body {
+  background-color: #9670e0;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    font-size: 1.125rem;
+    line-height: 1.6;
+}
+
+nav {
+  display: flex;
+  padding: 15px 20px;
+}
+
+#account-section {
+    display: flex;
+    margin-left: auto;
+}
+
+nav li {
+  list-style: none;
+  display: inline-block;
+  padding: 0px 10px;
+  justify-content: end;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+  padding: 8px 12px;
+}
+
+nav a:hover {
+  background-color: #9c7bdf;
+  border-radius: 5px;
+}
+
+nav a.active {
+  background-color: #BB99FF;
+  color: black;
+  border-radius: 8px;
+}
