@@ -1,18 +1,20 @@
 import pytest
+
 URL = "/api/v1/books"
+
 
 def test_post_book_with_title(client):
     r = client.post(URL, json={"title": "Dune"})
     assert r.status_code == 201
     assert r.get_json()["title"] == "Dune"
 
-    books = client.get(URL).get_json()
+    books = client.get(URL).get_json()["books"]
     assert [b["title"] for b in books] == ["Dune"]
 
 
 def test_post_book_with_no_title(client):
     r = client.post(URL, json={"authors": "hello, world"})
-    assert r.status_code == 400
+    assert r.status_code == 422
 
 
 def test_create_book_with_isbn(client):
@@ -38,5 +40,7 @@ def test_patch_book(client):
 def test_patch_book_invalid_fields(client):
     r = client.post(URL, json={"title": "Dune"})
     book_id = str(r.get_json()["id"])
-    r = client.patch(f"{URL}/{book_id}", json={"title": "NotDune", "fake_field": "value"})
+    r = client.patch(
+        f"{URL}/{book_id}", json={"title": "NotDune", "fake_field": "value"}
+    )
     assert r.status_code == 422
