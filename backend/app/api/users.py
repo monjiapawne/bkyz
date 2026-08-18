@@ -1,5 +1,5 @@
 from flask import Blueprint
-from flask_login import login_user, login_required, current_user
+from flask_login import current_user, login_required, login_user
 from pydantic import BaseModel, Field
 
 from app import spec
@@ -36,7 +36,7 @@ class RegisterIn(BaseModel):
 @spec.validate(json=RegisterIn)
 def register(json: RegisterIn):
     """Register a user."""
-    if User.get_one(User.id == json.username):
+    if User.get_one(User.username == json.username):
         raise APIError("Username already taken", 409)
 
     user = User.create(
@@ -56,11 +56,12 @@ def user_info(user_id: int):
 
     return user.to_json(), 200
 
+
 @users.get("")
 @login_required
 def current_user_info():
     """Get the current logged in user's info.
-    
+
     Userful to ensure your logged in.
     """
     return User.get_by_id(current_user.id).to_json()

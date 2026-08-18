@@ -8,7 +8,10 @@ class Config:
     SECRET_KEY = os.environ.get("SECRET_KEY", "please_change_me_only_for_dev")
     SESSION_COOKIE_SAMESITE = "Lax"
     SESSION_COOKIE_SECURE = not DEBUG
-    CORS_ALLOW_LIST = ["http://localhost:4200", "http://127.0.0.1:4200"]
+    CORS_ALLOW_LIST = [
+        "http://localhost:4200"
+        "http://127.0.0.1:4200"
+    ]
 
 
 class TestingConfig(Config):
