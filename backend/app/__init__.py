@@ -41,6 +41,7 @@ def create_app(config_object="config.Config"):
     db.init_app(app)
     migrate.init_app(app, db)
 
+    config_cors(app)
     config_error_handlers(app)
     config_flask_login(app)
 
