@@ -1,7 +1,8 @@
 class APIError(Exception):
-    def __init__(self, message: str, status: int | None = 400):
+    def __init__(self, message: str, status: int | None = None):
         self.message = message
-        self.status = status
+        if status is not None:
+            self.status = status
 
 
 class BadRequest(APIError):
@@ -14,3 +15,7 @@ class AuthenticationError(APIError):
 
 class NotFound(APIError):
     status = 404
+
+
+class ValidationFailed(APIError):
+    status = 422
