@@ -34,11 +34,19 @@ migrate = Migrate()
 login_manager = LoginManager()
 
 
+def format_validation_error(exc: ValidationError) -> str:
+    """Flatten pydantic's error list into one message."""
+    parts = []
+    for err in exc.errors():
+        field = ".".join(str(p) for p in err["loc"])
+        msg = err["msg"].removeprefix("Value error, ")
+        parts.append(f"{field}: {msg}" if field else msg)
+    return "; ".join(parts)
+
+
 def reshape_validation(req, resp, req_validation_error: ValidationError, instance):
     if req_validation_error:
-        err = req_validation_error.errors()[0]  # first failure
-        field = err["loc"][-1]
-        raise APIError(f"{field}: {err['msg']}", 422)
+        raise APIError(format_validation_error(req_validation_error), 422)
 
 
 spec = SpecTree(
