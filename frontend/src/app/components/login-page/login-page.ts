@@ -1,5 +1,5 @@
 import { Component, signal, WritableSignal } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { Auth } from '../../services/auth';
 import { FormsModule } from '@angular/forms';
 
@@ -11,7 +11,7 @@ import { FormsModule } from '@angular/forms';
 })
 export class LoginPage {
 
-  constructor(private auth: Auth) { }
+  constructor(private auth: Auth, private router: Router) { }
 
   invalidLoginErrorMessage: WritableSignal<String> = signal("");
 
@@ -25,8 +25,10 @@ export class LoginPage {
         {
           next: responseData => {
             this.userId = responseData.id;
-            console.log(this.userId);
             this.invalidLoginErrorMessage.set("");
+            this.auth.isLoggedIn.set(true);
+
+            this.router.navigate(['/']);
           },
           error: (err) => {
             console.log(err);

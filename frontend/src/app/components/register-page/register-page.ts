@@ -13,7 +13,9 @@ export class RegisterPage {
 
   constructor(private auth: Auth) { }
 
-  invalidLoginErrorMessage: WritableSignal<String> = signal("");
+  invalidRegisterErrorMessage: WritableSignal<String> = signal("");
+  accountCreatedSuccessMessage: WritableSignal<String> = signal("");
+
 
   username: string = '';
   password: string = '';
@@ -28,11 +30,12 @@ export class RegisterPage {
             next: responseData => {
               this.userId = responseData.id;
               console.log(this.userId);
-              this.invalidLoginErrorMessage.set("");
+              this.invalidRegisterErrorMessage.set("");
+              this.accountCreatedSuccessMessage.set("Account Created Sucessfully")
             },
             error: (err) => {
               console.log(err);
-              this.invalidLoginErrorMessage.set(err['error']['error'])
+              this.invalidRegisterErrorMessage.set(err['error']['error'])
             }
           })
     }
@@ -40,7 +43,7 @@ export class RegisterPage {
 
   verifyPasswordMatch() {
     if (this.password != this.confirmPassword) {
-      this.invalidLoginErrorMessage.set("Passwords do not match")
+      this.invalidRegisterErrorMessage.set("Passwords do not match")
       return false;
     }
     else {
