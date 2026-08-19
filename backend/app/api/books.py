@@ -28,6 +28,8 @@ class BookIn(BaseModel):
     """Comma seperated author names."""
     number_of_pages: int | None = None
     isbn: str | None = None
+    """ISBN 13 only.
+    Note this will attempt to fill missing fields based on an isbn lookup."""
 
     @model_validator(mode="after")
     def title_or_isbn(self):
@@ -42,7 +44,7 @@ class BookIn(BaseModel):
 
         self.isbn = Book.normalize_isbn(self.isbn)
 
-        if len(self.isbn) not in (10, 13):
+        if len(self.isbn) not in 13:
             raise ValueError(f"ISBN {self.isbn!r} format is invalid")
 
         return self

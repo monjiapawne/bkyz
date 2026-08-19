@@ -17,8 +17,8 @@ def test_post_book_with_no_title(client):
     assert r.status_code == 422
 
 
-def test_create_book_with_isbn(client):
-    r = client.post(URL, json={"isbn": "1718503547"})
+def test_create_book_with_isbn_13(client):
+    r = client.post(URL, json={"isbn": "978-1718503540"})
     if r.status_code == 503:
         pytest.skip("ISBN lookup timed out")
 
