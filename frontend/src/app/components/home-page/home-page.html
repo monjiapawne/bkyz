@@ -1,0 +1,8 @@
+<div class="max-w-7xl mx-auto my-8 px-6">
+    <div class="grid grid-cols-3 gap-6">
+        <div *ngFor="let book of books()" class="rounded-xl bg-white p-5 shadow">
+            <p class="font-semibold">{{ book.title }}</p>
+            <p class="text-gray-600">{{ book.authors }}</p>
+        </div>
+    </div>
+</div>

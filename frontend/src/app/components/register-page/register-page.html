@@ -10,11 +10,17 @@
         </svg>
 
         <h1 class="font-bold text-5xl text-center mb-10 text-[rgb(26,26,26)]">Register</h1>
-        @if(invalidLoginErrorMessage())
+        @if(invalidRegisterErrorMessage())
         {
         <div class="text-xs max-w-xs text-center text-[#ff2929] mb-6">{{
-            invalidLoginErrorMessage() }}</div>
+            invalidRegisterErrorMessage() }}</div>
         }
+        @if(accountCreatedSuccessMessage())
+        {
+        <div class="text-xs max-w-xs text-center text-[#5457ff] mb-6">{{
+            accountCreatedSuccessMessage() }}</div>
+        }
+
         <input name="usernameInput"
             class="bg-[#ffffff] rounded-lg p-2 mt-2 w-80 focus:outline-0 border border-[#8080808c]"
             placeholder="Username" type="text" [(ngModel)]="username">

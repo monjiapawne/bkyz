@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { User } from '../interfaces/user';
@@ -7,9 +7,12 @@ import { User } from '../interfaces/user';
   providedIn: 'root',
 })
 export class Auth {
+
   private apiURL = environment.apiUrl;
 
   constructor(private httpClient: HttpClient) { }
+
+  isLoggedIn = signal(false);
 
   register(username: string, password: string) {
     const body = {
@@ -27,6 +30,10 @@ export class Auth {
     }
 
     return this.httpClient.post<User>(this.apiURL + '/user/login', body);
+  }
+
+  signOut() {
+
   }
 
 }
