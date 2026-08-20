@@ -1,11 +1,10 @@
 import logging
 
-import requests
-from flask import Blueprint
+from flask import Blueprint, current_app, send_from_directory
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 from spectree import Response
 
-from app import db, spec
+from app import db, openlib, spec
 from app.errors import APIError, NotFound
 from app.models import Book
 
@@ -44,7 +43,7 @@ class BookIn(BaseModel):
 
         self.isbn = Book.normalize_isbn(self.isbn)
 
-        if len(self.isbn) not in 13:
+        if len(self.isbn) != 13:
             raise ValueError(f"ISBN {self.isbn!r} format is invalid")
 
         return self
@@ -57,6 +56,7 @@ class BookOut(BaseModel):
     number_of_pages: int
     publish_date: str | None = None
     isbn: str | None = None
+    cover_url: str | None = None
 
 
 @books.post("")
@@ -73,7 +73,7 @@ def create_book(json: BookIn):
             return existing.to_json(), 200
 
         # Merge the two looked up, input fields taking priority
-        book = lookup_isbn(isbn) | book
+        book = openlib.lookup_isbn(isbn) | book
 
     # Extract the fields
     title = book.get("title")
@@ -88,7 +88,8 @@ def create_book(json: BookIn):
         isbn=isbn,
     )
 
-    logger.info(f"book created id={book.id} title={book.title!r}")
+    if isbn:
+        openlib.fetch_cover(book.id, isbn)
 
     return book.to_json(), 201
 
@@ -121,27 +122,17 @@ def delete_book(book_id: int):
     """Delete a book."""
     if not Book.delete_by_id(book_id):
         raise NotFound(f"No Book found with id: {book_id}")
+
+    (current_app.config["COVERS_DIR"] / f"{book_id}.jpg").unlink(missing_ok=True)
     return "", 204
 
 
-def lookup_isbn(isbn: str) -> dict:
-    url = f"https://openlibrary.org/isbn/{isbn}"
-    headers = {"accept": "application/json"}
-    try:
-        r = requests.get(url, headers=headers, timeout=1)
-        res = r.json() if r.ok else {}
-        if authors_dict := res.get("authors"):
-            res["authors"] = []
-            for author in authors_dict:
-                author_id = author["key"].split("/")[-1]
-                a = requests.get(
-                    f"https://openlibrary.org/authors/{author_id}.json",
-                    headers=headers,
-                    timeout=1,
-                ).json()
-                res["authors"].append(a.get("name"))
-    except requests.RequestException as e:
-        logger.warning(f"isbn lookup failed isbn={isbn}")
-        raise APIError("ISBN lookup is unavailable", 503) from e
+@books.get("/<int:book_id>/cover")
+def get_book_cover(book_id: int):
+    """Serve a book's cover or a placeholder if we don't have one."""
+    covers_dir = current_app.config["COVERS_DIR"]
+    name = f"{book_id}.jpg"
+    if not (covers_dir / name).is_file():
+        name = "placeholder.jpeg"
 
-    return res
+    return send_from_directory(covers_dir, name, max_age=86400)
