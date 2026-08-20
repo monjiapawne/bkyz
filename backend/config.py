@@ -9,6 +9,7 @@ class Config:
     SESSION_COOKIE_SAMESITE = "Lax"
     SESSION_COOKIE_SECURE = not DEBUG
     CORS_ALLOW_LIST = ("http://localhost:4200", "http://127.0.0.1:4200")
+    # COVERS_DIR is the path to store the book covers, defaults to /instances/covers
     COVERS_DIR = os.environ.get("COVERS_DIR")
 
 

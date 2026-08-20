@@ -91,6 +91,7 @@ def create_book(json: BookIn):
     if isbn:
         openlib.fetch_cover(book.id, isbn)
 
+
     return book.to_json(), 201
 
 
@@ -129,10 +130,10 @@ def delete_book(book_id: int):
 
 @books.get("/<int:book_id>/cover")
 def get_book_cover(book_id: int):
-    """Serve a book's cover or a placeholder if we don't have one."""
     covers_dir = current_app.config["COVERS_DIR"]
     name = f"{book_id}.jpg"
+
     if not (covers_dir / name).is_file():
-        name = "placeholder.jpeg"
+        name = "placeholder.jpg"
 
     return send_from_directory(covers_dir, name, max_age=86400)
