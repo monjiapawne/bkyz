@@ -1,4 +1,5 @@
 import logging
+from pathlib import Path
 
 from flask import Flask
 from flask_cors import CORS
@@ -69,6 +70,7 @@ def create_app(config_object="config.Config"):
     config_cors(app)
     config_error_handlers(app)
     config_flask_login(app)
+    config_covers(app)
 
     from app.api import api
 
@@ -127,3 +129,9 @@ def config_error_handlers(app):
 
 def config_cors(app):
     CORS(app, supports_credentials=True, origins=app.config.get("CORS_ALLOW_LIST", []))
+
+
+def config_covers(app):
+    covers = Path(app.config.get("COVERS_DIR") or Path(app.instance_path) / "covers")
+    covers.mkdir(parents=True, exist_ok=True)
+    app.config["COVERS_DIR"] = covers
