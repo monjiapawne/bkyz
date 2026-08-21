@@ -13,5 +13,7 @@ export class App {
 
   constructor(public auth: Auth) { }
 
+  accountMenuOpen = false;
+
   protected readonly title = signal('BookTracker');
 }
