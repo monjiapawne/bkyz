@@ -3,10 +3,11 @@ import { Book } from '../../interfaces/book';
 import { BookService } from '../../services/book-service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-home-page',
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, RouterLink],
   templateUrl: './home-page.html',
   styleUrl: './home-page.css',
 })
