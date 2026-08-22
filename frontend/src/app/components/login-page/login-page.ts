@@ -1,6 +1,6 @@
 import { Component, signal, WritableSignal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { Auth } from '../../services/auth';
+import { Auth } from '../../services/auth-service';
 import { FormsModule } from '@angular/forms';
 
 @Component({

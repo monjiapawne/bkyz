@@ -12,7 +12,7 @@ export class PlaylistService {
   constructor(private http: HttpClient) { }
 
   getPlaylists() {
-    return this.http.get<Playlist[]>(this.API_URL);
+    return this.http.get<Playlist[]>(this.API_URL, { withCredentials: true });
   }
 
   postPlaylist(name: string, description: string) {
@@ -21,10 +21,10 @@ export class PlaylistService {
       description: description
     };
 
-    return this.http.post<Playlist>(this.API_URL, body);
+    return this.http.post<Playlist>(this.API_URL, body, { withCredentials: true });
   }
 
   deletePlaylist(id: number) {
-    return this.http.delete(`${this.API_URL}/${id}`)
+    return this.http.delete(`${this.API_URL}/${id}`, { withCredentials: true });
   }
 }
