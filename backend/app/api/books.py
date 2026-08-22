@@ -1,12 +1,15 @@
 import logging
+from pathlib import Path 
 
-from flask import Blueprint, current_app, send_from_directory
+from flask import Blueprint, current_app, send_file
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 from spectree import Response
 
-from app import db, openlib, spec
+from app import db, spec
 from app.errors import APIError, NotFound
 from app.models import Book
+from app.services.book import lookup_isbn
+from app.services.cover import fetch_cover
 
 logger = logging.getLogger(__name__)
 
@@ -73,7 +76,7 @@ def create_book(json: BookIn):
             return existing.to_json(), 200
 
         # Merge the two looked up, input fields taking priority
-        book = openlib.lookup_isbn(isbn) | book
+        book = lookup_isbn(isbn) | book
 
     # Extract the fields
     title = book.get("title")
@@ -89,8 +92,7 @@ def create_book(json: BookIn):
     )
 
     if isbn:
-        openlib.fetch_cover(book.id, isbn)
-
+        fetch_cover(book.id, isbn)
 
     return book.to_json(), 201
 
@@ -131,9 +133,10 @@ def delete_book(book_id: int):
 @books.get("/<int:book_id>/cover")
 def get_book_cover(book_id: int):
     covers_dir = current_app.config["COVERS_DIR"]
-    name = f"{book_id}.jpg"
+    cover = covers_dir / f"{book_id}.jpg"
 
-    if not (covers_dir / name).is_file():
+    if not cover.is_file():
         name = "placeholder.jpg"
+        return send_file(current_app.config["PLACEHOLDER_COVER"], max_age=300)
 
-    return send_from_directory(covers_dir, name, max_age=86400)
+    return send_file(path=cover, max_age=86400)
