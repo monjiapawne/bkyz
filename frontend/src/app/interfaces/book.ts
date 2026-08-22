@@ -5,4 +5,5 @@ export interface Book {
     numberOfPages: number;
     publishDate: string;
     title: string;
+    coverURL: string;
 }

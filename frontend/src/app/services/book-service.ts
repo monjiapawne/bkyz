@@ -13,12 +13,42 @@ export class BookService {
 
   constructor(private http: HttpClient) { }
 
+  getBook(id: number) {
+    return this.http.get<Book>(`${this.API_URL}/${id}`, { withCredentials: true });
+  }
+
   getBooks() {
-    return this.http.get<BookResponse>(this.API_URL)
+    return this.http.get<BookResponse>(this.API_URL, { withCredentials: true });
+  }
+
+  getBookCover(id: number) {
+    return this.http.get(`${this.API_URL}/${id}/cover`, { responseType: 'blob', withCredentials: true });
   }
 
   postBooks(authors: string, isbn: number, numberOfPages: number, title: string) {
-    return this
+    const body = {
+      "authors": authors,
+      "isbn": isbn,
+      "numberOfPages": numberOfPages,
+      "title": title
+    }
+
+    return this.http.post<BookResponse>(this.API_URL, body, { withCredentials: true });
+  }
+
+  patchBook(authors: string, isbn: number, numberOfPages: number, title: string, id: number) {
+    const body = {
+      "authors": authors,
+      "isbn": isbn,
+      "numberOfPages": numberOfPages,
+      "title": title
+    }
+
+    return this.http.patch<Book>(`${this.API_URL}/${id}`, body, { withCredentials: true });
+  }
+
+  deleteBook(id: number) {
+    return this.http.delete<Book>(`${this.API_URL}/${id}`, { withCredentials: true });
   }
 
 }
