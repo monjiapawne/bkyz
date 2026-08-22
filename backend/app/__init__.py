@@ -135,3 +135,8 @@ def config_covers(app):
     covers = Path(app.config.get("COVERS_DIR") or Path(app.instance_path) / "covers")
     covers.mkdir(parents=True, exist_ok=True)
     app.config["COVERS_DIR"] = covers
+
+    placeholder = Path(app.root_path).parent / "assets" / "placeholder.jpg"
+    if not placeholder.is_file():
+        app.logger.warning(f"missing cover placeholder at {placeholder}")
+    app.config["PLACEHOLDER_COVER"] = placeholder
