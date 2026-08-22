@@ -3,8 +3,8 @@ from flask_login import current_user, login_required
 from pydantic import BaseModel
 
 from app import spec
+from app.data.models import Medium, Playlist, Track
 from app.errors import NotFound
-from app.models import Medium, Playlist, Track
 
 tracks = Blueprint("tracks", __name__)
 
