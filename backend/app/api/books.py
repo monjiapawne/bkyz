@@ -1,24 +1,25 @@
 import logging
 
-from flask import Blueprint, current_app, send_file
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from flask import Blueprint, current_app, send_file, url_for
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    computed_field,
+    field_validator,
+    model_validator,
+)
 from spectree import Response
 
 from app import db, spec
+from app.data.models import Book
 from app.errors import APIError, NotFound
-from app.models import Book
 from app.services.book import fetch_book
 from app.services.cover import fetch_cover
 
 logger = logging.getLogger(__name__)
 
 books = Blueprint("books", __name__)
-
-
-@books.get("")
-def list_books():
-    """List all books."""
-    return {"books": [b.to_json() for b in Book.get_all()]}
 
 
 class BookIn(BaseModel):
@@ -52,13 +53,39 @@ class BookIn(BaseModel):
 
 
 class BookOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     title: str
     authors: list[str]
     number_of_pages: int
     publish_date: str | None = None
     isbn: str | None = None
-    cover_url: str | None = None
+
+    @field_validator("authors", mode="before")
+    @classmethod
+    def author_names(cls, v: list) -> list[str]:
+        return [a if isinstance(a, str) else a.name for a in v]
+
+    @computed_field
+    @property
+    def cover_url(self) -> str:
+        return url_for("api.books.get_book_cover", book_id=self.id, _external=True)
+
+
+class BookPatch(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    title: str | None = None
+    authors: str | None = None
+    number_of_pages: int | None = None
+    publish_date: str | None = None
+
+
+@books.get("")
+def list_books():
+    """List all books."""
+    return {"books": [BookOut.model_validate(b).model_dump() for b in Book.get_all()]}
 
 
 @books.post("")
@@ -72,7 +99,7 @@ def create_book(json: BookIn):
 
     if isbn := Book.normalize_isbn(json.isbn):
         if existing := Book.get_by_isbn(isbn):
-            return existing.to_json(), 200
+            return BookOut.model_validate(existing).model_dump(), 200
 
         # Merge the two looked up, input fields taking priority
         if external_book_data := fetch_book(isbn):
@@ -94,16 +121,7 @@ def create_book(json: BookIn):
     if isbn:
         fetch_cover(book.id, isbn)
 
-    return book.to_json(), 201
-
-
-class BookPatch(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    title: str | None = None
-    authors: str | None = None
-    number_of_pages: int | None = None
-    publish_date: str | None = None
+    return BookOut.model_validate(book).model_dump(), 201
 
 
 @books.patch("/<int:book_id>")
@@ -117,7 +135,16 @@ def update_book(book_id: int, json: BookPatch):
         setattr(book, f, v)
 
     db.session.commit()
-    return book.to_json()
+    return BookOut.model_validate(book).model_dump()
+
+
+@books.get("/<int:book_id>")
+def get_book(book_id: int):
+    """Get a book."""
+    if not (book := Book.get_by_id(book_id)):
+        raise NotFound(f"book {book_id} does no exist")
+
+    return BookOut.model_validate(book).model_dump()
 
 
 @books.delete("/<int:book_id>")
@@ -132,6 +159,7 @@ def delete_book(book_id: int):
 
 @books.get("/<int:book_id>/cover")
 def get_book_cover(book_id: int):
+    """Get a book cover."""
     covers_dir = current_app.config["COVERS_DIR"]
     cover = covers_dir / f"{book_id}.jpg"
 

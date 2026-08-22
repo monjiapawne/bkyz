@@ -3,18 +3,10 @@ from flask_login import current_user, login_required
 from pydantic import BaseModel, Field, model_validator
 
 from app import spec
+from app.data.models import Playlist
 from app.errors import NotFound
-from app.models import Playlist
 
 playlist = Blueprint("playlists", __name__)
-
-
-@playlist.get("")
-@login_required
-def get_all_playlists():
-    """Get all playlists of the logged in user."""
-    playlists = Playlist.get_all(Playlist.user_id == current_user.id)
-    return [s.to_json() for s in playlists]
 
 
 class PlaylistIn(BaseModel):
@@ -29,6 +21,14 @@ class PlaylistIn(BaseModel):
             self.name = "Unnamed"
         self.description = self.description or "Empty."
         return self
+
+
+@playlist.get("")
+@login_required
+def get_all_playlists():
+    """Get all playlists of the logged in user."""
+    playlists = Playlist.get_all(Playlist.user_id == current_user.id)
+    return [s.to_json() for s in playlists]
 
 
 @playlist.post("")
