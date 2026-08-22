@@ -3,8 +3,8 @@ from flask_login import current_user, login_required, login_user
 from pydantic import BaseModel, Field
 
 from app import spec
+from app.data.models import User
 from app.errors import APIError, AuthenticationError, NotFound
-from app.models import User
 
 users = Blueprint("users", __name__)
 

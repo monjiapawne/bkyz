@@ -99,7 +99,7 @@ def config_docs(app):
 
 def config_flask_login(app):
     login_manager.init_app(app)
-    from app.models import User
+    from app.data.models import User
 
     @login_manager.user_loader
     def load_user(user_id: str):

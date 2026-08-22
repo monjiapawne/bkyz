@@ -1,7 +1,6 @@
 import enum
 from typing import Self
 
-from flask import url_for
 from flask_login import UserMixin
 from sqlalchemy import (
     Column,
@@ -73,9 +72,6 @@ class CRUDMixin:
         db.session.commit()
         return self
 
-    def to_json(self) -> dict[any]:
-        raise NotImplementedError
-
 
 class Book(CRUDMixin, db.Model):
     __tablename__ = "books"
@@ -113,19 +109,6 @@ class Book(CRUDMixin, db.Model):
         if raw is None:
             return None
         return raw.replace("-", "").replace(" ", "").upper() or None
-
-    def to_json(self):
-        return {
-            "id": self.id,
-            "title": self.title,
-            "authors": [a.name for a in self.authors],
-            "number_of_pages": self.number_of_pages,
-            "publish_date": self.publish_date,
-            "isbn": self.isbn,
-            "cover_url": url_for(
-                "api.books.get_book_cover", book_id=self.id, _external=True
-            ),
-        }
 
 
 class Author(CRUDMixin, db.Model):
