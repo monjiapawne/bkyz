@@ -17,4 +17,8 @@ export class BookService {
     return this.http.get<BookResponse>(this.API_URL)
   }
 
+  postBooks(authors: string, isbn: number, numberOfPages: number, title: string) {
+    return this
+  }
+
 }
