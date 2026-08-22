@@ -1,5 +1,4 @@
 import logging
-from pathlib import Path 
 
 from flask import Blueprint, current_app, send_file
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -8,7 +7,7 @@ from spectree import Response
 from app import db, spec
 from app.errors import APIError, NotFound
 from app.models import Book
-from app.services.book import lookup_isbn
+from app.services.book import fetch_book
 from app.services.cover import fetch_cover
 
 logger = logging.getLogger(__name__)
@@ -76,7 +75,8 @@ def create_book(json: BookIn):
             return existing.to_json(), 200
 
         # Merge the two looked up, input fields taking priority
-        book = lookup_isbn(isbn) | book
+        if external_book_data := fetch_book(isbn):
+            book = external_book_data | book
 
     # Extract the fields
     title = book.get("title")
@@ -136,7 +136,6 @@ def get_book_cover(book_id: int):
     cover = covers_dir / f"{book_id}.jpg"
 
     if not cover.is_file():
-        name = "placeholder.jpg"
         return send_file(current_app.config["PLACEHOLDER_COVER"], max_age=300)
 
     return send_file(path=cover, max_age=86400)
