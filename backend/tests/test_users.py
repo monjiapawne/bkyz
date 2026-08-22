@@ -1,6 +1,6 @@
 import pytest
 
-from app.models import User
+from app.data.models import User
 
 
 def test_password_no_getter():

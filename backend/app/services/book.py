@@ -32,9 +32,7 @@ def _openlib_fetch_book(s: requests.Session, isbn: str) -> dict | None:
     if not raw_author_ids:
         return book
 
-    author_ids = [
-        k.split("/")[-1] for v in raw_author_ids if (k := v.get("key"))
-    ]
+    author_ids = [k.split("/")[-1] for v in raw_author_ids if (k := v.get("key"))]
 
     names = _lookup_authors(s, author_ids)
 
