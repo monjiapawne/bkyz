@@ -159,16 +159,8 @@ class Playlist(CRUDMixin, db.Model):
 
     tracks: Mapped[list["Track"]] = relationship(back_populates="playlist")
 
-    def to_json(self):
-        return {
-            "id": self.id,
-            "name": self.name,
-            "description": self.description,
-            "user_id": self.user_id,
-        }  # fmt: skip
 
-
-class Medium(enum.Enum):
+class Medium(enum.StrEnum):
     pdf = "pdf"
     oreilly = "oreilly"
     physical = "physical"
@@ -187,14 +179,6 @@ class Track(CRUDMixin, db.Model):
 
     playlist: Mapped["Playlist"] = relationship(back_populates="tracks")
     book: Mapped["Book"] = relationship()
-
-    def to_json(self):
-        return {
-            "id": self.id,
-            "current_page": self.current_page,
-            "medium": self.medium.value if self.medium else None,
-            "book_id": self.book_id,
-        }
 
 
 class User(CRUDMixin, UserMixin, db.Model):
@@ -216,9 +200,3 @@ class User(CRUDMixin, UserMixin, db.Model):
 
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
-
-    def to_json(self):
-        return {
-            "id": self.id,
-            "username": self.username,
-        }
