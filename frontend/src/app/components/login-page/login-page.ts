@@ -28,7 +28,7 @@ export class LoginPage {
             this.invalidLoginErrorMessage.set("");
             this.auth.isLoggedIn.set(true);
 
-            this.router.navigate(['/']);
+            this.router.navigate(['/dashboard']);
           },
           error: (err) => {
             console.log(err);

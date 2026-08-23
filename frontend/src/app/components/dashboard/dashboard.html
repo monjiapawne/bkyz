@@ -1,8 +1,47 @@
 <div class="flex gap-3 overflow-x-auto py-2 my-4 mx-auto max-w-7xl">
     @for (playlist of playlists(); track playlist.id) {
-    <button type="button" [routerLink]="['/playlists', playlist.id]"
-        class="shrink-0 rounded-lg bg-gray-200 px-4 py-2 hover:bg-gray-300">
+    <button type="button" [routerLink]="['/playlists', playlist.id]" routerLinkActive="playlist-active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="bg-[#cfcece38] shrink-0 rounded-lg px-4 py-2 hover:bg-gray-300/80">
         {{ playlist.name }}
     </button>
+    }
+</div>
+
+<div class="flex flex-col gap-3 overflow-x-auto py-2 my-4 mx-auto max-w-7xl">
+    @for (track of tracks(); track track.id) {
+    @let book = getBookForTrack(track);
+
+    <div class="p-4">
+        @if (book) {
+
+        <div class="flex">
+            <div>
+                <img [src]="book.cover_url" [alt]="book.title" class="h-48 w-auto object-cover mr-4">
+            </div>
+
+            <div>
+                <div class="text-[#5457ff] font-bold text-xs">
+                    {{ track.medium | uppercase }}
+                </div>
+                <div class="font-bold text-2xl">
+                    {{ book.title }}
+                </div>
+                <div>
+                    {{ book.authors }}
+                </div>
+            </div>
+        </div>
+        <div class="flex w-full items-center mt-4">
+            <h1>{{ getProgress(track,book) }}%</h1>
+            <div class="h-2 w-full overflow-hidden rounded-full bg-gray-200 ml-4">
+                <div class="h-full rounded-full bg-[#5457ff]" [style.width.%]="getProgress(track, book)"></div>
+            </div>
+        </div>
+
+        } @else {
+        Loading...
+        }
+    </div>
     }
 </div>

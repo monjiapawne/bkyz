@@ -1,0 +1,8 @@
+.playlist-active {
+    background-color: #5457ff;
+    color: white;
+}
+
+.playlist-active:hover {
+    background-color: #5457ff;
+}

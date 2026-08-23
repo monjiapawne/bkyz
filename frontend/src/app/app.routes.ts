@@ -9,5 +9,6 @@ export const routes: Routes = [
     { path: '', component: HomePage },
     { path: 'login', component: LoginPage },
     { path: 'register', component: RegisterPage },
-    { path: 'dashboard', component: Dashboard }
+    { path: 'dashboard', component: Dashboard },
+    { path: 'playlists/:id', component: Dashboard }
 ];
