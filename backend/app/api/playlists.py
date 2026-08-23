@@ -1,6 +1,6 @@
 from flask import Blueprint
 from flask_login import current_user, login_required
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, model_validator, ConfigDict
 
 from app import spec
 from app.data.models import Playlist
@@ -22,13 +22,20 @@ class PlaylistIn(BaseModel):
         self.description = self.description or "Empty."
         return self
 
+class PlaylistOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    name: str
+    description: str
+    user_id: int
 
 @playlist.get("")
 @login_required
 def get_all_playlists():
     """Get all playlists of the logged in user."""
     playlists = Playlist.get_all(Playlist.user_id == current_user.id)
-    return [s.to_json() for s in playlists]
+    return [PlaylistOut.model_validate(s).model_dump() for s in playlists]
 
 
 @playlist.post("")
@@ -39,7 +46,7 @@ def add_shelf(json: PlaylistIn):
     playlist = Playlist.create(
         name=json.name, description=json.description, user_id=current_user.id
     )
-    return playlist.to_json(), 201
+    return PlaylistOut.model_validate(playlist).model_dump(), 201
 
 
 @playlist.delete("<int:playlist_id>")

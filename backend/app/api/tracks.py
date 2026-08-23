@@ -1,12 +1,25 @@
 from flask import Blueprint
 from flask_login import current_user, login_required
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from app import spec
 from app.data.models import Medium, Playlist, Track
 from app.errors import NotFound
 
 tracks = Blueprint("tracks", __name__)
+
+class TrackIn(BaseModel):
+    book_id: int
+    current_page: int = 1
+    medium: Medium = Medium.physical
+
+class TrackOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    current_page: int
+    medium: Medium | None
+    book_id: int
 
 
 @tracks.get("")
@@ -19,7 +32,7 @@ def list_tracks(playlist_id: int):
     if playlist is None:
         raise NotFound(f"No Playlist found with id: {playlist_id}")
 
-    return {"tracks": [t.to_json() for t in playlist.tracks]}
+    return {"tracks": [TrackOut.model_validate(t).model_dump() for t in playlist.tracks]}
 
 
 @tracks.get("/<int:track_id>")
@@ -35,13 +48,10 @@ def get_track(playlist_id: int, track_id: int):
             f"Track id: {track_id} was not found in Playlist id: {playlist_id}"
         )
 
-    return track.to_json(), 200
+    return TrackOut.model_validate(track).model_dump(), 200
 
 
-class TrackIn(BaseModel):
-    book_id: int
-    current_page: int = 1
-    medium: Medium = Medium.physical
+
 
 
 @tracks.post("")
@@ -59,7 +69,7 @@ def create_track(playlist_id: int, json: TrackIn):
         current_page=json.current_page,
         medium=json.medium
     )  # fmt: skip
-    return track.to_json(), 201
+    return TrackOut.model_validate(track).model_dump(), 201
 
 
 @tracks.delete("/<int:track_id>")

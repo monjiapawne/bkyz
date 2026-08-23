@@ -1,6 +1,6 @@
 from flask import Blueprint
-from flask_login import current_user, login_required, login_user
-from pydantic import BaseModel, Field
+from flask_login import current_user, login_required, login_user, logout_user
+from pydantic import BaseModel, Field, ConfigDict
 
 from app import spec
 from app.data.models import User
@@ -9,22 +9,33 @@ from app.errors import APIError, AuthenticationError, NotFound
 users = Blueprint("users", __name__)
 
 
-class LoginIn(BaseModel):
+class UserIn(BaseModel):
     username: str
     password: str
     remember_me: bool = False
 
+class UserOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: int
+    username: str
+
 
 @users.post("/login")
-@spec.validate(json=LoginIn)
-def login(json: LoginIn):
+@spec.validate(json=UserIn)
+def login(json: UserIn):
     """Login as a user."""
     user = User.get_one(User.username == json.username)
     if not user or not user.verify_password(json.password):
         raise AuthenticationError("Invalid username or password", 401)
 
     login_user(user, json.remember_me)
-    return {"id": user.id, "username": user.username}, 200
+    return UserOut.model_validate(user).model_dump(), 200
+
+@users.get("/logout")
+def logout():
+    """Logout the currently logged in user."""
+    logout_user()
+    return "", 204
 
 
 class RegisterIn(BaseModel):
@@ -44,7 +55,7 @@ def register(json: RegisterIn):
         password=json.password,
     )
 
-    return user.to_json(), 201
+    return UserOut.model_validate(user).model_dump(), 201
 
 
 @users.get("<int:user_id>")
@@ -54,7 +65,8 @@ def user_info(user_id: int):
     if user is None:
         raise NotFound("user not found")
 
-    return user.to_json(), 200
+    return UserOut.model_validate(user).model_dump(), 200
+
 
 
 @users.get("")
@@ -64,4 +76,5 @@ def current_user_info():
 
     Userful to ensure your logged in.
     """
-    return User.get_by_id(current_user.id).to_json()
+    user = User.get_by_id(current_user.id)
+    return UserOut.model_validate(user).model_dump(), 200

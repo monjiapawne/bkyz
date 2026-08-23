@@ -64,7 +64,7 @@ class BookOut(BaseModel):
 
     @field_validator("authors", mode="before")
     @classmethod
-    def author_names(cls, v: list) -> list[str]:
+    def flatten_authors(cls, v: list) -> list[str]:
         return [a if isinstance(a, str) else a.name for a in v]
 
     @computed_field
