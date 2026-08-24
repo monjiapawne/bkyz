@@ -2,7 +2,7 @@ from flask import Blueprint
 from flask_login import current_user, login_required
 from pydantic import BaseModel, ConfigDict, Field
 
-from app import db, spec
+from app import spec
 from app.data.models import Medium, Playlist, Track
 from app.errors import NotFound
 
@@ -101,8 +101,6 @@ def add_progress(playlist_id: int, track_id: int, json: TrackProgressIn):
         )
 
     new_current_page = track.current_page + json.pages
-    track.current_page = max(1, new_current_page)
-
-    db.session.commit()
+    track.update(current_page=max(1, new_current_page))
 
     return TrackOut.model_validate(track).model_dump(), 200

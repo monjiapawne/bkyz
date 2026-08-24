@@ -119,7 +119,7 @@ def create_book(json: BookIn):
     )
 
     if isbn:
-        fetch_cover(book.id, isbn)
+        fetch_cover(current_app.config["COVERS_DIR"], book.id, isbn)
 
     return BookOut.model_validate(book).model_dump(), 201
 

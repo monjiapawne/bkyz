@@ -67,6 +67,11 @@ class CRUDMixin:
         db.session.delete(self)
         db.session.commit()
 
+    def update(self, **kwargs) -> Self:
+        for f, v in kwargs.items():
+            setattr(self, f, v)
+        return self._save()
+
     def _save(self) -> Self:
         db.session.add(self)
         db.session.commit()
@@ -180,7 +185,10 @@ class Track(CRUDMixin, db.Model):
     playlist: Mapped["Playlist"] = relationship(back_populates="tracks")
     book: Mapped["Book"] = relationship()
 
-    def get_owned_track(playlist_id: int, track_id: int, uid: int) -> "Track | None":
+    @classmethod
+    def get_owned_track(
+        cls, playlist_id: int, track_id: int, uid: int
+    ) -> "Track | None":
         return Track.get_one(
             Track.id == track_id,
             Track.playlist_id == playlist_id,
