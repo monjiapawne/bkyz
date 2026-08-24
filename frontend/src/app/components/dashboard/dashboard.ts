@@ -92,10 +92,10 @@ export class Dashboard {
       return 0;
     }
 
-    return Math.min(
+    return Math.round(Math.min(
       (track.current_page / book.number_of_pages) * 100,
       100
-    );
+    ));
   }
 
 }
