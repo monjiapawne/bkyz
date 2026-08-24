@@ -1,6 +1,6 @@
 from flask import Blueprint
 from flask_login import current_user, login_required
-from pydantic import BaseModel, Field, model_validator, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from app import spec
 from app.data.models import Playlist
@@ -22,6 +22,7 @@ class PlaylistIn(BaseModel):
         self.description = self.description or "Empty."
         return self
 
+
 class PlaylistOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -29,6 +30,7 @@ class PlaylistOut(BaseModel):
     name: str
     description: str
     user_id: int
+
 
 @playlist.get("")
 @login_required

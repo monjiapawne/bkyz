@@ -166,4 +166,4 @@ def get_book_cover(book_id: int):
     if not cover.is_file():
         return send_file(current_app.config["PLACEHOLDER_COVER"], max_age=300)
 
-    return send_file(path=cover, max_age=86400)
+    return send_file(cover, max_age=86400)

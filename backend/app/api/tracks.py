@@ -8,10 +8,12 @@ from app.errors import NotFound
 
 tracks = Blueprint("tracks", __name__)
 
+
 class TrackIn(BaseModel):
     book_id: int
     current_page: int = 1
     medium: Medium = Medium.physical
+
 
 class TrackOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -32,7 +34,9 @@ def list_tracks(playlist_id: int):
     if playlist is None:
         raise NotFound(f"No Playlist found with id: {playlist_id}")
 
-    return {"tracks": [TrackOut.model_validate(t).model_dump() for t in playlist.tracks]}
+    return {
+        "tracks": [TrackOut.model_validate(t).model_dump() for t in playlist.tracks]
+    }
 
 
 @tracks.get("/<int:track_id>")
@@ -49,9 +53,6 @@ def get_track(playlist_id: int, track_id: int):
         )
 
     return TrackOut.model_validate(track).model_dump(), 200
-
-
-
 
 
 @tracks.post("")
