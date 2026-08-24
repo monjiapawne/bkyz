@@ -1,6 +1,6 @@
 from flask import Blueprint
 from flask_login import current_user, login_required, login_user, logout_user
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from app import spec
 from app.data.models import User
@@ -13,6 +13,7 @@ class UserIn(BaseModel):
     username: str
     password: str
     remember_me: bool = False
+
 
 class UserOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -30,6 +31,7 @@ def login(json: UserIn):
 
     login_user(user, json.remember_me)
     return UserOut.model_validate(user).model_dump(), 200
+
 
 @users.get("/logout")
 def logout():
@@ -66,7 +68,6 @@ def user_info(user_id: int):
         raise NotFound("user not found")
 
     return UserOut.model_validate(user).model_dump(), 200
-
 
 
 @users.get("")
