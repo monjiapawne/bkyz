@@ -180,6 +180,13 @@ class Track(CRUDMixin, db.Model):
     playlist: Mapped["Playlist"] = relationship(back_populates="tracks")
     book: Mapped["Book"] = relationship()
 
+    def get_owned_track(playlist_id: int, track_id: int, uid: int) -> "Track | None":
+        return Track.get_one(
+            Track.id == track_id,
+            Track.playlist_id == playlist_id,
+            Track.playlist.has(Playlist.user_id == uid),
+        )
+
 
 class User(CRUDMixin, UserMixin, db.Model):
     __tablename__ = "users"

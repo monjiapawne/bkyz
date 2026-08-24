@@ -1,8 +1,8 @@
 from flask import Blueprint
 from flask_login import current_user, login_required
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
-from app import spec
+from app import db, spec
 from app.data.models import Medium, Playlist, Track
 from app.errors import NotFound
 
@@ -80,3 +80,29 @@ def delete_track(playlist_id: int, track_id: int):
         raise NotFound
 
     return "", 204
+
+
+class TrackProgressIn(BaseModel):
+    pages: int = Field(
+        examples=[50],
+        description="Takes the current page of the track and adds the provied pages (e.g., 101 + 50)",
+    )
+
+
+@tracks.post("/<int:track_id>/progress")
+@login_required
+@spec.validate(json=TrackProgressIn)
+def add_progress(playlist_id: int, track_id: int, json: TrackProgressIn):
+    """Adds progress to a track"""
+    track = Track.get_owned_track(playlist_id, track_id, current_user.id)
+    if not track:
+        raise NotFound(
+            f"Track not found track id: {track_id} in playlist id: {playlist_id}"
+        )
+
+    new_current_page = track.current_page + json.pages
+    track.current_page = max(1, new_current_page)
+
+    db.session.commit()
+
+    return TrackOut.model_validate(track).model_dump(), 200
