@@ -12,6 +12,7 @@ def client():
         db.session.remove()
         db.drop_all()
 
+
 @pytest.fixture
 def client_with_user(client):
     client.post(
@@ -22,6 +23,7 @@ def client_with_user(client):
         "/api/v1/user/login", json={"username": "testuser", "password": "testpassword"}
     )
     return client
+
 
 @pytest.fixture
 def client_user_playlist(client_with_user):

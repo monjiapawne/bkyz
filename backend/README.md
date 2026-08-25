@@ -4,7 +4,7 @@
 
 ```sh
 flask run
-flask db migrate {name}
+flask db migrate -m "{name}"
 flask db upgrade
 
 # Nuke db 

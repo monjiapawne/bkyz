@@ -1,5 +1,6 @@
-import enum
+from enum import StrEnum, auto
 from typing import Self
+from dataclasses import dataclass
 
 from flask_login import UserMixin
 from sqlalchemy import (
@@ -78,6 +79,25 @@ class CRUDMixin:
         return self
 
 
+class FetchStatus(StrEnum):
+    not_attempted = auto()
+    unreachable = auto()
+    timeout = auto()
+    not_found = auto()
+    http_error = auto()
+    ok = auto()
+
+
+@dataclass
+class FetchResult:
+    status: FetchStatus
+    dict_: dict | None = None
+
+    @property
+    def ok(self) -> bool:
+        return self.status == FetchStatus.ok
+
+
 class Book(CRUDMixin, db.Model):
     __tablename__ = "books"
 
@@ -86,6 +106,12 @@ class Book(CRUDMixin, db.Model):
     number_of_pages: Mapped[int] = mapped_column(default=1, server_default="1")
     publish_date: Mapped[str | None]
     isbn: Mapped[str | None] = mapped_column(String(13), unique=True)
+    fetch_status: Mapped[FetchStatus] = mapped_column(
+        Enum(FetchStatus, native_enum=False, create_constraint=False, length=20),
+        default=FetchStatus.not_attempted,
+        server_default="not_attempted",
+    )
+
 
     _authors: Mapped[list["Author"]] = relationship(
         secondary=book_authors, back_populates="books"
@@ -165,11 +191,10 @@ class Playlist(CRUDMixin, db.Model):
     tracks: Mapped[list["Track"]] = relationship(back_populates="playlist")
 
 
-class Medium(enum.StrEnum):
-    pdf = "pdf"
-    oreilly = "oreilly"
-    physical = "physical"
-    audio = "audio"
+class Medium(StrEnum):
+    pdf = auto()
+    physical = auto()
+    audio = auto()
 
 
 class Track(CRUDMixin, db.Model):

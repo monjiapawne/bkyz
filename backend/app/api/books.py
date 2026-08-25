@@ -11,7 +11,7 @@ from pydantic import (
 )
 from spectree import Response
 
-from app import db, spec
+from app import spec
 from app.data.models import Book
 from app.errors import APIError, NotFound
 from app.services.book import fetch_book
@@ -97,13 +97,18 @@ def create_book(json: BookIn):
     """
     book: BookIn = json.model_dump(exclude_none=True)
 
+    fetch_status = None
     if isbn := Book.normalize_isbn(json.isbn):
         if existing := Book.get_by_isbn(isbn):
             return BookOut.model_validate(existing).model_dump(), 200
 
         # Merge the two looked up, input fields taking priority
-        if external_book_data := fetch_book(isbn):
-            book = external_book_data | book
+        result = fetch_book(isbn)
+        fetch_status = result.status        
+
+        if result.ok:
+            book = result.dict_ | book
+
 
     # Extract the fields
     title = book.get("title")
@@ -116,6 +121,7 @@ def create_book(json: BookIn):
         number_of_pages=book.get("number_of_pages"),
         publish_date=book.get("publish_date"),
         isbn=isbn,
+        fetch_status=fetch_status,
     )
 
     if isbn:
@@ -128,13 +134,13 @@ def create_book(json: BookIn):
 @spec.validate(json=BookPatch)
 def update_book(book_id: int, json: BookPatch):
     """Modify a book."""
-    if not (book := Book.get_by_id(book_id)):
+    book = Book.get_by_id(book_id)
+    if not book:
         raise NotFound(f"book {book_id} does not exist")
 
-    for f, v in json.model_dump(exclude_unset=True, exclude_none=True).items():
-        setattr(book, f, v)
+    changes = json.model_dump(exclude_unset=True, exclude_none=True)
+    book.update(**changes)
 
-    db.session.commit()
     return BookOut.model_validate(book).model_dump()
 
 
