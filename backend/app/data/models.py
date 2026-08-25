@@ -1,6 +1,6 @@
+from dataclasses import dataclass
 from enum import StrEnum, auto
 from typing import Self
-from dataclasses import dataclass
 
 from flask_login import UserMixin
 from sqlalchemy import (
@@ -111,7 +111,6 @@ class Book(CRUDMixin, db.Model):
         default=FetchStatus.not_attempted,
         server_default="not_attempted",
     )
-
 
     _authors: Mapped[list["Author"]] = relationship(
         secondary=book_authors, back_populates="books"

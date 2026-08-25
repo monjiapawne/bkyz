@@ -1,11 +1,9 @@
 import logging
-from dataclasses import dataclass
-from enum import StrEnum
 
 import requests
 
-from app.services import OPENLIB_HEADERS
 from app.data.models import FetchResult, FetchStatus
+from app.services import OPENLIB_HEADERS
 
 TIMEOUT = 5
 
