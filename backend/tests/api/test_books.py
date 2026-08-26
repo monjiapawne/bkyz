@@ -22,7 +22,12 @@ def test_create_book_with_isbn_13(client):
     if r.status_code == 503:
         pytest.skip("ISBN lookup timed out")
 
-    assert r.get_json()["title"] == "Linux Basics for Hackers"
+    j = r.get_json()
+
+    assert j["title"] == "Linux Basics for Hackers"
+    assert len(j["authors"]) == 1
+    assert j["authors"] == ['OccupyTheWeb']
+    assert j["publish_date"] == '2024'
 
 
 def test_post_book_with_author(client):
