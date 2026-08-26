@@ -1,12 +1,11 @@
-
 from flask import Blueprint
 from flask_login import current_user, login_required
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from app import spec
-from app.data.models import Medium, Playlist, Track, Book
-from app.errors import NotFound
 from app.api.schemas import Out
+from app.data.models import Book, Medium, Playlist, Track
+from app.errors import NotFound
 
 tracks = Blueprint("tracks", __name__)
 
@@ -14,13 +13,12 @@ tracks = Blueprint("tracks", __name__)
 class TrackIn(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
 
-    book_id: int
+    book_id: int = Field(examples=["1"])
     position: int = 1
-    """User's progress in the book"""
-    unit: str | None = None
-    """Unit is the string representation of the users progress (e.g., pages, chapters, percent)
-    if none is provided, page will be assumed"""
-    total: int | None = None
+    """User's progress in the book, consider this their bookmark or current page"""
+    unit: str | None = Field("pages", examples=["chapters"])
+    """Unit is the string representation of the users progress (e.g., pages, chapters, percent)"""
+    total: int | None = Field(None, examples=[24])
     """Total number of unit, if none is provided, it will be inherited from the book"""
     medium: Medium = Medium.physical
 
@@ -34,7 +32,6 @@ class TrackIn(BaseModel):
         # from the book record
         if self.total is None:
             self.total = book.number_of_pages
-            self.unit = "pages"
 
         return self
 
@@ -46,7 +43,7 @@ class TrackOut(Out):
     position: int
     unit: str
     total: int
-    medium: Medium | None
+    medium: Medium
     book_id: int
 
 
@@ -60,9 +57,7 @@ def list_tracks(playlist_id: int):
     if playlist is None:
         raise NotFound(f"No Playlist found with id: {playlist_id}")
 
-    return {
-        "tracks": [TrackOut.json(t) for t in playlist.tracks]
-    }
+    return {"tracks": [TrackOut.json(t) for t in playlist.tracks]}
 
 
 @tracks.get("/<int:track_id>")
@@ -108,6 +103,7 @@ def create_track(playlist_id: int, json: TrackIn):
 @tracks.delete("/<int:track_id>")
 @login_required
 def delete_track(playlist_id: int, track_id: int):
+    """Delete a track."""
     if not Track.delete_by_id(track_id):
         raise NotFound
 
