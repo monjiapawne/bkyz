@@ -104,14 +104,38 @@ def create_track(playlist_id: int, json: TrackIn):
 @login_required
 def delete_track(playlist_id: int, track_id: int):
     """Delete a track."""
+    # validate
     if not Track.delete_by_id(track_id):
         raise NotFound
 
     return "", 204
 
 
+class TrackPatch(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    book_id: int | None = None
+    unit: str | None = None
+    total: int | None = None
+    medium: Medium | None = None
+
+
+@tracks.patch("/<int:track_id>")
+@login_required
+@spec.validate(json=TrackPatch)
+def update_track(playlist_id: int, track_id: int, json: TrackPatch):
+    track = Track.get_by_id(track_id)
+    if not track:
+        raise NotFound
+
+    changes = json.model_dump(exclude_unset=True, exclude_none=True)
+    track.update(**changes)
+
+    return TrackOut.json(track)
+
+
 class TrackProgressIn(BaseModel):
-    pages: int = Field(
+    position: int = Field(
         examples=[50],
         description="Takes the current page of the track and adds the provied pages (e.g., 101 + 50)",
     )
@@ -128,7 +152,7 @@ def add_progress(playlist_id: int, track_id: int, json: TrackProgressIn):
             f"Track not found track id: {track_id} in playlist id: {playlist_id}"
         )
 
-    new_current_page = track.position + json.pages
-    track.update(current_page=max(1, new_current_page))
+    new_pos = track.position + json.position
+    track.update(position=max(1, new_pos))
 
     return TrackOut.json(track), 200
