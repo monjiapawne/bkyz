@@ -39,6 +39,7 @@ nav a {
   text-decoration: none;
   font-size: 18px;
   padding: 8px 12px;
+  transition: background-color 0.15s ease;
 }
 
 nav a:hover {
@@ -50,6 +51,11 @@ nav a.active {
   background-color: #5457ff;
   color: #ffffff;
   border-radius: 8px;
+  transition: background-color 0.15s ease;
+}
+
+nav a.active:hover {
+  background-color: #4c4ee6;
 }
 
 footer {

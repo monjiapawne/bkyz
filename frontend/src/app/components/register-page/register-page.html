@@ -34,7 +34,8 @@
             class="block bg-[#ffffff] rounded-lg p-2 mt-2 w-80 focus:outline-0 border border-[#8080808c]"
             placeholder="Confirm Password" type="password" [(ngModel)]="confirmPassword">
 
-        <button class="bg-[#5457ff] text-[#ffffff] block mx-auto rounded-xl mt-8 px-4 p-2 cursor-pointer"
+        <button
+            class="bg-[#5457ff] text-[#ffffff] block mx-auto rounded-xl mt-8 px-4 p-2 cursor-pointer hover:bg-[#4c4ee6] shadow transition-colors"
             (click)="attemptRegistration()">Register</button>
         <h2 class="block text-base text-center justify-center mt-6 text-[rgb(26,26,26)]">Already have an account?</h2>
         <a routerLink="/login" routerLinkActive="active"
