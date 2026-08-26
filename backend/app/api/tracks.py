@@ -1,25 +1,49 @@
 from flask import Blueprint
 from flask_login import current_user, login_required
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from app import spec
-from app.data.models import Medium, Playlist, Track
+from app.data.models import Medium, Playlist, Track, Book
 from app.errors import NotFound
 
 tracks = Blueprint("tracks", __name__)
 
 
 class TrackIn(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
     book_id: int
-    current_page: int = 1
+    position: int = 1
+    """User's progress in the book"""
+    unit: str | None = None
+    """Unit is the string representation of the users progress (e.g., pages, chapters, percent)
+    if none is provided, page will be assumed"""
+    total: str | None = None
+    """Total number of unit, if none is provided, it will be inherited from the book"""
     medium: Medium = Medium.physical
+
+    @model_validator(mode="after")
+    def validate(self):
+        book = Book.get_by_id(self.book_id)
+        if not book:
+            raise ValueError(f"Book: {self.book_id} not found.")
+
+        # If user doesn't provide a total, we assume pages and inherity
+        # from the book record
+        if self.total is None:
+            self.total = book.number_of_pages
+            self.unit = "pages"
+
+        return self
 
 
 class TrackOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
-    current_page: int
+    position: int
+    unit: str
+    total: int
     medium: Medium | None
     book_id: int
 
@@ -62,14 +86,19 @@ def create_track(playlist_id: int, json: TrackIn):
     """Creates a track and adds it to the parent playlist."""
     # Ensure playlist exists
     playlist = Playlist.get_one(
-        Playlist.id == playlist_id, Playlist.user_id == current_user.id
-    )
+        Playlist.id == playlist_id,
+        Playlist.user_id == current_user.id
+    )  # fmt: skip
+
     track = Track.create(
+        position=json.position,
+        unit=json.unit,
+        total=json.total,
+        medium=json.medium,
         playlist_id=playlist.id,
         book_id=json.book_id,
-        current_page=json.current_page,
-        medium=json.medium
     )  # fmt: skip
+
     return TrackOut.model_validate(track).model_dump(), 201
 
 
@@ -100,7 +129,7 @@ def add_progress(playlist_id: int, track_id: int, json: TrackProgressIn):
             f"Track not found track id: {track_id} in playlist id: {playlist_id}"
         )
 
-    new_current_page = track.current_page + json.pages
+    new_current_page = track.position + json.pages
     track.update(current_page=max(1, new_current_page))
 
     return TrackOut.model_validate(track).model_dump(), 200
