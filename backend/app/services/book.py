@@ -12,12 +12,12 @@ logger = logging.getLogger(__name__)
 
 def fetch_book(isbn: str) -> FetchResult:
     """Fetches book info from external source"""
-    s = requests.session()
-    return _openlib_fetch_book(s, isbn)
+    with requests.session() as s:
+        s.headers.update(OPENLIB_HEADERS)
+        return _openlib_fetch_book(s, isbn)
 
 
 def _openlib_fetch_book(s: requests.Session, isbn: str) -> FetchResult:
-    s.headers.update(OPENLIB_HEADERS)
     try:
         r = s.get(f"https://openlibrary.org/isbn/{isbn}", timeout=TIMEOUT)
         r.raise_for_status()
@@ -61,14 +61,17 @@ def _lookup_authors(s: requests.Session, author_ids: list[str] | None) -> list[s
                 headers=OPENLIB_HEADERS,
                 timeout=TIMEOUT,
             )
+            r.raise_for_status()
         # Current logic just skips possible errors. There shouldn't be http errors for
         # these requests, as they're provided by the up stream.
         except requests.exceptions.ConnectionError:
             continue
         except requests.exceptions.Timeout:
             continue
+        except requests.exceptions.HTTPError:
+            continue
         else:
-            if r.ok and (name := r.json().get("name")):
+            if name := r.json().get("name"):
                 authors.append(name)
 
     return authors
