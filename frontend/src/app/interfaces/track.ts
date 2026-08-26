@@ -1,6 +1,8 @@
 export interface Track {
-    book_id: number;
-    current_page: number;
     id: number;
+    position: number;
+    total: number;
+    unit: string;
     medium: string;
+    book_id: number;
 }
