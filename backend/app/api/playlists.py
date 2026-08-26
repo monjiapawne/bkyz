@@ -5,6 +5,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from app import spec
 from app.data.models import Playlist
 from app.errors import NotFound
+from app.api.schemas import Out
 
 playlist = Blueprint("playlists", __name__)
 
@@ -23,7 +24,7 @@ class PlaylistIn(BaseModel):
         return self
 
 
-class PlaylistOut(BaseModel):
+class PlaylistOut(Out):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
@@ -37,7 +38,7 @@ class PlaylistOut(BaseModel):
 def get_all_playlists():
     """Get all playlists of the logged in user."""
     playlists = Playlist.get_all(Playlist.user_id == current_user.id)
-    return [PlaylistOut.model_validate(s).model_dump() for s in playlists]
+    return [PlaylistOut.json(s) for s in playlists]
 
 
 @playlist.post("")
@@ -48,7 +49,7 @@ def add_shelf(json: PlaylistIn):
     playlist = Playlist.create(
         name=json.name, description=json.description, user_id=current_user.id
     )
-    return PlaylistOut.model_validate(playlist).model_dump(), 201
+    return PlaylistOut.json(playlist), 201
 
 
 @playlist.delete("<int:playlist_id>")

@@ -87,15 +87,9 @@ export class Dashboard {
     return this.books().find(book => book.id === track.book_id);
   }
 
-  getProgress(track: Track, book: Book): number {
-    if (!book.number_of_pages || book.number_of_pages <= 0) {
-      return 0;
-    }
-
-    return Math.round(Math.min(
-      (track.current_page / book.number_of_pages) * 100,
-      100
-    ));
+  getProgress(track: Track): number {
+    let progress = Math.round(track.position / track.total * 100)
+    return Math.min(progress, 100)
   }
 
 }
