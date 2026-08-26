@@ -1,7 +1,7 @@
 import { Component, signal, WritableSignal } from '@angular/core';
 import { Auth } from '../../services/auth-service';
 import { FormsModule } from '@angular/forms';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 
 @Component({
   selector: 'app-register-page',
@@ -11,7 +11,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 })
 export class RegisterPage {
 
-  constructor(private auth: Auth) { }
+  constructor(private auth: Auth, private router: Router) { }
 
   invalidRegisterErrorMessage: WritableSignal<String> = signal("");
   accountCreatedSuccessMessage: WritableSignal<String> = signal("");
@@ -32,6 +32,9 @@ export class RegisterPage {
               console.log(this.userId);
               this.invalidRegisterErrorMessage.set("");
               this.accountCreatedSuccessMessage.set("Account Created Sucessfully")
+
+
+              this.router.navigate(['/']);
             },
             error: (err) => {
               console.log(err);
