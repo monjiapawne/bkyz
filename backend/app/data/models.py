@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from enum import StrEnum, auto
 from typing import Self
 
@@ -80,22 +79,15 @@ class CRUDMixin:
 
 
 class FetchStatus(StrEnum):
+    """An enum to store the results from external fetches to ensure we can properly proceed all subsiquent
+    for the same query."""
+
     not_attempted = auto()
     unreachable = auto()
     timeout = auto()
     not_found = auto()
     http_error = auto()
     ok = auto()
-
-
-@dataclass
-class FetchResult:
-    status: FetchStatus
-    dict_: dict | None = None
-
-    @property
-    def ok(self) -> bool:
-        return self.status == FetchStatus.ok
 
 
 class Book(CRUDMixin, db.Model):

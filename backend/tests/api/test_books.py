@@ -26,8 +26,8 @@ def test_create_book_with_isbn_13(client):
 
     assert j["title"] == "Linux Basics for Hackers"
     assert len(j["authors"]) == 1
-    assert j["authors"] == ['OccupyTheWeb']
-    assert j["publish_date"] == '2024'
+    assert j["authors"] == ["OccupyTheWeb"]
+    assert j["publish_date"] == "2024"
 
 
 def test_post_book_with_author(client):

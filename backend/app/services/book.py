@@ -1,13 +1,26 @@
 import logging
+from dataclasses import dataclass
 
 import requests
 
-from app.data.models import FetchResult, FetchStatus
+from app.data.models import FetchStatus
 from app.services import OPENLIB_HEADERS
 
 TIMEOUT = 5
 
 logger = logging.getLogger(__name__)
+
+
+@dataclass
+class FetchResult:
+    """Helper for external fetches to"""
+
+    status: FetchStatus
+    dict_: dict | None = None
+
+    @property
+    def ok(self) -> bool:
+        return self.status == FetchStatus.ok
 
 
 def fetch_book(isbn: str) -> FetchResult:
