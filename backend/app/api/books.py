@@ -16,6 +16,7 @@ from app.data.models import Book
 from app.errors import APIError, NotFound
 from app.services.book import fetch_book
 from app.services.cover import fetch_cover
+from app.api.schemas import Out
 
 logger = logging.getLogger(__name__)
 
@@ -52,7 +53,7 @@ class BookIn(BaseModel):
         return self
 
 
-class BookOut(BaseModel):
+class BookOut(Out):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
@@ -85,7 +86,7 @@ class BookPatch(BaseModel):
 @books.get("")
 def list_books():
     """List all books."""
-    return {"books": [BookOut.model_validate(b).model_dump() for b in Book.get_all()]}
+    return {"books": [BookOut.json(b) for b in Book.get_all()]}
 
 
 @books.post("")
@@ -126,7 +127,7 @@ def create_book(json: BookIn):
     if isbn:
         fetch_cover(current_app.config["COVERS_DIR"], book.id, isbn)
 
-    return BookOut.model_validate(book).model_dump(), 201
+    return BookOut.json(book), 201
 
 
 @books.patch("/<int:book_id>")
@@ -140,7 +141,7 @@ def update_book(book_id: int, json: BookPatch):
     changes = json.model_dump(exclude_unset=True, exclude_none=True)
     book.update(**changes)
 
-    return BookOut.model_validate(book).model_dump()
+    return BookOut.json(book)
 
 
 @books.get("/<int:book_id>")
@@ -149,7 +150,7 @@ def get_book(book_id: int):
     if not (book := Book.get_by_id(book_id)):
         raise NotFound(f"book {book_id} does no exist")
 
-    return BookOut.model_validate(book).model_dump()
+    return BookOut.json(book)
 
 
 @books.delete("/<int:book_id>")

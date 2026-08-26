@@ -1,3 +1,4 @@
+
 from flask import Blueprint
 from flask_login import current_user, login_required
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -5,6 +6,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from app import spec
 from app.data.models import Medium, Playlist, Track, Book
 from app.errors import NotFound
+from app.api.schemas import Out
 
 tracks = Blueprint("tracks", __name__)
 
@@ -18,7 +20,7 @@ class TrackIn(BaseModel):
     unit: str | None = None
     """Unit is the string representation of the users progress (e.g., pages, chapters, percent)
     if none is provided, page will be assumed"""
-    total: str | None = None
+    total: int | None = None
     """Total number of unit, if none is provided, it will be inherited from the book"""
     medium: Medium = Medium.physical
 
@@ -37,7 +39,7 @@ class TrackIn(BaseModel):
         return self
 
 
-class TrackOut(BaseModel):
+class TrackOut(Out):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
@@ -59,7 +61,7 @@ def list_tracks(playlist_id: int):
         raise NotFound(f"No Playlist found with id: {playlist_id}")
 
     return {
-        "tracks": [TrackOut.model_validate(t).model_dump() for t in playlist.tracks]
+        "tracks": [TrackOut.json(t) for t in playlist.tracks]
     }
 
 
@@ -71,12 +73,13 @@ def get_track(playlist_id: int, track_id: int):
         Playlist.id == playlist_id,
         Track.id == track_id,
     )
+
     if not track:
         raise NotFound(
             f"Track id: {track_id} was not found in Playlist id: {playlist_id}"
         )
 
-    return TrackOut.model_validate(track).model_dump(), 200
+    return TrackOut.json(track), 200
 
 
 @tracks.post("")
@@ -99,7 +102,7 @@ def create_track(playlist_id: int, json: TrackIn):
         book_id=json.book_id,
     )  # fmt: skip
 
-    return TrackOut.model_validate(track).model_dump(), 201
+    return TrackOut.json(track), 201
 
 
 @tracks.delete("/<int:track_id>")
@@ -132,4 +135,4 @@ def add_progress(playlist_id: int, track_id: int, json: TrackProgressIn):
     new_current_page = track.position + json.pages
     track.update(current_page=max(1, new_current_page))
 
-    return TrackOut.model_validate(track).model_dump(), 200
+    return TrackOut.json(track), 200
