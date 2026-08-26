@@ -108,8 +108,7 @@ class Book(CRUDMixin, db.Model):
     isbn: Mapped[str | None] = mapped_column(String(13), unique=True)
     fetch_status: Mapped[FetchStatus] = mapped_column(
         Enum(FetchStatus, native_enum=False, create_constraint=False, length=20),
-        default=FetchStatus.not_attempted,
-        server_default="not_attempted",
+        server_default=FetchStatus.not_attempted,
     )
 
     _authors: Mapped[list["Author"]] = relationship(
@@ -176,7 +175,7 @@ class Author(CRUDMixin, db.Model):
 
 
 class Playlist(CRUDMixin, db.Model):
-    """A group of tracks."""
+    """A playlist is a group of tracks."""
 
     __tablename__ = "playlists"
 
@@ -197,13 +196,17 @@ class Medium(StrEnum):
 
 
 class Track(CRUDMixin, db.Model):
+    """A user book's copy of a book storing all their data, referencing a parent book."""
+
     __tablename__ = "tracks"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     position: Mapped[int] = mapped_column(server_default="1")
     unit: Mapped[str | None] = mapped_column(String(30), default=None)
     total: Mapped[int | None] = mapped_column(default=None)
-    medium: Mapped[Medium | None] = mapped_column(Enum(Medium))
+    medium: Mapped[Medium] = mapped_column(
+        Enum(Medium), server_default=Medium.physical.name
+    )
 
     playlist_id: Mapped[int | None] = mapped_column(ForeignKey("playlists.id"))
     book_id: Mapped["Book | None"] = mapped_column(ForeignKey("books.id"))

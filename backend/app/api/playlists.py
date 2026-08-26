@@ -3,9 +3,9 @@ from flask_login import current_user, login_required
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from app import spec
+from app.api.schemas import Out
 from app.data.models import Playlist
 from app.errors import NotFound
-from app.api.schemas import Out
 
 playlist = Blueprint("playlists", __name__)
 

@@ -1,7 +1,9 @@
 from pydantic import BaseModel, ConfigDict
 
+
 class Out(BaseModel):
     """Output class to be inherited by output to add some generic functions"""
+
     model_config = ConfigDict(from_attributes=True)
 
     @classmethod

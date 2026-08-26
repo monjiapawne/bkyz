@@ -12,11 +12,11 @@ from pydantic import (
 from spectree import Response
 
 from app import spec
+from app.api.schemas import Out
 from app.data.models import Book
 from app.errors import APIError, NotFound
 from app.services.book import fetch_book
 from app.services.cover import fetch_cover
-from app.api.schemas import Out
 
 logger = logging.getLogger(__name__)
 
