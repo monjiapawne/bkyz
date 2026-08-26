@@ -210,11 +210,15 @@ class Track(CRUDMixin, db.Model):
     def get_owned_track(
         cls, playlist_id: int, track_id: int, uid: int
     ) -> "Track | None":
-        return Track.get_one(
-            Track.id == track_id,
-            Track.playlist_id == playlist_id,
-            Track.playlist.has(Playlist.user_id == uid),
+        return cls.get_one(
+            cls.id == track_id,
+            cls.playlist_id == playlist_id,
+            cls.playlist.has(Playlist.user_id == uid),
         )
+
+    @property
+    def is_owner(track_id: int):
+        pass
 
 
 class User(CRUDMixin, UserMixin, db.Model):

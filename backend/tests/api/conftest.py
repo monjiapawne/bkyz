@@ -14,14 +14,14 @@ def client():
 
 
 @pytest.fixture
-def client_with_book(client):
+def client_book(client):
     client.post("/api/v1/books", json={"title": "Dune"})
     return client
 
 
 @pytest.fixture
-def client_with_user(client_with_book):
-    client = client_with_book
+def client_user(client_book):
+    client = client_book
     client.post(
         "/api/v1/user/register",
         json={"username": "testuser", "password": "testpassword"},
@@ -33,8 +33,8 @@ def client_with_user(client_with_book):
 
 
 @pytest.fixture
-def client_user_playlist(client_with_user):
-    client = client_with_user
+def client_playist(client_user):
+    client = client_user
     r = client.post(
         "/api/v1/playlists", json={"name": "unamed", "description": "Empty."}
     )
@@ -43,5 +43,29 @@ def client_user_playlist(client_with_user):
     assert r.status_code == 200
     assert r.get_json()[0]["description"] == "Empty."
     assert r.get_json()[0]["name"] == "unamed"
+
+    return client
+
+
+@pytest.fixture
+def client_track(client_playist):
+    client = client_playist
+    r = client.post(
+        "/api/v1/playlists/1/tracks",
+        json={
+            "book_id": 1,
+            "position": 1,
+            "medium": "physical",
+            "unit": "pages",
+            "total": 100,
+        },
+    )
+
+    assert r.status_code == 201
+    j = r.get_json()
+    assert j["medium"] == "physical"
+    assert j["position"] == 1
+    assert j["unit"] == "pages"
+    assert j["total"] == 100
 
     return client
