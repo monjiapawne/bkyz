@@ -14,7 +14,14 @@ def client():
 
 
 @pytest.fixture
-def client_with_user(client):
+def client_with_book(client):
+    client.post("/api/v1/books", json={"title": "Dune"})
+    return client
+
+
+@pytest.fixture
+def client_with_user(client_with_book):
+    client = client_with_book
     client.post(
         "/api/v1/user/register",
         json={"username": "testuser", "password": "testpassword"},

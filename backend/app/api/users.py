@@ -5,6 +5,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from app import spec
 from app.data.models import User
 from app.errors import APIError, AuthenticationError, NotFound
+from app.api.schemas import Out
 
 users = Blueprint("users", __name__)
 
@@ -15,7 +16,7 @@ class UserIn(BaseModel):
     remember_me: bool = False
 
 
-class UserOut(BaseModel):
+class UserOut(Out):
     model_config = ConfigDict(from_attributes=True)
     id: int
     username: str
@@ -30,7 +31,7 @@ def login(json: UserIn):
         raise AuthenticationError("Invalid username or password", 401)
 
     login_user(user, json.remember_me)
-    return UserOut.model_validate(user).model_dump(), 200
+    return UserOut.json(user), 200
 
 
 @users.get("/logout")
@@ -57,7 +58,7 @@ def register(json: RegisterIn):
         password=json.password,
     )
 
-    return UserOut.model_validate(user).model_dump(), 201
+    return UserOut.json(user), 201
 
 
 @users.get("<int:user_id>")
@@ -67,7 +68,7 @@ def user_info(user_id: int):
     if user is None:
         raise NotFound("user not found")
 
-    return UserOut.model_validate(user).model_dump(), 200
+    return UserOut.json(user), 200
 
 
 @users.get("")
@@ -78,4 +79,4 @@ def current_user_info():
     Userful to ensure your logged in.
     """
     user = User.get_by_id(current_user.id)
-    return UserOut.model_validate(user).model_dump(), 200
+    return UserOut.json(user), 200

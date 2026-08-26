@@ -200,7 +200,9 @@ class Track(CRUDMixin, db.Model):
     __tablename__ = "tracks"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    current_page: Mapped[int] = mapped_column(server_default="1")
+    position: Mapped[int] = mapped_column(server_default="1")
+    unit: Mapped[str | None] = mapped_column(String(30), default=None)
+    total: Mapped[int | None] = mapped_column(default=None)
     medium: Mapped[Medium | None] = mapped_column(Enum(Medium))
 
     playlist_id: Mapped[int | None] = mapped_column(ForeignKey("playlists.id"))
