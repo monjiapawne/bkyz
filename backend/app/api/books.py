@@ -45,11 +45,11 @@ class BookIn(BaseModel):
         if self.isbn is None:
             return self
 
-        self.isbn = Book.normalize_isbn(self.isbn)
-
-        if len(self.isbn) != 13:
+        isbn = Book.normalize_isbn(self.isbn)
+        if isbn is None or len(isbn) != 13:
             raise ValueError(f"ISBN {self.isbn!r} format is invalid")
 
+        self.isbn = isbn
         return self
 
 
@@ -96,12 +96,12 @@ def create_book(json: BookIn):
 
     If an ISBN is provided, metadata is auto-filled.
     """
-    book: BookIn = json.model_dump(exclude_none=True)
+    book = json.model_dump(exclude_none=True)
 
     fetch_status = None
     if isbn := Book.normalize_isbn(json.isbn):
         if existing := Book.get_by_isbn(isbn):
-            return BookOut.model_validate(existing).model_dump(), 200
+            return BookOut.json(existing), 200
 
         # Merge the two looked up, input fields taking priority
         result = fetch_book(isbn)

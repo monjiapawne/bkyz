@@ -1,5 +1,5 @@
 import logging
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 import requests
 
@@ -16,7 +16,7 @@ class FetchResult:
     """Helper for external fetches to"""
 
     status: FetchStatus
-    dict_: dict | None = None
+    dict_: dict = field(default_factory=dict)
 
     @property
     def ok(self) -> bool:
@@ -33,15 +33,18 @@ def fetch_book(isbn: str) -> FetchResult:
 def _openlib_fetch_book(s: requests.Session, isbn: str) -> FetchResult:
     try:
         r = s.get(f"https://openlibrary.org/isbn/{isbn}", timeout=TIMEOUT)
-        r.raise_for_status()
     except requests.exceptions.ConnectionError:
         return FetchResult(FetchStatus.unreachable)
     except requests.exceptions.Timeout:
         return FetchResult(FetchStatus.timeout)
+
+    try:
+        r.raise_for_status()
     except requests.exceptions.HTTPError:
         status = (
             FetchStatus.not_found if r.status_code == 404 else FetchStatus.http_error
         )
+
         return FetchResult(status)
 
     try:
