@@ -23,7 +23,7 @@ class TrackIn(BaseModel):
     medium: Medium = Medium.physical
 
     @model_validator(mode="after")
-    def validate(self):
+    def validate_(self):
         book = Book.get_by_id(self.book_id)
         if not book:
             raise ValueError(f"Book: {self.book_id} not found.")

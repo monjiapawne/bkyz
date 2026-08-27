@@ -40,7 +40,7 @@ class CRUDMixin:
         )  # fmt: skip
 
     @classmethod
-    def get_all(cls, *criteria: ColumnExpressionArgument) -> list[Self] | None:
+    def get_all(cls, *criteria: ColumnExpressionArgument) -> list[Self]:
         return list(db.session.scalars(
             select(cls).
             where(*criteria)
@@ -113,7 +113,7 @@ class Book(CRUDMixin, db.Model):
         return self._authors
 
     @authors.inplace.setter
-    def authors(self, value: "str | list[str] | list[Author] | None") -> None:
+    def _authors_setter(self, value: "str | list[str] | list[Author] | None") -> None:
         # Using a protected attribute, so we can create a setter and getter
         self._authors = Author.from_string(value)
 
@@ -145,7 +145,7 @@ class Author(CRUDMixin, db.Model):
     )
 
     @classmethod
-    def from_string(cls, raw: str | list[str] | None) -> list["Author"]:
+    def from_string(cls, raw: "str | list[str] | list[Author] | None") -> list["Author"]:
         if not raw:
             return []
 
@@ -156,9 +156,7 @@ class Author(CRUDMixin, db.Model):
 
         res = []
         for n in names:
-            if (
-                obj := db.session.scalar(select(cls).filter_by(name=n.strip()))
-            ) is None:
+            if obj := db.session.scalar(select(cls).filter_by(name=n.strip())) is None:
                 obj = cls(name=n.strip())
                 db.session.add(obj)
                 db.session.flush()
