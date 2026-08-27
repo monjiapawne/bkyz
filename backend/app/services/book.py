@@ -47,18 +47,18 @@ def _openlib_fetch_book(s: requests.Session, isbn: str) -> FetchResult:
     try:
         book = r.json()
     except requests.exceptions.JSONDecodeError:
-        return FetchResult(FetchStatus)
+        return FetchResult(FetchStatus.invalid_format)
 
     raw_author_ids = book.get("authors")
     if not raw_author_ids:
-        return book
+        return FetchResult(FetchStatus.ok, book)
 
     author_ids = [k.split("/")[-1] for v in raw_author_ids if (k := v.get("key"))]
 
     names = _lookup_authors(s, author_ids)
 
     if not names:
-        return book
+        return FetchResult(FetchStatus.ok, book)
 
     book["authors"] = names
 
@@ -66,6 +66,9 @@ def _openlib_fetch_book(s: requests.Session, isbn: str) -> FetchResult:
 
 
 def _lookup_authors(s: requests.Session, author_ids: list[str] | None) -> list[str]:
+    if author_ids is None:
+        return []
+
     authors = []
     for author_id in author_ids:
         try:

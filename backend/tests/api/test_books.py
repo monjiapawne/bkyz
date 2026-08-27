@@ -49,3 +49,24 @@ def test_patch_book_invalid_fields(client):
         f"{URL}/{book_id}", json={"title": "NotDune", "fake_field": "value"}
     )
     assert r.status_code == 422
+
+
+def test_create_book_full(client):
+    r = client.post(
+        URL,
+        json={
+            "authors": "Al Sweigart",
+            "isbn": "978-1593275990",
+            "number_of_pages": 504,
+            "title": "Automate the Boring Stuff with Python: Practical Programming for Total Beginners",
+        },
+    )
+
+    j = r.get_json()
+    assert j["authors"] == ["Al Sweigart"]
+    assert j["number_of_pages"] == 504
+    assert j["publish_date"] == "2015"
+    assert (
+        j["title"]
+        == "Automate the Boring Stuff with Python: Practical Programming for Total Beginners"
+    )

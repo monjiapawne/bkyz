@@ -87,6 +87,7 @@ class FetchStatus(StrEnum):
     timeout = auto()
     not_found = auto()
     http_error = auto()
+    invalid_format = auto()
     ok = auto()
 
 
@@ -215,10 +216,6 @@ class Track(CRUDMixin, db.Model):
             cls.playlist_id == playlist_id,
             cls.playlist.has(Playlist.user_id == uid),
         )
-
-    @property
-    def is_owner(track_id: int):
-        pass
 
 
 class User(CRUDMixin, UserMixin, db.Model):
