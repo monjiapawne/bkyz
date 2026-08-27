@@ -29,7 +29,7 @@ class BookIn(BaseModel):
     title: str | None = Field(None, examples=["Just For Fun"])
     authors: str | None = Field(None, examples=["Linus Torvalds, David Diamond"])
     """Comma seperated author names."""
-    number_of_pages: int | None = None
+    total: int | None = None
     isbn: str | None = None
     """ISBN 13 only.
     Note this will attempt to fill missing fields based on an isbn lookup."""
