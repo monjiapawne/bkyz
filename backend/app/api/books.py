@@ -29,7 +29,7 @@ class BookIn(BaseModel):
     title: str | None = Field(None, examples=["Just For Fun"])
     authors: str | None = Field(None, examples=["Linus Torvalds, David Diamond"])
     """Comma seperated author names."""
-    total: int | None = None
+    pages: int | None = 1
     isbn: str | None = None
     """ISBN 13 only.
     Note this will attempt to fill missing fields based on an isbn lookup."""
@@ -59,7 +59,7 @@ class BookOut(Out):
     id: int
     title: str
     authors: list[str]
-    number_of_pages: int
+    pages: int
     publish_date: str | None = None
     isbn: str | None = None
 
@@ -79,7 +79,7 @@ class BookPatch(BaseModel):
 
     title: str | None = None
     authors: str | None = None
-    number_of_pages: int | None = None
+    pages: int | None = None
     publish_date: str | None = None
 
 
@@ -118,7 +118,7 @@ def create_book(json: BookIn):
     book = Book.create(
         title=title,
         authors=book.get("authors"),
-        number_of_pages=book.get("number_of_pages"),
+        pages=book.get("pages"),
         publish_date=book.get("publish_date"),
         isbn=isbn,
         fetch_status=fetch_status,

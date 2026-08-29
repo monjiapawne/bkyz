@@ -96,7 +96,7 @@ class Book(CRUDMixin, db.Model):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(String(255))
-    number_of_pages: Mapped[int] = mapped_column(default=1, server_default="1")
+    pages: Mapped[int] = mapped_column(default=1, server_default="1")
     publish_date: Mapped[str | None]
     isbn: Mapped[str | None] = mapped_column(String(13), unique=True)
     fetch_status: Mapped[FetchStatus] = mapped_column(
