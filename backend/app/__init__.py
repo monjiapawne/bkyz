@@ -86,15 +86,9 @@ def config_docs(app):
     """Register API docs, grouping endpoints by blueprint."""
     if app.config["DEBUG"]:
         for endpoint, view in app.view_functions.items():
-            view.tags = (
-                [bp.name]
-                if (bp := app.blueprints.get(endpoint.rpartition(".")[0]))
-                else []
-            )
+            view.tags = [bp.name] if (bp := app.blueprints.get(endpoint.rpartition(".")[0])) else []
         spec.register(app)
-        app.add_url_rule(
-            "/api/docs", "docs", app.view_functions["openapi_api/docs_swagger"]
-        )
+        app.add_url_rule("/api/docs", "docs", app.view_functions["openapi_api/docs_swagger"])
 
 
 def config_flask_login(app):

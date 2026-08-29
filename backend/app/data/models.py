@@ -104,9 +104,7 @@ class Book(CRUDMixin, db.Model):
         server_default=FetchStatus.not_attempted,
     )
 
-    _authors: Mapped[list["Author"]] = relationship(
-        secondary=book_authors, back_populates="books"
-    )
+    _authors: Mapped[list["Author"]] = relationship(secondary=book_authors, back_populates="books")
 
     @hybrid_property
     def authors(self) -> list["Author"]:
@@ -195,9 +193,7 @@ class Track(CRUDMixin, db.Model):
     position: Mapped[int] = mapped_column(server_default="1")
     unit: Mapped[str | None] = mapped_column(String(30), default=None)
     total: Mapped[int | None] = mapped_column(default=None)
-    medium: Mapped[Medium] = mapped_column(
-        Enum(Medium), server_default=Medium.physical.name
-    )
+    medium: Mapped[Medium] = mapped_column(Enum(Medium), server_default=Medium.physical.name)
 
     playlist_id: Mapped[int | None] = mapped_column(ForeignKey("playlists.id"))
     book_id: Mapped["Book | None"] = mapped_column(ForeignKey("books.id"))
@@ -206,9 +202,7 @@ class Track(CRUDMixin, db.Model):
     book: Mapped["Book"] = relationship()
 
     @classmethod
-    def get_owned_track(
-        cls, playlist_id: int, track_id: int, uid: int
-    ) -> "Track | None":
+    def get_owned_track(cls, playlist_id: int, track_id: int, uid: int) -> "Track | None":
         return cls.get_one(
             cls.id == track_id,
             cls.playlist_id == playlist_id,
