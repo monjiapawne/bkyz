@@ -51,9 +51,7 @@ class TrackOut(Out):
 @login_required
 def list_tracks(playlist_id: int):
     """List all tracks of a playlist."""
-    playlist = Playlist.get_one(
-        Playlist.id == playlist_id, Playlist.user_id == current_user.id
-    )
+    playlist = Playlist.get_one(Playlist.id == playlist_id, Playlist.user_id == current_user.id)
     if playlist is None:
         raise NotFound(f"No Playlist found with id: {playlist_id}")
 
@@ -70,9 +68,7 @@ def get_track(playlist_id: int, track_id: int):
     )
 
     if not track:
-        raise NotFound(
-            f"Track id: {track_id} was not found in Playlist id: {playlist_id}"
-        )
+        raise NotFound(f"Track id: {track_id} was not found in Playlist id: {playlist_id}")
 
     return TrackOut.json(track), 200
 
@@ -93,7 +89,7 @@ def create_track(playlist_id: int, json: TrackIn):
         unit=json.unit,
         total=json.total,
         medium=json.medium,
-        playlist_id=playlist.id,
+        playlist_id=playlist_id,
         book_id=json.book_id,
     )  # fmt: skip
 
@@ -148,9 +144,7 @@ def add_progress(playlist_id: int, track_id: int, json: TrackProgressIn):
     """Adds progress to a track"""
     track = Track.get_owned_track(playlist_id, track_id, current_user.id)
     if not track:
-        raise NotFound(
-            f"Track not found track id: {track_id} in playlist id: {playlist_id}"
-        )
+        raise NotFound(f"Track not found track id: {track_id} in playlist id: {playlist_id}")
 
     new_pos = track.position + json.position
     track.update(position=max(1, new_pos))
