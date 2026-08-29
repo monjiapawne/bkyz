@@ -1,11 +1,18 @@
 import pytest
+from flask.testing import FlaskClient
 
 from app import create_app, db
 
 
+class APIClient(FlaskClient):
+    def open(self, path, *args, **kwargs):
+        prefix = "/api/v1"
+        return super().open(f"{prefix}{path}", *args, **kwargs)
+
 @pytest.fixture
 def client():
     app = create_app("config.TestingConfig")
+    app.test_client_class = APIClient
     with app.app_context():
         db.create_all()
         yield app.test_client()
@@ -15,7 +22,7 @@ def client():
 
 @pytest.fixture
 def client_book(client):
-    client.post("/api/v1/books", json={"title": "Dune"})
+    client.post("/books", json={"title": "Dune"})
     return client
 
 
@@ -23,19 +30,19 @@ def client_book(client):
 def client_user(client_book):
     client = client_book
     client.post(
-        "/api/v1/user/register",
+        "/user/register",
         json={"username": "testuser", "password": "testpassword"},
     )
-    client.post("/api/v1/user/login", json={"username": "testuser", "password": "testpassword"})
+    client.post("/user/login", json={"username": "testuser", "password": "testpassword"})
     return client
 
 
 @pytest.fixture
 def client_playist(client_user):
     client = client_user
-    r = client.post("/api/v1/playlists", json={"name": "unamed", "description": "Empty."})
+    r = client.post("/playlists", json={"name": "unamed", "description": "Empty."})
     assert r.status_code == 201
-    r = client.get("/api/v1/playlists")
+    r = client.get("/playlists")
     assert r.status_code == 200
     assert r.get_json()[0]["description"] == "Empty."
     assert r.get_json()[0]["name"] == "unamed"
@@ -47,7 +54,7 @@ def client_playist(client_user):
 def client_track(client_playist):
     client = client_playist
     r = client.post(
-        "/api/v1/playlists/1/tracks",
+        "/playlists/1/tracks",
         json={
             "book_id": 1,
             "position": 1,

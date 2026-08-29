@@ -13,6 +13,11 @@ class AuthenticationError(APIError):
     status = 401
 
 
+class Forbidden(APIError):
+    def __init__(self, resource: str):
+        super().__init__(f"access to {resource} is forbidden", 403)
+
+
 class NotFound(APIError):
     status = 404
 
