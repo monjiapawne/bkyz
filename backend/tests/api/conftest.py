@@ -39,7 +39,7 @@ def client_user(client_book):
 
 
 @pytest.fixture
-def client_playist(client_user):
+def client_playlist(client_user):
     client = client_user
     r = client.post("/playlists", json={"name": "unamed", "description": "Empty."})
     assert r.status_code == 201
@@ -52,8 +52,8 @@ def client_playist(client_user):
 
 
 @pytest.fixture
-def client_track(client_playist):
-    client = client_playist
+def client_track(client_playlist):
+    client = client_playlist
     r = client.post(
         "/playlists/1/tracks",
         json={
