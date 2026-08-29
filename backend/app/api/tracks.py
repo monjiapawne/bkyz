@@ -22,19 +22,6 @@ class TrackIn(BaseModel):
     """Total number of unit, if none is provided, it will be inherited from the book"""
     medium: Medium = Medium.physical
 
-    @model_validator(mode="after")
-    def validate_(self):
-        book = Book.get_by_id(self.book_id)
-        if not book:
-            raise ValueError(f"Book: {self.book_id} not found.")
-
-        # If user doesn't provide a total, we assume pages and inherity
-        # from the book record
-        if self.total is None:
-            self.total = book.pages
-
-        return self
-
 
 class TrackOut(Out):
     model_config = ConfigDict(from_attributes=True)
@@ -63,12 +50,14 @@ def list_tracks(playlist_id: int):
 def get_track(playlist_id: int, track_id: int):
     """Get a track."""
     track = Track.get_one(
-        Playlist.id == playlist_id,
         Track.id == track_id,
+        Track.playlist_id == playlist_id,
     )
 
     if not track:
         raise NotFound(f"Track id: {track_id} was not found in Playlist id: {playlist_id}")
+    if not track.verify_track_owner(current_user.id):
+        raise Forbidden("track")
 
     return TrackOut.json(track), 200
 
@@ -86,10 +75,14 @@ def create_track(playlist_id: int, json: TrackIn):
     if playlist is None:
         raise NotFound(f"playlist: {playlist_id} not found")
 
+    book = Book.get_by_id(json.book_id)
+    if book is None:
+        raise NotFound(f"book: {json.book_id} not found")
+
     track = Track.create(
         position=json.position,
         unit=json.unit,
-        total=json.total,
+        total=json.total if json.total is not None else book.pages,
         medium=json.medium,
         playlist_id=playlist_id,
         book_id=json.book_id,
