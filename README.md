@@ -1,6 +1,8 @@
+<h4>bkyz</h4>
+
 <img src="docs/booktracker.svg" alt="logo" width="200" align="left">
 
-<h4>bkyz - track your reading progress!</h4>
+<h4>track your reading progress!</h4>
 
 *Built with Flask, Angular and SQLAlchemy.*
 

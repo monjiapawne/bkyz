@@ -5,7 +5,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from app import spec
 from app.api.schemas import Out
 from app.data.models import Book, Medium, Playlist, Track
-from app.errors import NotFound
+from app.errors import Forbidden, NotFound
 
 tracks = Blueprint("tracks", __name__)
 
@@ -83,6 +83,8 @@ def create_track(playlist_id: int, json: TrackIn):
         Playlist.id == playlist_id,
         Playlist.user_id == current_user.id
     )  # fmt: skip
+    if playlist is None:
+        raise NotFound(f"playlist: {playlist_id} not found")
 
     track = Track.create(
         position=json.position,
@@ -102,7 +104,7 @@ def delete_track(playlist_id: int, track_id: int):
     """Delete a track."""
     # validate
     if not Track.delete_by_id(track_id):
-        raise NotFound
+        raise NotFound(f"track: {track_id} not found")
 
     return "", 204
 
@@ -122,7 +124,7 @@ class TrackPatch(BaseModel):
 def update_track(playlist_id: int, track_id: int, json: TrackPatch):
     track = Track.get_by_id(track_id)
     if not track:
-        raise NotFound
+        raise NotFound(f"track: {track_id} not found")
 
     changes = json.model_dump(exclude_unset=True, exclude_none=True)
     track.update(**changes)
@@ -142,9 +144,12 @@ class TrackProgressIn(BaseModel):
 @spec.validate(json=TrackProgressIn)
 def add_progress(playlist_id: int, track_id: int, json: TrackProgressIn):
     """Adds progress to a track"""
-    track = Track.get_owned_track(playlist_id, track_id, current_user.id)
+    track = Track.get_by_id(track_id)
     if not track:
         raise NotFound(f"Track not found track id: {track_id} in playlist id: {playlist_id}")
+
+    if not track.verify_track_owner(current_user.id):
+        raise Forbidden("track")
 
     new_pos = track.position + json.position
     track.update(position=max(1, new_pos))

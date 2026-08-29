@@ -201,13 +201,12 @@ class Track(CRUDMixin, db.Model):
     playlist: Mapped["Playlist"] = relationship(back_populates="tracks")
     book: Mapped["Book"] = relationship()
 
-    @classmethod
-    def get_owned_track(cls, playlist_id: int, track_id: int, uid: int) -> "Track | None":
-        return cls.get_one(
-            cls.id == track_id,
-            cls.playlist_id == playlist_id,
-            cls.playlist.has(Playlist.user_id == uid),
-        )
+    def verify_track_owner(self, uid: int) -> bool:
+        playlist = Playlist.get_by_id(self.playlist_id)
+        if not playlist:
+            return False
+
+        return playlist.user_id == uid
 
 
 class User(CRUDMixin, UserMixin, db.Model):
