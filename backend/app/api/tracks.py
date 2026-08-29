@@ -31,7 +31,7 @@ class TrackIn(BaseModel):
         # If user doesn't provide a total, we assume pages and inherity
         # from the book record
         if self.total is None:
-            self.total = book.number_of_pages
+            self.total = book.pages
 
         return self
 

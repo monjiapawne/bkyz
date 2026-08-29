@@ -9,6 +9,7 @@ class APIClient(FlaskClient):
         prefix = "/api/v1"
         return super().open(f"{prefix}{path}", *args, **kwargs)
 
+
 @pytest.fixture
 def client():
     app = create_app("config.TestingConfig")
