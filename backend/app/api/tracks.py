@@ -3,9 +3,9 @@ from flask_login import current_user, login_required
 from pydantic import BaseModel, ConfigDict, Field
 
 from app import spec
+from app.api.errors import Forbidden, NotFound
 from app.api.schemas import Out
 from app.data.models import Book, Medium, Playlist, Track
-from app.errors import Forbidden, NotFound
 
 tracks = Blueprint("tracks", __name__)
 
@@ -40,9 +40,9 @@ def list_tracks(playlist_id: int):
     """List all tracks of a playlist."""
     playlist = Playlist.get_one(Playlist.id == playlist_id, Playlist.user_id == current_user.id)
     if playlist is None:
-        raise NotFound(f"No Playlist found with id: {playlist_id}")
+        raise NotFound("playlist_id", playlist_id)
 
-    return {"tracks": [TrackOut.json(t) for t in playlist.tracks]}
+    return {"tracks": [TrackOut.json_(t) for t in playlist.tracks]}
 
 
 @tracks.get("/<int:track_id>")
@@ -55,11 +55,11 @@ def get_track(playlist_id: int, track_id: int):
     )
 
     if not track:
-        raise NotFound(f"Track id: {track_id} was not found in Playlist id: {playlist_id}")
+        raise NotFound("track_id", track_id)
     if not track.verify_track_owner(current_user.id):
         raise Forbidden("track")
 
-    return TrackOut.json(track), 200
+    return TrackOut.json_(track), 200
 
 
 @tracks.post("")
@@ -67,28 +67,19 @@ def get_track(playlist_id: int, track_id: int):
 @spec.validate(json=TrackIn)
 def create_track(playlist_id: int, json: TrackIn):
     """Creates a track and adds it to the parent playlist."""
-    # Ensure playlist exists
-    playlist = Playlist.get_one(
-        Playlist.id == playlist_id,
-        Playlist.user_id == current_user.id
-    )  # fmt: skip
-    if playlist is None:
-        raise NotFound(f"playlist: {playlist_id} not found")
-
-    book = Book.get_by_id(json.book_id)
-    if book is None:
-        raise NotFound(f"book: {json.book_id} not found")
+    if json.total is None:
+        json.total = Book.get_by_id(json.book_id).pages
 
     track = Track.create(
         position=json.position,
         unit=json.unit,
-        total=json.total if json.total is not None else book.pages,
+        total=json.total,
         medium=json.medium,
-        playlist_id=playlist_id,
+        playlist_id=playlist_id, # move validation here...
         book_id=json.book_id,
     )  # fmt: skip
 
-    return TrackOut.json(track), 201
+    return TrackOut.json_(track), 201
 
 
 @tracks.delete("/<int:track_id>")
@@ -96,9 +87,7 @@ def create_track(playlist_id: int, json: TrackIn):
 def delete_track(playlist_id: int, track_id: int):
     """Delete a track."""
     # validate
-    if not Track.delete_by_id(track_id):
-        raise NotFound(f"track: {track_id} not found")
-
+    Track.delete_by_id(track_id)
     return "", 204
 
 
@@ -122,7 +111,7 @@ def update_track(playlist_id: int, track_id: int, json: TrackPatch):
     changes = json.model_dump(exclude_unset=True, exclude_none=True)
     track.update(**changes)
 
-    return TrackOut.json(track)
+    return TrackOut.json_(track)
 
 
 class TrackProgressIn(BaseModel):
@@ -147,4 +136,4 @@ def add_progress(playlist_id: int, track_id: int, json: TrackProgressIn):
     new_pos = track.position + json.position
     track.update(position=max(1, new_pos))
 
-    return TrackOut.json(track), 200
+    return TrackOut.json_(track), 200

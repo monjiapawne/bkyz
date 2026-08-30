@@ -12,9 +12,9 @@ from pydantic import (
 from spectree import Response
 
 from app import spec
+from app.api.errors import APIError
 from app.api.schemas import Out
 from app.data.models import Book
-from app.errors import APIError, NotFound
 from app.services.book import fetch_book
 from app.services.cover import fetch_cover
 
@@ -86,7 +86,7 @@ class BookPatch(BaseModel):
 @books.get("")
 def list_books():
     """List all books."""
-    return {"books": [BookOut.json(b) for b in Book.get_all()]}
+    return {"books": [BookOut.json_(b) for b in Book.get_all()]}
 
 
 @books.post("")
@@ -101,7 +101,7 @@ def create_book(json: BookIn):
     fetch_status = None
     if isbn := Book.normalize_isbn(json.isbn):
         if existing := Book.get_by_isbn(isbn):
-            return BookOut.json(existing), 200
+            return BookOut.json_(existing), 200
 
         # Merge the two looked up, input fields taking priority
         result = fetch_book(isbn)
@@ -127,7 +127,7 @@ def create_book(json: BookIn):
     if isbn:
         fetch_cover(current_app.config["COVERS_DIR"], book.id, isbn)
 
-    return BookOut.json(book), 201
+    return BookOut.json_(book), 201
 
 
 @books.patch("/<int:book_id>")
@@ -135,30 +135,24 @@ def create_book(json: BookIn):
 def update_book(book_id: int, json: BookPatch):
     """Modify a book."""
     book = Book.get_by_id(book_id)
-    if not book:
-        raise NotFound(f"book {book_id} does not exist")
 
     changes = json.model_dump(exclude_unset=True, exclude_none=True)
     book.update(**changes)
 
-    return BookOut.json(book)
+    return BookOut.json_(book)
 
 
 @books.get("/<int:book_id>")
 def get_book(book_id: int):
     """Get a book."""
-    if not (book := Book.get_by_id(book_id)):
-        raise NotFound(f"book {book_id} does no exist")
-
-    return BookOut.json(book)
+    book = Book.get_by_id(book_id)
+    return BookOut.json_(book)
 
 
 @books.delete("/<int:book_id>")
 def delete_book(book_id: int):
     """Delete a book."""
-    if not Book.delete_by_id(book_id):
-        raise NotFound(f"No Book found with id: {book_id}")
-
+    Book.delete_by_id(book_id)
     (current_app.config["COVERS_DIR"] / f"{book_id}.jpg").unlink(missing_ok=True)
     return "", 204
 
