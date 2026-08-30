@@ -45,7 +45,6 @@ def test_get_book(client_book, name: str, id: int, exp_status: int):
     client = client_book
     r = client.get(f"/books/{id}")
     assert r.status_code == exp_status
-    print(r.get_json())
 
 
 def test_create_book_integration(client):

@@ -7,6 +7,6 @@ class Out(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     @classmethod
-    def json(cls, obj):
+    def json_(cls, obj):
         """Validate and dump the obj"""
         return cls.model_validate(obj).model_dump()
