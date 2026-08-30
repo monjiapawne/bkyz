@@ -1,5 +1,7 @@
 import pytest
 
+from tests.helpers import assert_dict_subset
+
 URL = "/books"
 
 
@@ -35,18 +37,10 @@ def test_create_book(client, name: str, req_json: dict, exp_json: dict, exp_stat
     r = client.post("/books", json=req_json)
     assert r.status_code == exp_status
     resp_json = r.get_json()
-    print(r.text)
-    for exp_k, exp_v in exp_json.items():
-        try:
-            resp_v = resp_json[exp_k]
-        except KeyError:
-            pytest.fail(f"[{name}] missing key {exp_k!r} in {resp_json}\nresponse: {r.text}")
-
-        assert resp_v == exp_v
+    assert_dict_subset(resp_json, exp_json, name=name, resp_text=r.text)
 
 
-def test_create_book_with_isbn_13(client):
-    # this probably shouldn't be here, or at least should be mocked the external response..
+def test_create_book_integration(client):
     r = client.post("/books", json={"isbn": "978-1718503540"})
     if r.status_code == 503:
         pytest.skip("ISBN lookup timed out")

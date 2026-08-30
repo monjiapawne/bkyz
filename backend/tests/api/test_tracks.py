@@ -37,7 +37,9 @@ def test_create_track(client_playlist, name: str, req_json: dict, exp_json: dict
     client = client_playlist
 
     r = client.post("/playlists/1/tracks", json=req_json)
-    assert r.status_code == exp_status, f"{name}: expected {exp_status}, got {r.status_code}\n response: {r.text}"
+    assert r.status_code == exp_status, (
+        f"{name}: expected {exp_status}, got {r.status_code}\n response: {r.text}"
+    )
 
     if not exp_json:
         return
