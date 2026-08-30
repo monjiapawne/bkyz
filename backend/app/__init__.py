@@ -9,9 +9,6 @@ from flask_sqlalchemy import SQLAlchemy
 from pydantic import ValidationError
 from spectree import SpecTree
 from sqlalchemy import MetaData
-from werkzeug.exceptions import HTTPException
-
-from .errors import APIError
 
 # Disable logging of requests like:
 # 127.0.0.1 - - [08/Aug/2026 10:13:40] "GET /api/v1/books/ HTTP/1.1" 200
@@ -59,6 +56,11 @@ spec = SpecTree(
     before=reshape_validation,
 )
 
+# Avoiding cyclical import error
+# after spec importing app.api.errors initializes the app.api package,
+# whose blueprints do `from app import spec`
+from app.api.errors import APIError, register_error_handlers
+
 
 def create_app(config_object="config.Config"):
     app = Flask(__name__)
@@ -68,7 +70,7 @@ def create_app(config_object="config.Config"):
     migrate.init_app(app, db)
 
     config_cors(app)
-    config_error_handlers(app)
+    register_error_handlers(app)
     config_flask_login(app)
     config_covers(app)
 
@@ -102,23 +104,6 @@ def config_flask_login(app):
     @login_manager.unauthorized_handler
     def unauthorized():
         return {"error": "authenticated required"}, 401
-
-
-def config_error_handlers(app):
-    @app.errorhandler(APIError)
-    def handle_api_error(e: APIError):
-        return {"error": e.message}, e.status
-
-    @app.errorhandler(HTTPException)
-    def handle_http_error(e: HTTPException):
-        return {"error": e.description}, e.code
-
-    @app.errorhandler(Exception)
-    def handle_server_error(e: Exception):
-        app.logger.exception("unhandled exception")
-        if app.config["DEBUG"]:
-            raise e
-        return {"error": "internal server error"}, 500
 
 
 def config_cors(app):

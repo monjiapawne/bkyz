@@ -11,11 +11,13 @@ from sqlalchemy import (
     Table,
     select,
 )
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from app import db
+from app.data.errors import DuplicateError, NotFoundError
 
 # Junction table of books and their authors (since there can be many to many)
 book_authors = Table(
@@ -33,11 +35,19 @@ class CRUDMixin:
     """
 
     @classmethod
-    def get_one(cls, *criteria: ColumnExpressionArgument) -> Self | None:
-        return db.session.scalar(
+    def get_one(cls, *criteria: ColumnExpressionArgument) -> Self:
+        """Query for one object based on criteria.
+
+        Raises:
+            NotFoundError if there is none found.
+        """
+        obj = db.session.scalar(
             select(cls).
             where(*criteria)
         )  # fmt: skip
+        if obj is None:
+            raise NotFoundError("", *criteria)  # not sure we want to expose this up..
+        return obj
 
     @classmethod
     def get_all(cls, *criteria: ColumnExpressionArgument) -> list[Self]:
@@ -47,21 +57,34 @@ class CRUDMixin:
         ))  # fmt: skip
 
     @classmethod
-    def get_by_id(cls, id: int | None) -> Self | None:
-        if id is None:
-            return None
-        return db.session.get(cls, id)
+    def get_by_id(cls, id: int) -> Self:
+        """Lookup an obj by it's PK id.
+
+        Raises:
+            NotFoundError if the id isn't found.
+        """
+        if (obj := db.session.get(cls, id)) is None:
+            raise NotFoundError("id", id)
+        return obj
 
     @classmethod
-    def delete_by_id(cls, id: int | None) -> bool:
+    def delete_by_id(cls, id: int) -> None:
+        """Delete an obj by it's PK id.
+
+        Raises:
+            NotFoundError if the id isn't found (could already have been deleted.)
+        """
         if (obj := cls.get_by_id(id)) is None:
-            return False
+            raise NotFoundError("id", id)
         obj.delete()
-        return True
 
     @classmethod
     def create(cls, **kwargs) -> Self:
-        return cls(**kwargs)._save()
+        try:
+            return cls(**kwargs)._save()
+        except IntegrityError:
+            db.session.rollback()
+            raise DuplicateError(cls.__name__)
 
     def delete(self) -> None:
         db.session.delete(self)
@@ -195,7 +218,7 @@ class Track(CRUDMixin, db.Model):
     total: Mapped[int | None] = mapped_column(default=None)
     medium: Mapped[Medium] = mapped_column(Enum(Medium), server_default=Medium.physical.name)
 
-    playlist_id: Mapped[int | None] = mapped_column(ForeignKey("playlists.id"))
+    playlist_id: Mapped[int] = mapped_column(ForeignKey("playlists.id"))
     book_id: Mapped["Book | None"] = mapped_column(ForeignKey("books.id"))
 
     playlist: Mapped["Playlist"] = relationship(back_populates="tracks")
@@ -207,6 +230,12 @@ class Track(CRUDMixin, db.Model):
             return False
 
         return playlist.user_id == uid
+
+    @classmethod
+    def create(cls, **kwargs) -> Self:
+        # verify playlist exists
+        # verify ownership
+        return super().create(**kwargs)
 
 
 class User(CRUDMixin, UserMixin, db.Model):
