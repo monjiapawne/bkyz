@@ -57,5 +57,6 @@ def add_shelf(json: PlaylistIn):
 def delete_shelf(playlist_id: int):
     """Delete a Playlist."""
     if not Playlist.delete_by_id(playlist_id):
-        raise NotFound(f"No Playlist found with id: {playlist_id}")
+        raise NotFound("playlist_id", playlist_id)
     return "", 204
+

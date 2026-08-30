@@ -136,10 +136,7 @@ def update_book(book_id: int, json: BookPatch):
     """Modify a book."""
     book = Book.get_by_id(book_id)
     if not book:
-        raise NotFound(f"book {book_id} does not exist")
-
-    changes = json.model_dump(exclude_unset=True, exclude_none=True)
-    book.update(**changes)
+        raise NotFound("book_id", book_id)
 
     return BookOut.json(book)
 
@@ -148,7 +145,7 @@ def update_book(book_id: int, json: BookPatch):
 def get_book(book_id: int):
     """Get a book."""
     if not (book := Book.get_by_id(book_id)):
-        raise NotFound(f"book {book_id} does no exist")
+        raise NotFound("book_id", book_id)
 
     return BookOut.json(book)
 
@@ -157,7 +154,7 @@ def get_book(book_id: int):
 def delete_book(book_id: int):
     """Delete a book."""
     if not Book.delete_by_id(book_id):
-        raise NotFound(f"No Book found with id: {book_id}")
+        raise NotFound("book_id", book_id)
 
     (current_app.config["COVERS_DIR"] / f"{book_id}.jpg").unlink(missing_ok=True)
     return "", 204

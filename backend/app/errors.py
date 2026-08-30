@@ -19,7 +19,14 @@ class Forbidden(APIError):
 
 
 class NotFound(APIError):
-    status = 404
+    def __init__(self, resource: str = "resource", value: int | str | None = None):
+        msg = []
+        msg.append(resource)
+        if value:
+            msg.append(str(value))
+        msg.append("not found")
+
+        super().__init__(" ".join(msg), 404)
 
 
 class ValidationFailed(APIError):

@@ -40,7 +40,7 @@ def list_tracks(playlist_id: int):
     """List all tracks of a playlist."""
     playlist = Playlist.get_one(Playlist.id == playlist_id, Playlist.user_id == current_user.id)
     if playlist is None:
-        raise NotFound(f"No Playlist found with id: {playlist_id}")
+        raise NotFound("playlist_id", playlist_id)
 
     return {"tracks": [TrackOut.json(t) for t in playlist.tracks]}
 
@@ -55,7 +55,7 @@ def get_track(playlist_id: int, track_id: int):
     )
 
     if not track:
-        raise NotFound(f"Track id: {track_id} was not found in Playlist id: {playlist_id}")
+        raise NotFound("track_id", track_id)
     if not track.verify_track_owner(current_user.id):
         raise Forbidden("track")
 
@@ -73,11 +73,11 @@ def create_track(playlist_id: int, json: TrackIn):
         Playlist.user_id == current_user.id
     )  # fmt: skip
     if playlist is None:
-        raise NotFound(f"playlist: {playlist_id} not found")
+        raise NotFound("playlist_id", playlist_id)
 
     book = Book.get_by_id(json.book_id)
     if book is None:
-        raise NotFound(f"book: {json.book_id} not found")
+        raise NotFound("book_id", book_id)
 
     track = Track.create(
         position=json.position,
@@ -97,7 +97,7 @@ def delete_track(playlist_id: int, track_id: int):
     """Delete a track."""
     # validate
     if not Track.delete_by_id(track_id):
-        raise NotFound(f"track: {track_id} not found")
+        raise NotFound("track_id", track_id)
 
     return "", 204
 

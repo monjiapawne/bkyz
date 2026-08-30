@@ -40,6 +40,14 @@ def test_create_book(client, name: str, req_json: dict, exp_json: dict, exp_stat
     assert_dict_subset(resp_json, exp_json, name=name, resp_text=r.text)
 
 
+@pytest.mark.parametrize(("name", "id", "exp_status"), [("exists", 1, 200), ("missing", 99, 404)])
+def test_get_book(client_book, name: str, id: int, exp_status: int):
+    client = client_book
+    r = client.get(f"/books/{id}")
+    assert r.status_code == exp_status
+    print(r.get_json())
+
+
 def test_create_book_integration(client):
     r = client.post("/books", json={"isbn": "978-1718503540"})
     if r.status_code == 503:
