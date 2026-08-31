@@ -53,8 +53,14 @@ export class Auth {
       });
   }
 
-  signOut() {
-
+  logout() {
+    this.httpClient.get(this.apiURL + '/user/logout', { withCredentials: true })
+      .subscribe({
+        next: (user) => {
+          this.user.set(null);
+          this.isLoggedIn.set(false);
+        }
+      })
   }
 
 }
