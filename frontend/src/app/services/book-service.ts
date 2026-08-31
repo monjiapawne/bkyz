@@ -33,7 +33,7 @@ export class BookService {
       "title": title
     }
 
-    return this.http.post<BookResponse>(this.API_URL, body, { withCredentials: true });
+    return this.http.post<Book>(this.API_URL, body, { withCredentials: true });
   }
 
   patchBook(authors: string, isbn: number, numberOfPages: number, title: string, id: number) {

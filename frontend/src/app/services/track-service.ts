@@ -21,10 +21,12 @@ export class TrackService {
     return this.http.get<Track>(`${this.API_URL}/${playlistId}/tracks/${trackId}`, { withCredentials: true });
   }
 
-  postTrackToPlaylist(playlistId: number, bookId: number, currentPage: number, medium: string) {
+  postTrackToPlaylist(playlistId: number, bookId: number, currentPosition: number, totalPosition: number, unit: string, medium: string) {
     const body = {
       "book_id": bookId,
-      "current_page": currentPage,
+      "position": currentPosition,
+      "total": totalPosition,
+      "unit": unit,
       "medium": medium
     };
 

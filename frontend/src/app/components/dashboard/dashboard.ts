@@ -9,10 +9,11 @@ import { Book } from '../../interfaces/book';
 import { TitleCasePipe, UpperCasePipe } from '@angular/common';
 import { Auth } from '../../services/auth-service';
 import { User } from '../../interfaces/user';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [RouterLink, UpperCasePipe, RouterLinkActive, TitleCasePipe],
+  imports: [RouterLink, UpperCasePipe, RouterLinkActive, TitleCasePipe, ReactiveFormsModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
@@ -24,9 +25,19 @@ export class Dashboard {
     private bookService: BookService,
     private auth: Auth,
     private route: ActivatedRoute,
-    private router: Router
-  ) { }
+    private router: Router,
+    private fb: FormBuilder
+  ) {
+    this.bookForm = this.fb.group({
+      authors: ['', Validators.required],
+      isbn: ['', Validators.required],
+      number_of_pages: ['', Validators.required],
+      title: ['', Validators.required]
+    });
+  }
 
+  bookForm: FormGroup;
+  playlistId!: number;
   playlists: WritableSignal<Playlist[]> = signal([]);
   tracks: WritableSignal<Track[]> = signal([]);
   books: WritableSignal<Book[]> = signal([]);
@@ -38,10 +49,11 @@ export class Dashboard {
     this.loadPlaylists();
 
     this.route.paramMap.subscribe(params => {
-      const playlistId = params.get('id');
+      const id = params.get('id');
 
-      if (playlistId) {
-        this.loadTracks(Number(playlistId));
+      if (id) {
+        this.playlistId = Number(id);
+        this.loadTracks(Number(this.playlistId));
       }
     });
   }
@@ -113,6 +125,35 @@ export class Dashboard {
           console.log(err);
         }
       })
+  }
+
+  onSubmit(): void {
+    if (this.bookForm.valid) {
+      this.bookService.postBooks(
+        this.bookForm.value.authors,
+        this.bookForm.value.isbn,
+        this.bookForm.value.number_of_pages,
+        this.bookForm.value.title
+      )
+        .subscribe({
+          next: responseData => {
+            console.log(responseData);
+            this.trackService.postTrackToPlaylist(this.playlistId, responseData.id, 0, this.bookForm.value.number_of_pages, "pages", "physical")
+              .subscribe({
+                next: trackData => {
+                  console.log(trackData);
+                  this.loadTracks(this.playlistId);
+                },
+                error: err => {
+                  console.log(err);
+                }
+              })
+          },
+          error: err => {
+            console.log(err);
+          }
+        })
+    }
   }
 
 }
