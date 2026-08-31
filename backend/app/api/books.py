@@ -157,6 +157,12 @@ def delete_book(book_id: int):
     return "", 204
 
 
+@books.get("/isbn=<isbn>")
+def search_by_isbn(isbn: str):
+    book = Book.get_one(Book.isbn == Book.normalize_isbn(isbn))
+    return BookOut.json_(book), 200
+
+
 @books.get("/<int:book_id>/cover")
 def get_book_cover(book_id: int):
     """Get a book cover."""
