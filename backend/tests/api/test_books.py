@@ -71,3 +71,10 @@ def test_patch_book_invalid_fields(client):
     book_id = str(r.get_json()["id"])
     r = client.patch(f"/books/{book_id}", json={"title": "NotDune", "fake_field": "value"})
     assert r.status_code == 422
+
+
+def test_get_book_by_isbn(client):
+    isbn = "978-9999999999"
+    client.post("/books", json={"title": "test", "isbn": isbn})
+    r = client.get(f"/books/isbn={isbn}")
+    assert r.status_code == 200
