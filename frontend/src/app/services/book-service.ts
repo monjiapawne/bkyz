@@ -29,7 +29,7 @@ export class BookService {
     const body = {
       "authors": authors,
       "isbn": isbn,
-      "numberOfPages": numberOfPages,
+      "number_of_pages": numberOfPages,
       "title": title
     }
 
@@ -40,7 +40,7 @@ export class BookService {
     const body = {
       "authors": authors,
       "isbn": isbn,
-      "numberOfPages": numberOfPages,
+      "number_of_pages": numberOfPages,
       "title": title
     }
 
