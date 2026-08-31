@@ -3,9 +3,9 @@ from flask_login import current_user, login_required, login_user, logout_user
 from pydantic import BaseModel, ConfigDict, Field
 
 from app import spec
+from app.api.errors import AuthenticationError, NotFound
 from app.api.schemas import Out
 from app.data.models import User
-from app.errors import APIError, AuthenticationError, NotFound
 
 users = Blueprint("users", __name__)
 
@@ -28,10 +28,10 @@ def login(json: UserIn):
     """Login as a user."""
     user = User.get_one(User.username == json.username)
     if not user or not user.verify_password(json.password):
-        raise AuthenticationError("Invalid username or password", 401)
+        raise AuthenticationError("Invalid username or password")
 
     login_user(user, json.remember_me)
-    return UserOut.json(user), 200
+    return UserOut.json_(user), 200
 
 
 @users.get("/logout")
@@ -50,15 +50,12 @@ class RegisterIn(BaseModel):
 @spec.validate(json=RegisterIn)
 def register(json: RegisterIn):
     """Register a user."""
-    if User.get_one(User.username == json.username):
-        raise APIError("Username already taken", 409)
-
     user = User.create(
         username=json.username,
         password=json.password,
     )
 
-    return UserOut.json(user), 201
+    return UserOut.json_(user), 201
 
 
 @users.get("<int:user_id>")
@@ -68,7 +65,7 @@ def user_info(user_id: int):
     if user is None:
         raise NotFound("user not found")
 
-    return UserOut.json(user), 200
+    return UserOut.json_(user), 200
 
 
 @users.get("")
@@ -79,4 +76,4 @@ def current_user_info():
     Userful to ensure your logged in.
     """
     user = User.get_by_id(current_user.id)
-    return UserOut.json(user), 200
+    return UserOut.json_(user), 200
