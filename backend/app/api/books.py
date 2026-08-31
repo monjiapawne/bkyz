@@ -12,9 +12,9 @@ from pydantic import (
 from spectree import Response
 
 from app import spec
+from app.api.errors import APIError
 from app.api.schemas import Out
 from app.data.models import Book
-from app.errors import APIError, NotFound
 from app.services.book import fetch_book
 from app.services.cover import fetch_cover
 
@@ -29,7 +29,7 @@ class BookIn(BaseModel):
     title: str | None = Field(None, examples=["Just For Fun"])
     authors: str | None = Field(None, examples=["Linus Torvalds, David Diamond"])
     """Comma seperated author names."""
-    number_of_pages: int | None = None
+    pages: int | None = 1
     isbn: str | None = None
     """ISBN 13 only.
     Note this will attempt to fill missing fields based on an isbn lookup."""
@@ -45,11 +45,11 @@ class BookIn(BaseModel):
         if self.isbn is None:
             return self
 
-        self.isbn = Book.normalize_isbn(self.isbn)
-
-        if len(self.isbn) != 13:
+        isbn = Book.normalize_isbn(self.isbn)
+        if isbn is None or len(isbn) != 13:
             raise ValueError(f"ISBN {self.isbn!r} format is invalid")
 
+        self.isbn = isbn
         return self
 
 
@@ -59,7 +59,7 @@ class BookOut(Out):
     id: int
     title: str
     authors: list[str]
-    number_of_pages: int
+    pages: int
     publish_date: str | None = None
     isbn: str | None = None
 
@@ -79,14 +79,14 @@ class BookPatch(BaseModel):
 
     title: str | None = None
     authors: str | None = None
-    number_of_pages: int | None = None
+    pages: int | None = None
     publish_date: str | None = None
 
 
 @books.get("")
 def list_books():
     """List all books."""
-    return {"books": [BookOut.json(b) for b in Book.get_all()]}
+    return {"books": [BookOut.json_(b) for b in Book.get_all()]}
 
 
 @books.post("")
@@ -96,12 +96,12 @@ def create_book(json: BookIn):
 
     If an ISBN is provided, metadata is auto-filled.
     """
-    book: BookIn = json.model_dump(exclude_none=True)
+    book = json.model_dump(exclude_none=True)
 
     fetch_status = None
     if isbn := Book.normalize_isbn(json.isbn):
         if existing := Book.get_by_isbn(isbn):
-            return BookOut.model_validate(existing).model_dump(), 200
+            return BookOut.json_(existing), 200
 
         # Merge the two looked up, input fields taking priority
         result = fetch_book(isbn)
@@ -118,7 +118,7 @@ def create_book(json: BookIn):
     book = Book.create(
         title=title,
         authors=book.get("authors"),
-        number_of_pages=book.get("number_of_pages"),
+        pages=book.get("pages"),
         publish_date=book.get("publish_date"),
         isbn=isbn,
         fetch_status=fetch_status,
@@ -127,7 +127,7 @@ def create_book(json: BookIn):
     if isbn:
         fetch_cover(current_app.config["COVERS_DIR"], book.id, isbn)
 
-    return BookOut.json(book), 201
+    return BookOut.json_(book), 201
 
 
 @books.patch("/<int:book_id>")
@@ -135,32 +135,32 @@ def create_book(json: BookIn):
 def update_book(book_id: int, json: BookPatch):
     """Modify a book."""
     book = Book.get_by_id(book_id)
-    if not book:
-        raise NotFound(f"book {book_id} does not exist")
 
     changes = json.model_dump(exclude_unset=True, exclude_none=True)
     book.update(**changes)
 
-    return BookOut.json(book)
+    return BookOut.json_(book)
 
 
 @books.get("/<int:book_id>")
 def get_book(book_id: int):
     """Get a book."""
-    if not (book := Book.get_by_id(book_id)):
-        raise NotFound(f"book {book_id} does no exist")
-
-    return BookOut.json(book)
+    book = Book.get_by_id(book_id)
+    return BookOut.json_(book)
 
 
 @books.delete("/<int:book_id>")
 def delete_book(book_id: int):
     """Delete a book."""
-    if not Book.delete_by_id(book_id):
-        raise NotFound(f"No Book found with id: {book_id}")
-
+    Book.delete_by_id(book_id)
     (current_app.config["COVERS_DIR"] / f"{book_id}.jpg").unlink(missing_ok=True)
     return "", 204
+
+
+@books.get("/isbn=<isbn>")
+def search_by_isbn(isbn: str):
+    book = Book.get_one(Book.isbn == Book.normalize_isbn(isbn))
+    return BookOut.json_(book), 200
 
 
 @books.get("/<int:book_id>/cover")

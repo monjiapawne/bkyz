@@ -1,4 +1,15 @@
-# bkyz
+
+
+<img src="docs/booktracker.svg" alt="logo" width="200" align="left">
+
+**bkyz** track your reading progress!
+
+*Built with Flask, Angular and SQLAlchemy.*
+
+<br clear="left">
+
+## Usage
+
 
 ## Backend
 

@@ -14,9 +14,7 @@ def fetch_cover(covers_dir: str, book_id: int, isbn: str) -> None:
     url = f"https://covers.openlibrary.org/b/isbn/{isbn}-{size}.jpg?default=false"
 
     try:
-        r = requests.get(
-            url, headers=OPENLIB_HEADERS | {"accept": "image/*"}, timeout=TIMEOUT
-        )
+        r = requests.get(url, headers=OPENLIB_HEADERS | {"accept": "image/*"}, timeout=TIMEOUT)
     except requests.exceptions.RequestException:
         # For now just skip, don't propegate
         pass

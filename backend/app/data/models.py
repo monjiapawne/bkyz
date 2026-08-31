@@ -11,11 +11,13 @@ from sqlalchemy import (
     Table,
     select,
 )
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from app import db
+from app.data.errors import DuplicateError, NotFoundError
 
 # Junction table of books and their authors (since there can be many to many)
 book_authors = Table(
@@ -33,35 +35,56 @@ class CRUDMixin:
     """
 
     @classmethod
-    def get_one(cls, *criteria: ColumnExpressionArgument) -> Self | None:
-        return db.session.scalar(
+    def get_one(cls, *criteria: ColumnExpressionArgument) -> Self:
+        """Query for one object based on criteria.
+
+        Raises:
+            NotFoundError if there is none found.
+        """
+        obj = db.session.scalar(
             select(cls).
             where(*criteria)
         )  # fmt: skip
+        if obj is None:
+            raise NotFoundError("", *criteria)  # not sure we want to expose this up..
+        return obj
 
     @classmethod
-    def get_all(cls, *criteria: ColumnExpressionArgument) -> list[Self] | None:
+    def get_all(cls, *criteria: ColumnExpressionArgument) -> list[Self]:
         return list(db.session.scalars(
             select(cls).
             where(*criteria)
         ))  # fmt: skip
 
     @classmethod
-    def get_by_id(cls, id: int | None) -> Self | None:
-        if id is None:
-            return None
-        return db.session.get(cls, id)
+    def get_by_id(cls, id: int) -> Self:
+        """Lookup an obj by it's PK id.
+
+        Raises:
+            NotFoundError if the id isn't found.
+        """
+        if (obj := db.session.get(cls, id)) is None:
+            raise NotFoundError("id", id)
+        return obj
 
     @classmethod
-    def delete_by_id(cls, id: int | None) -> bool:
+    def delete_by_id(cls, id: int) -> None:
+        """Delete an obj by it's PK id.
+
+        Raises:
+            NotFoundError if the id isn't found (could already have been deleted.)
+        """
         if (obj := cls.get_by_id(id)) is None:
-            return False
+            raise NotFoundError("id", id)
         obj.delete()
-        return True
 
     @classmethod
     def create(cls, **kwargs) -> Self:
-        return cls(**kwargs)._save()
+        try:
+            return cls(**kwargs)._save()
+        except IntegrityError:
+            db.session.rollback()
+            raise DuplicateError(cls.__name__)
 
     def delete(self) -> None:
         db.session.delete(self)
@@ -87,6 +110,7 @@ class FetchStatus(StrEnum):
     timeout = auto()
     not_found = auto()
     http_error = auto()
+    invalid_format = auto()
     ok = auto()
 
 
@@ -95,7 +119,7 @@ class Book(CRUDMixin, db.Model):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(String(255))
-    number_of_pages: Mapped[int] = mapped_column(default=1, server_default="1")
+    pages: Mapped[int] = mapped_column(default=1, server_default="1")
     publish_date: Mapped[str | None]
     isbn: Mapped[str | None] = mapped_column(String(13), unique=True)
     fetch_status: Mapped[FetchStatus] = mapped_column(
@@ -103,16 +127,14 @@ class Book(CRUDMixin, db.Model):
         server_default=FetchStatus.not_attempted,
     )
 
-    _authors: Mapped[list["Author"]] = relationship(
-        secondary=book_authors, back_populates="books"
-    )
+    _authors: Mapped[list["Author"]] = relationship(secondary=book_authors, back_populates="books")
 
     @hybrid_property
     def authors(self) -> list["Author"]:
         return self._authors
 
     @authors.inplace.setter
-    def authors(self, value: "str | list[str] | list[Author] | None") -> None:
+    def _authors_setter(self, value: "str | list[str] | list[Author] | None") -> None:
         # Using a protected attribute, so we can create a setter and getter
         self._authors = Author.from_string(value)
 
@@ -144,7 +166,7 @@ class Author(CRUDMixin, db.Model):
     )
 
     @classmethod
-    def from_string(cls, raw: str | list[str] | None) -> list["Author"]:
+    def from_string(cls, raw: "str | list[str] | list[Author] | None") -> list["Author"]:
         if not raw:
             return []
 
@@ -155,9 +177,7 @@ class Author(CRUDMixin, db.Model):
 
         res = []
         for n in names:
-            if (
-                obj := db.session.scalar(select(cls).filter_by(name=n.strip()))
-            ) is None:
+            if obj := db.session.scalar(select(cls).filter_by(name=n.strip())) is None:
                 obj = cls(name=n.strip())
                 db.session.add(obj)
                 db.session.flush()
@@ -196,29 +216,26 @@ class Track(CRUDMixin, db.Model):
     position: Mapped[int] = mapped_column(server_default="1")
     unit: Mapped[str | None] = mapped_column(String(30), default=None)
     total: Mapped[int | None] = mapped_column(default=None)
-    medium: Mapped[Medium] = mapped_column(
-        Enum(Medium), server_default=Medium.physical.name
-    )
+    medium: Mapped[Medium] = mapped_column(Enum(Medium), server_default=Medium.physical.name)
 
-    playlist_id: Mapped[int | None] = mapped_column(ForeignKey("playlists.id"))
+    playlist_id: Mapped[int] = mapped_column(ForeignKey("playlists.id"))
     book_id: Mapped["Book | None"] = mapped_column(ForeignKey("books.id"))
 
     playlist: Mapped["Playlist"] = relationship(back_populates="tracks")
     book: Mapped["Book"] = relationship()
 
-    @classmethod
-    def get_owned_track(
-        cls, playlist_id: int, track_id: int, uid: int
-    ) -> "Track | None":
-        return cls.get_one(
-            cls.id == track_id,
-            cls.playlist_id == playlist_id,
-            cls.playlist.has(Playlist.user_id == uid),
-        )
+    def verify_track_owner(self, uid: int) -> bool:
+        playlist = Playlist.get_by_id(self.playlist_id)
+        if not playlist:
+            return False
 
-    @property
-    def is_owner(track_id: int):
-        pass
+        return playlist.user_id == uid
+
+    @classmethod
+    def create(cls, **kwargs) -> Self:
+        # verify playlist exists
+        # verify ownership
+        return super().create(**kwargs)
 
 
 class User(CRUDMixin, UserMixin, db.Model):
