@@ -8,12 +8,17 @@ import { BookService } from '../../services/book-service';
 import { Book } from '../../interfaces/book';
 import { TitleCasePipe, UpperCasePipe } from '@angular/common';
 import { Auth } from '../../services/auth-service';
-import { User } from '../../interfaces/user';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AddBookComponent } from './add-book/add-book';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [RouterLink, UpperCasePipe, RouterLinkActive, TitleCasePipe, ReactiveFormsModule],
+  imports: [
+    RouterLink,
+    UpperCasePipe,
+    RouterLinkActive,
+    TitleCasePipe,
+    AddBookComponent
+  ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
@@ -25,19 +30,11 @@ export class Dashboard {
     private bookService: BookService,
     private auth: Auth,
     private route: ActivatedRoute,
-    private router: Router,
-    private fb: FormBuilder
-  ) {
-    this.bookForm = this.fb.group({
-      authors: ['', Validators.required],
-      isbn: ['', Validators.required],
-      number_of_pages: ['', Validators.required],
-      title: ['', Validators.required]
-    });
-  }
+    private router: Router
+  ) { }
 
-  bookForm: FormGroup;
   playlistId!: number;
+
   playlists: WritableSignal<Playlist[]> = signal([]);
   tracks: WritableSignal<Track[]> = signal([]);
   books: WritableSignal<Book[]> = signal([]);
@@ -53,7 +50,7 @@ export class Dashboard {
 
       if (id) {
         this.playlistId = Number(id);
-        this.loadTracks(Number(this.playlistId));
+        this.loadTracks(this.playlistId);
       }
     });
   }
@@ -85,7 +82,7 @@ export class Dashboard {
 
           responseData.tracks.forEach(track => {
             this.loadBook(track.book_id);
-          })
+          });
         },
         error: err => {
           console.log(err);
@@ -98,7 +95,6 @@ export class Dashboard {
       .subscribe({
         next: responseData => {
           this.books.update(books => [...books, responseData]);
-          console.log(this.books());
         },
         error: err => {
           console.log(err);
@@ -111,8 +107,8 @@ export class Dashboard {
   }
 
   getProgress(track: Track): number {
-    let progress = Math.round(track.position / track.total * 100)
-    return Math.min(progress, 100)
+    const progress = Math.round(track.position / track.total * 100);
+    return Math.min(progress, 100);
   }
 
   getUsername() {
@@ -124,36 +120,6 @@ export class Dashboard {
         error: err => {
           console.log(err);
         }
-      })
+      });
   }
-
-  onSubmit(): void {
-    if (this.bookForm.valid) {
-      this.bookService.postBooks(
-        this.bookForm.value.authors,
-        this.bookForm.value.isbn,
-        this.bookForm.value.number_of_pages,
-        this.bookForm.value.title
-      )
-        .subscribe({
-          next: responseData => {
-            console.log(responseData);
-            this.trackService.postTrackToPlaylist(this.playlistId, responseData.id, 0, this.bookForm.value.number_of_pages, "pages", "physical")
-              .subscribe({
-                next: trackData => {
-                  console.log(trackData);
-                  this.loadTracks(this.playlistId);
-                },
-                error: err => {
-                  console.log(err);
-                }
-              })
-          },
-          error: err => {
-            console.log(err);
-          }
-        })
-    }
-  }
-
 }
