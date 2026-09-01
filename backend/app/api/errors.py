@@ -1,4 +1,10 @@
+import logging
+
+from flask import request
+
 from app.data.errors import DuplicateError, NotFoundError
+
+logger = logging.getLogger(__name__)
 
 
 class APIError(Exception):
@@ -41,10 +47,6 @@ class ValidationFailed(APIError):
 def register_error_handlers(app):
     """Top level error wrapper, these are what catch errors and format them for http clients."""
 
-    @app.errorhandler(Exception)
-    def handle_server_error(e: Exception):
-        return {"error": "internal server error"}, 500
-
     @app.errorhandler(NotFoundError)
     def handle_not_found(e: NotFoundError):
         err = NotFound(e.field, e.value)
@@ -57,6 +59,14 @@ def register_error_handlers(app):
     @app.errorhandler(APIError)
     def handle_api_error(e: APIError):
         return {"error": e.message}, e.status
+
+    @app.errorhandler(Exception)
+    def handle_server_error(e: Exception):
+        """Catch all"""
+        logger.exception(f"unhandled error: {request.method}, {request.path}")
+        if app.config["DEBUG"]:
+            raise e
+        return {"error": "internal server error"}, 500
 
 
 #     @app.errorhandler(HTTPException)
