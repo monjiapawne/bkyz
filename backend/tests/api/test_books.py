@@ -73,8 +73,20 @@ def test_patch_book_invalid_fields(client):
     assert r.status_code == 422
 
 
-def test_get_book_by_isbn(client):
+@pytest.mark.parametrize(
+    ("name", "query_string", "exp_len", "exp_code"),
+    [
+        ("isbn exists", "isbn=978-9999999999", 1, 200),
+        ("isbn missing", "isbn=978-1111111111", 0, 200),
+    ],
+)
+def test_get_book_queries(client, name: str, query_string: str, exp_len: int, exp_code: int):
+    # Add a book
     isbn = "978-9999999999"
-    client.post("/books", json={"title": "test", "isbn": isbn})
-    r = client.get(f"/books/isbn={isbn}")
-    assert r.status_code == 200
+    client.post("/books", json={"title": "test", "isbn": isbn, "lookup": False})
+
+    # Query
+    r = client.get(f"/books?{query_string}")
+    assert r.status_code == exp_code
+    book_count = len(r.get_json()["books"])
+    assert book_count == exp_len, f"expected len: {exp_len}, got {book_count}"
