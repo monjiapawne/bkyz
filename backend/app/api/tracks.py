@@ -2,8 +2,7 @@ from flask import Blueprint
 from flask_login import current_user, login_required
 from pydantic import BaseModel, ConfigDict, Field
 
-from app import spec
-from app.api.errors import Forbidden, NotFound
+from app import errors, spec
 from app.api.schemas import Out
 from app.data.models import Book, Medium, Playlist, Track
 
@@ -40,7 +39,7 @@ def list_tracks(playlist_id: int):
     """List all tracks of a playlist."""
     playlist = Playlist.get_one(Playlist.id == playlist_id, Playlist.user_id == current_user.id)
     if playlist is None:
-        raise NotFound("playlist_id", playlist_id)
+        raise errors.NotFoundError("playlist_id", playlist_id)
 
     return {"tracks": [TrackOut.json_(t) for t in playlist.tracks]}
 
@@ -55,9 +54,9 @@ def get_track(playlist_id: int, track_id: int):
     )
 
     if not track:
-        raise NotFound("track_id", track_id)
+        raise errors.NotFoundError("track_id", track_id)
     if not track.verify_track_owner(current_user.id):
-        raise Forbidden("track")
+        raise errors.ForbiddenError("track")
 
     return TrackOut.json_(track), 200
 
@@ -106,7 +105,7 @@ class TrackPatch(BaseModel):
 def update_track(playlist_id: int, track_id: int, json: TrackPatch):
     track = Track.get_by_id(track_id)
     if not track:
-        raise NotFound(f"track: {track_id} not found")
+        raise errors.NotFoundError(f"track: {track_id} not found")
 
     changes = json.model_dump(exclude_unset=True, exclude_none=True)
     track.update(**changes)
@@ -128,10 +127,12 @@ def add_progress(playlist_id: int, track_id: int, json: TrackProgressIn):
     """Adds progress to a track"""
     track = Track.get_by_id(track_id)
     if not track:
-        raise NotFound(f"Track not found track id: {track_id} in playlist id: {playlist_id}")
+        raise errors.NotFoundError(
+            f"Track not found track id: {track_id} in playlist id: {playlist_id}"
+        )
 
     if not track.verify_track_owner(current_user.id):
-        raise Forbidden("track")
+        raise errors.ForbiddenError("track")
 
     new_pos = track.position + json.position
     track.update(position=max(1, new_pos))
