@@ -1,6 +1,6 @@
 import pytest
 
-from tests.helpers import assert_dict_subset
+from tests.helpers import assert_dict_subset, assert_status_code
 
 URL = "/books"
 
@@ -30,12 +30,12 @@ URL = "/books"
             },
             201,
         ),
-        ("no values", {}, {}, 422),
+        ("no values", {}, {}, 400),
     ],
 )
 def test_create_book(client, name: str, req_json: dict, exp_json: dict, exp_status: int):
     r = client.post("/books", json=req_json)
-    assert r.status_code == exp_status
+    assert_status_code(exp_status, r)
     resp_json = r.get_json()
     assert_dict_subset(resp_json, exp_json, name=name, resp_text=r.text)
 
@@ -44,7 +44,7 @@ def test_create_book(client, name: str, req_json: dict, exp_json: dict, exp_stat
 def test_get_book(client_book, name: str, id: int, exp_status: int):
     client = client_book
     r = client.get(f"/books/{id}")
-    assert r.status_code == exp_status
+    assert_status_code(exp_status, r)
 
 
 def test_create_book_integration(client):
@@ -70,7 +70,7 @@ def test_patch_book_invalid_fields(client):
     r = client.post("/books", json={"title": "Dune"})
     book_id = str(r.get_json()["id"])
     r = client.patch(f"/books/{book_id}", json={"title": "NotDune", "fake_field": "value"})
-    assert r.status_code == 422
+    assert_status_code(400, r)
 
 
 @pytest.mark.parametrize(
@@ -87,6 +87,6 @@ def test_get_book_queries(client, name: str, query_string: str, exp_len: int, ex
 
     # Query
     r = client.get(f"/books?{query_string}")
-    assert r.status_code == exp_code
+    assert_status_code(exp_code, r)
     book_count = len(r.get_json()["books"])
     assert book_count == exp_len, f"expected len: {exp_len}, got {book_count}"

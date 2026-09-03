@@ -15,7 +15,7 @@ class Config:
 
 class TestingConfig(Config):
     TESTING = True
-    DEBUG = True
+    DEBUG = False
     PROPAGATE_EXCEPTIONS = True
     SQLALCHEMY_DATABASE_URI = os.environ.get(
         "TEST_DATABASE_URL", "sqlite://"

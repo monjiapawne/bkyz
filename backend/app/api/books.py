@@ -11,8 +11,7 @@ from pydantic import (
 )
 from spectree import Response
 
-from app import spec
-from app.api.errors import APIError
+from app import errors, spec
 from app.api.schemas import Out
 from app.data.models import Book
 from app.services.book import fetch_book
@@ -111,7 +110,7 @@ def create_book(json: BookIn):
     # Extract the fields
     title = book.get("title")
     if not title:
-        raise APIError("title is required")
+        raise errors.BadRequestError("title is required")
 
     book = Book.create(
         title=title,
