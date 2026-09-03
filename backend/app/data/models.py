@@ -205,6 +205,7 @@ class Medium(StrEnum):
     pdf = auto()
     physical = auto()
     audio = auto()
+    ebook = auto()
 
 
 class Track(CRUDMixin, db.Model):
