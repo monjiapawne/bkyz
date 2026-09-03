@@ -1,0 +1,49 @@
+<dialog #modal class="fixed inset-0 m-auto w-full max-w-md p-6 bg-white rounded-xl shadow-xl border border-gray-200
+    backdrop:bg-black/50 backdrop:backdrop-blur-sm
+    open:flex open:flex-col gap-4">
+
+    <div class="py-2 text-gray-700">
+        <label for="bookSearch" class="block mb-1 font-medium">Search for a book</label>
+        <input id="bookSearch" type="text" [formControl]="searchControl" placeholder="Enter book title"
+            class="w-full rounded border border-gray-300 px-3 py-2" />
+
+        @if (isSearching()) {
+        <div class="flex justify-center mt-4">
+            <span class="h-5 w-5 animate-spin rounded-full border-2 border-[#5457ff] border-t-transparent"></span>
+        </div>
+        } @else {
+        <div class="flex flex-col gap-2 mt-4 max-h-80 overflow-y-auto">
+            @for (book of results(); track book.id) {
+            <button type="button" (click)="selectBook(book)"
+                class="flex items-center gap-3 p-2 rounded hover:bg-gray-100 text-left cursor-pointer">
+                <img [src]="book.cover_url" [alt]="book.title" class="h-14 w-10 object-cover rounded" />
+                <div>
+                    <div class="font-medium">{{ book.title }}</div>
+                    <div class="text-sm text-gray-500">{{ book.authors.join(', ') }}</div>
+                </div>
+            </button>
+            } @empty {
+            <div class="text-sm text-gray-400 text-center py-4">
+                No results found.
+            </div>
+            }
+        </div>
+        }
+
+        <div class="flex justify-between gap-2 mt-4">
+            <button type="button" (click)="close()"
+                class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md">
+                Cancel
+            </button>
+
+            @if (!isSearching() && results().length === 0) {
+            <button type="button" (click)="addBookModal.open()"
+                class="px-4 py-2 bg-[#5457ff] hover:bg-[#4c4ee6] text-white font-medium rounded-md">
+                Add a new book
+            </button>
+            }
+        </div>
+    </div>
+</dialog>
+
+<app-add-book #addBookModal (bookAdded)="onBookAdded($event)"></app-add-book>

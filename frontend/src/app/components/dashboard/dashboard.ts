@@ -1,4 +1,4 @@
-import { Component, signal, WritableSignal } from '@angular/core';
+import { Component, signal, ViewChild, WritableSignal } from '@angular/core';
 import { PlaylistService } from '../../services/playlist-service';
 import { Playlist } from '../../interfaces/playlist';
 import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from '@angular/router';
@@ -8,7 +8,9 @@ import { BookService } from '../../services/book-service';
 import { Book } from '../../interfaces/book';
 import { TitleCasePipe, UpperCasePipe } from '@angular/common';
 import { Auth } from '../../services/auth-service';
-import { AddBookComponent } from './add-book/add-book';
+import { AddPlaylistComponent } from './add-playlist/add-playlist';
+import { AddTrackComponent } from './add-track/add-track';
+import { SearchBookComponent } from './search-book/search-book';
 
 @Component({
   selector: 'app-dashboard',
@@ -17,7 +19,9 @@ import { AddBookComponent } from './add-book/add-book';
     UpperCasePipe,
     RouterLinkActive,
     TitleCasePipe,
-    AddBookComponent
+    AddPlaylistComponent,
+    AddTrackComponent,
+    SearchBookComponent
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
@@ -33,7 +37,11 @@ export class Dashboard {
     private router: Router
   ) { }
 
+
+  @ViewChild('addTrackModal') addTrackModal!: AddTrackComponent;
+
   playlistId!: number;
+  selectedBookId!: number;
 
   playlists: WritableSignal<Playlist[]> = signal([]);
   tracks: WritableSignal<Track[]> = signal([]);
@@ -64,6 +72,19 @@ export class Dashboard {
           if (responseData.length > 0) {
             this.router.navigate(['/playlists', responseData[0].id]);
           }
+        },
+        error: err => {
+          console.log(err);
+        }
+      });
+  }
+
+  onPlaylistAdded(newPlaylistId: number): void {
+    this.playlistService.getPlaylists()
+      .subscribe({
+        next: responseData => {
+          this.playlists.set(responseData);
+          this.router.navigate(['/playlists', newPlaylistId]);
         },
         error: err => {
           console.log(err);
@@ -121,5 +142,10 @@ export class Dashboard {
           console.log(err);
         }
       });
+  }
+
+  onBookSelected(book: Book): void {
+    this.selectedBookId = book.id;
+    this.addTrackModal.open();
   }
 }
