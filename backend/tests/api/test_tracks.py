@@ -1,6 +1,5 @@
 import pytest
 
-
 from tests.helpers import assert_status_code
 
 
@@ -40,7 +39,7 @@ def test_create_track(client_playlist, name: str, req_json: dict, exp_json: dict
     client = client_playlist
 
     r = client.post("/playlists/1/tracks", json=req_json)
-    assert_status_code(exp_status, r) 
+    assert_status_code(exp_status, r)
 
     if not exp_json:
         return

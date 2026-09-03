@@ -2,9 +2,10 @@ from flask import Blueprint
 from flask_login import current_user, login_required, login_user, logout_user
 from pydantic import BaseModel, ConfigDict, Field
 
-from app import errors, spec
+from app import spec
 from app.api.schemas import Out
 from app.data.models import User
+from app.errors import NotFoundError, UnauthorizedError
 
 users = Blueprint("users", __name__)
 
@@ -27,7 +28,7 @@ def login(json: UserIn):
     """Login as a user."""
     user = User.get_one(User.username == json.username)
     if not user or not user.verify_password(json.password):
-        raise errors.UnauthorizedError("Invalid username or password")
+        raise UnauthorizedError("Invalid username or password")
 
     login_user(user, json.remember_me)
     return UserOut.json_(user), 200
@@ -62,7 +63,7 @@ def user_info(user_id: int):
     """Get a user's info."""
     user = User.get_one(User.id == user_id)
     if user is None:
-        raise errors.NotFoundError("user not found")
+        raise NotFoundError("user")
 
     return UserOut.json_(user), 200
 

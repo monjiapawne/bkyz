@@ -16,7 +16,8 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from app import db, errors
+from app import db
+from app.errors import NotFoundError, ResourceExistsError
 
 # Junction table of books and their authors (since there can be many to many)
 book_authors = Table(
@@ -45,7 +46,7 @@ class CRUDMixin:
             where(*criteria)
         )  # fmt: skip
         if obj is None:
-            raise errors.NotFoundError(cls.__name__)
+            raise NotFoundError(cls.__name__)
         return obj
 
     @classmethod
@@ -63,7 +64,7 @@ class CRUDMixin:
             NotFoundError if the id isn't found.
         """
         if (obj := db.session.get(cls, id)) is None:
-            raise errors.NotFoundError("id", id)
+            raise NotFoundError("id", id)
         return obj
 
     @classmethod
@@ -74,7 +75,7 @@ class CRUDMixin:
             NotFoundError if the id isn't found (could already have been deleted.)
         """
         if (obj := cls.get_by_id(id)) is None:
-            raise errors.NotFoundError("id", id)
+            raise NotFoundError("id", id)
         obj.delete()
 
     @classmethod
@@ -83,7 +84,7 @@ class CRUDMixin:
             return cls(**kwargs)._save()
         except IntegrityError:
             db.session.rollback()
-            raise errors.ResourceExistsError(cls.__name__)
+            raise ResourceExistsError(cls.__name__)
 
     def delete(self) -> None:
         db.session.delete(self)
