@@ -129,13 +129,12 @@ class Book(CRUDMixin, db.Model):
 
     _authors: Mapped[list["Author"]] = relationship(secondary=book_authors, back_populates="books")
 
-    @hybrid_property
+    @property
     def authors(self) -> list["Author"]:
         return self._authors
 
-    @authors.inplace.setter
-    def _authors_setter(self, value: "str | list[str] | list[Author] | None") -> None:
-        # Using a protected attribute, so we can create a setter and getter
+    @authors.setter
+    def authors(self, value: "str | list[str] | None") -> None:
         self._authors = Author.from_string(value)
 
     @classmethod
@@ -166,24 +165,35 @@ class Author(CRUDMixin, db.Model):
     )
 
     @classmethod
-    def from_string(cls, raw: "str | list[str] | list[Author] | None") -> list["Author"]:
-        if not raw:
+    def from_string(cls, authors_raw: "str | list[str] | None") -> list["Author"]:
+        """Takes a raw string or list of strings and converts them into a list of author objects.
+
+        Checks if the authors already exist, if not it will create them. 
+        """
+        if not authors_raw:
             return []
 
-        if isinstance(raw, str):
-            names = raw.split(",")
-        else:
-            names = raw
+        # split the list of authors into a list
+        names = authors_raw.split(",") if isinstance(authors_raw, str) else authors_raw
 
-        res = []
-        for n in names:
-            if obj := db.session.scalar(select(cls).filter_by(name=n.strip())) is None:
-                obj = cls(name=n.strip())
-                db.session.add(obj)
-                db.session.flush()
-            res.append(obj)
+        authors = []
+        for name in names:
+            name = name.strip()
+            # Check if the author already exists
+            author = db.session.scalar(select(cls).filter_by(name=name))
 
-        return res
+            if author:
+                # Author already exists, add it to the list
+                authors.append(author)
+                continue
+
+            # If not we'll create a new author 
+            author = cls(name=name)
+            db.session.add(author)
+            db.session.flush()
+            authors.append(author)
+
+        return authors
 
 
 class Playlist(CRUDMixin, db.Model):
