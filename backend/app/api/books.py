@@ -12,9 +12,9 @@ from pydantic import (
 from spectree import Response
 
 from app import spec
-from app.api.errors import APIError
 from app.api.schemas import Out
 from app.data.models import Book
+from app.errors import BadRequestError
 from app.services.book import fetch_book
 from app.services.cover import fetch_cover
 
@@ -29,10 +29,12 @@ class BookIn(BaseModel):
     title: str | None = Field(None, examples=["Just For Fun"])
     authors: str | None = Field(None, examples=["Linus Torvalds, David Diamond"])
     """Comma seperated author names."""
-    pages: int | None = 1
+    pages: int = 1
     isbn: str | None = None
     """ISBN 13 only.
     Note this will attempt to fill missing fields based on an isbn lookup."""
+    lookup: bool = True
+    """If true and isbn is provided thebackend will attempt to lookup the book details from an external source."""
 
     @model_validator(mode="after")
     def title_or_isbn(self):
@@ -83,12 +85,6 @@ class BookPatch(BaseModel):
     publish_date: str | None = None
 
 
-@books.get("")
-def list_books():
-    """List all books."""
-    return {"books": [BookOut.json_(b) for b in Book.get_all()]}
-
-
 @books.post("")
 @spec.validate(json=BookIn, resp=Response(HTTP_200=BookOut, HTTP_201=BookOut))
 def create_book(json: BookIn):
@@ -99,7 +95,9 @@ def create_book(json: BookIn):
     book = json.model_dump(exclude_none=True)
 
     fetch_status = None
-    if isbn := Book.normalize_isbn(json.isbn):
+    isbn = Book.normalize_isbn(json.isbn)
+
+    if json.lookup and isbn:
         if existing := Book.get_by_isbn(isbn):
             return BookOut.json_(existing), 200
 
@@ -113,14 +111,14 @@ def create_book(json: BookIn):
     # Extract the fields
     title = book.get("title")
     if not title:
-        raise APIError("title is required")
+        raise BadRequestError("title is required")
 
     book = Book.create(
         title=title,
         authors=book.get("authors"),
         pages=book.get("pages"),
         publish_date=book.get("publish_date"),
-        isbn=isbn,
+        isbn=isbn if isbn else None,
         fetch_status=fetch_status,
     )
 
@@ -146,7 +144,33 @@ def update_book(book_id: int, json: BookPatch):
 def get_book(book_id: int):
     """Get a book."""
     book = Book.get_by_id(book_id)
-    return BookOut.json_(book)
+    return BookOut.json_(book), 200
+
+
+class BookQuery(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    isbn: str | None = None
+    """Filter by ISBN 13."""
+    title: str | None = None
+
+    @field_validator("isbn")
+    @classmethod
+    def norm_isbn(cls, v: str | None) -> str | None:
+        return Book.normalize_isbn(v)
+
+
+@books.get("")
+@spec.validate(query=BookQuery)
+def list_books(query: BookQuery):
+    """Gets the list of books."""
+    filters = []
+    if query.isbn:
+        filters.append(Book.isbn == query.isbn)
+    if query.title:
+        filters.append(Book.title.ilike(f"%{query.title}%"))
+
+    return {"books": [BookOut.json_(b) for b in Book.get_all(*filters)]}
 
 
 @books.delete("/<int:book_id>")
@@ -155,12 +179,6 @@ def delete_book(book_id: int):
     Book.delete_by_id(book_id)
     (current_app.config["COVERS_DIR"] / f"{book_id}.jpg").unlink(missing_ok=True)
     return "", 204
-
-
-@books.get("/isbn=<isbn>")
-def search_by_isbn(isbn: str):
-    book = Book.get_one(Book.isbn == Book.normalize_isbn(isbn))
-    return BookOut.json_(book), 200
 
 
 @books.get("/<int:book_id>/cover")
