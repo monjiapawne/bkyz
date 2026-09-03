@@ -6,22 +6,23 @@ import { TrackService } from '../../services/track-service';
 import { Track } from '../../interfaces/track';
 import { BookService } from '../../services/book-service';
 import { Book } from '../../interfaces/book';
-import { TitleCasePipe, UpperCasePipe } from '@angular/common';
+import { TitleCasePipe } from '@angular/common';
 import { Auth } from '../../services/auth-service';
 import { AddPlaylistComponent } from './add-playlist/add-playlist';
 import { AddTrackComponent } from './add-track/add-track';
 import { SearchBookComponent } from './search-book/search-book';
+import { TrackRowComponent } from './track-row/track-row';
 
 @Component({
   selector: 'app-dashboard',
   imports: [
     RouterLink,
-    UpperCasePipe,
     RouterLinkActive,
     TitleCasePipe,
     AddPlaylistComponent,
     AddTrackComponent,
-    SearchBookComponent
+    SearchBookComponent,
+    TrackRowComponent
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
