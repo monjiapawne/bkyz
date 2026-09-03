@@ -1,0 +1,21 @@
+<dialog #modal class="m-auto w-full max-w-md rounded-lg p-6 shadow-lg backdrop:bg-black/50">
+    <form [formGroup]="playlistForm" (ngSubmit)="onSubmit()">
+        <label for="name" class="block text-sm font-medium text-gray-700 mt-2">Name</label>
+        <input id="name" type="text" formControlName="name" placeholder="Enter playlist name"
+            class="w-full rounded border border-gray-300 px-3 py-2 my-2" />
+
+        <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+        <textarea id="description" formControlName="description" placeholder="Enter playlist description"
+            class="w-full rounded border border-gray-300 px-3 py-2" rows="4">
+    </textarea>
+
+        <div class="flex flex-col justify-center gap-2 mt-4">
+            <button
+                class="bg-[#5457ff] text-[#ffffff] block mx-auto rounded-xl mt-4 px-4 p-2 cursor-pointer hover:bg-[#4c4ee6] shadow transition-colors"
+                type="submit">Add Playlist</button>
+            <button
+                class="bg-gray-100 text-gray-800 block mx-auto rounded-xl mt-2 px-4 p-2 cursor-pointer hover:bg-gray-200 shadow transition-colors"
+                type="button" (click)="modal.close()">Cancel</button>
+        </div>
+    </form>
+</dialog>

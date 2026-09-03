@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Book } from '../interfaces/book';
 import { BookResponse } from '../interfaces/book-response';
 
@@ -49,6 +49,11 @@ export class BookService {
 
   deleteBook(id: number) {
     return this.http.delete<Book>(`${this.API_URL}/${id}`, { withCredentials: true });
+  }
+
+  searchBooks(title: string) {
+    const params = new HttpParams().set('title', title);
+    return this.http.get<BookResponse>(this.API_URL, { params, withCredentials: true });
   }
 
 }

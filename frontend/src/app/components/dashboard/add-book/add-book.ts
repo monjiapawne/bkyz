@@ -1,8 +1,8 @@
-import { Component, ElementRef, EventEmitter, Input, Output, signal, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Output, signal, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { switchMap, finalize } from 'rxjs';
+import { finalize } from 'rxjs';
 import { BookService } from '../../../services/book-service';
-import { TrackService } from '../../../services/track-service';
+import { Book } from '../../../interfaces/book';
 
 @Component({
   selector: 'app-add-book',
@@ -12,8 +12,7 @@ import { TrackService } from '../../../services/track-service';
 })
 export class AddBookComponent {
 
-  @Input() playlistId!: number;
-  @Output() bookAdded = new EventEmitter<void>();
+  @Output() bookAdded = new EventEmitter<Book>();
   @ViewChild('modal') modal!: ElementRef<HTMLDialogElement>;
 
   isSubmitting = signal(false);
@@ -22,8 +21,7 @@ export class AddBookComponent {
 
   constructor(
     private fb: FormBuilder,
-    private bookService: BookService,
-    private trackService: TrackService
+    private bookService: BookService
   ) {
     this.bookForm = this.fb.group({
       title: ['', Validators.required],
@@ -60,22 +58,13 @@ export class AddBookComponent {
       form.title!
     )
       .pipe(
-        switchMap(book =>
-          this.trackService.postTrackToPlaylist(
-            this.playlistId,
-            book.id,
-            0,
-            form.number_of_pages!,
-            'pages',
-            'physical'
-          )
-        ),
         finalize(() => this.isSubmitting.set(false))
       )
       .subscribe({
-        next: () => {
+        next: book => {
           this.bookForm.reset();
-          this.bookAdded.emit();
+          this.modal.nativeElement.close();
+          this.bookAdded.emit(book);
         },
         error: err => {
           console.error(err);
