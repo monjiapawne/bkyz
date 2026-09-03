@@ -32,8 +32,14 @@
                 <select id="unit" formControlName="unit" class="w-full rounded border border-gray-300 px-3 py-2">
                     <option value="pages">Pages</option>
                     <option value="chapters">Chapters</option>
+                    <option value="percent">Percent</option>
                     <option value="other">Other</option>
                 </select>
+
+                @if (trackForm.value.unit === 'other'){
+                    <input type="text" formControlName="customUnit" placeholder="e.g. sections"
+                    class="w-full rounded border border-gray-300 px-3 py-2 mt-2"/>
+                }
             </div>
 
             <div>

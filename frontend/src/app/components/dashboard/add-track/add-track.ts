@@ -36,6 +36,7 @@ export class AddTrackComponent {
         Validators.pattern(/^\d+$/)
       ]],
       unit: ['pages', Validators.required],
+      customUnit: [''],
       medium: ['physical', Validators.required]
     });
   }
@@ -53,12 +54,14 @@ export class AddTrackComponent {
 
     const form = this.trackForm.getRawValue();
 
+    const unit = form.unit === 'other' ? form.customUnit.trim() : form.unit;
+
     this.trackService.postTrackToPlaylist(
       this.playlistId,
       this.bookId,
       form.position!,
       form.total!,
-      form.unit!,
+      unit,
       form.medium!
     )
       .pipe(
