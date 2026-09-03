@@ -11,9 +11,10 @@ from pydantic import (
 )
 from spectree import Response
 
-from app import errors, spec
+from app import spec
 from app.api.schemas import Out
 from app.data.models import Book
+from app.errors import BadRequestError
 from app.services.book import fetch_book
 from app.services.cover import fetch_cover
 
@@ -110,7 +111,7 @@ def create_book(json: BookIn):
     # Extract the fields
     title = book.get("title")
     if not title:
-        raise errors.BadRequestError("title is required")
+        raise BadRequestError("title is required")
 
     book = Book.create(
         title=title,
