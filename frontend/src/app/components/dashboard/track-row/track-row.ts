@@ -13,8 +13,9 @@ export class TrackRowComponent {
   track = input.required<Track>();
   book = input.required<Book>();
 
-  progress = computed(() => {
-    const t = this.track();
-    return Math.min(Math.round(t.position / t.total * 100), 100);
-  });
+  progress(): number {
+    const track = this.track();
+    const progress = Math.round(track.position / track.total * 100);
+    return Math.min(progress, 100);
+  } 
 }

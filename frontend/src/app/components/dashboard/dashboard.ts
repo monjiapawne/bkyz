@@ -128,11 +128,6 @@ export class Dashboard {
     return this.books().find(book => book.id === track.book_id);
   }
 
-  getProgress(track: Track): number {
-    const progress = Math.round(track.position / track.total * 100);
-    return Math.min(progress, 100);
-  }
-
   getUsername() {
     this.auth.getUser()
       .subscribe({
