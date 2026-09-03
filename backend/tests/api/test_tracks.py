@@ -1,5 +1,7 @@
 import pytest
 
+from tests.helpers import assert_status_code
+
 
 @pytest.mark.parametrize(
     ("name", "req_json", "exp_json", "exp_status"),
@@ -37,25 +39,23 @@ def test_create_track(client_playlist, name: str, req_json: dict, exp_json: dict
     client = client_playlist
 
     r = client.post("/playlists/1/tracks", json=req_json)
-    assert r.status_code == exp_status, (
-        f"{name}: expected {exp_status}, got {r.status_code}\n response: {r.text}"
-    )
+    assert_status_code(exp_status, r)
 
     if not exp_json:
         return
 
     track_id = r.get_json()["id"]
     r = client.get(f"/playlists/1/tracks/{track_id}")
-    assert r.status_code == 200
+    assert_status_code(200, r)
 
 
 def test_delete_track(client_track):
     client = client_track
     r = client.delete("/playlists/1/tracks/1")
-    assert r.status_code == 204
+    assert_status_code(204, r)
 
     r = client.get("/playlists/1/tracks")
-    assert r.status_code == 200
+    assert_status_code(200, r)
     assert len(r.get_json()["tracks"]) == 0
 
 

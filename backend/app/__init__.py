@@ -10,9 +10,12 @@ from pydantic import ValidationError
 from spectree import SpecTree
 from sqlalchemy import MetaData
 
+from app.errors import BadRequestError, register_error_handlers
+
 # Disable logging of requests like:
 # 127.0.0.1 - - [08/Aug/2026 10:13:40] "GET /api/v1/books/ HTTP/1.1" 200
 logging.getLogger("werkzeug").setLevel(logging.ERROR)
+# Setup logging
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s %(levelname)s %(name)s: %(message)s",
@@ -43,8 +46,9 @@ def format_validation_error(exc: ValidationError) -> str:
 
 
 def reshape_validation(req, resp, req_validation_error: ValidationError, instance):
+    # error catcher for validation failures caught by pylance
     if req_validation_error:
-        raise APIError(format_validation_error(req_validation_error), 422)
+        raise BadRequestError(format_validation_error(req_validation_error))
 
 
 spec = SpecTree(
@@ -59,7 +63,6 @@ spec = SpecTree(
 # Avoiding cyclical import error
 # after spec importing app.api.errors initializes the app.api package,
 # whose blueprints do `from app import spec`
-from app.api.errors import APIError, register_error_handlers
 
 
 def create_app(config_object="config.Config"):
