@@ -80,6 +80,29 @@ export class Dashboard {
       });
   }
 
+  deletePlaylist() {
+    const deletedId = this.playlistId;
+
+    this.playlistService.deletePlaylist(deletedId)
+      .subscribe({
+        next: () => {
+          const remaining = this.playlists().filter(p => p.id !== deletedId);
+          this.playlists.set(remaining);
+
+          if (remaining.length > 0) {
+            this.router.navigate(['/playlists', remaining[0].id]);
+          } else {
+            this.tracks.set([]);
+            this.books.set([]);
+            this.router.navigate(['/playlists']);
+          }
+        },
+        error: err => {
+          console.log(err);
+        }
+      });
+  }
+
   onPlaylistAdded(newPlaylistId: number): void {
     this.playlistService.getPlaylists()
       .subscribe({
