@@ -208,7 +208,8 @@ class Playlist(CRUDMixin, db.Model):
     user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"))
     user: Mapped["User | None"] = relationship(back_populates="playlists")
 
-    tracks: Mapped[list["Track"]] = relationship(back_populates="playlist")
+    # Delete all tracks when a playlist is deleted
+    tracks: Mapped[list["Track"]] = relationship(back_populates="playlist", cascade="all, delete-orphan", passive_deletes=True)
 
 
 class Medium(StrEnum):
@@ -229,7 +230,7 @@ class Track(CRUDMixin, db.Model):
     total: Mapped[int | None] = mapped_column(default=None)
     medium: Mapped[Medium] = mapped_column(Enum(Medium), server_default=Medium.physical.name)
 
-    playlist_id: Mapped[int] = mapped_column(ForeignKey("playlists.id"))
+    playlist_id: Mapped[int] = mapped_column(ForeignKey("playlists.id", ondelete="CASCADE"))
     book_id: Mapped["Book | None"] = mapped_column(ForeignKey("books.id"))
 
     playlist: Mapped["Playlist"] = relationship(back_populates="tracks")
