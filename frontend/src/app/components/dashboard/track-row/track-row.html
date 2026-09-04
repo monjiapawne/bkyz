@@ -1,0 +1,24 @@
+<div class="flex">
+    <div>
+        <img [src]="book().cover_url" [alt]="book().title" class="h-48 w-auto object-cover mr-4">
+    </div>
+
+    <div>
+        <div class="text-[#5457ff] font-bold text-xs">
+            {{ track().medium | uppercase }}
+        </div>
+        <div class="font-bold text-2xl">
+            {{ book().title }}
+        </div>
+        <div>
+            {{ book().authors }}
+        </div>
+    </div>
+</div>
+
+<div class="flex w-full items-center mt-4">
+    <h1>{{ progress() }}%</h1>
+    <div class="h-2 w-full overflow-hidden rounded-full bg-gray-200 ml-4">
+        <div class="h-full rounded-full bg-[#5457ff]" [style.width.%]="progress()"></div>
+    </div>
+</div>
