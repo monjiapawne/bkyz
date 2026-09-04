@@ -29,7 +29,7 @@ class ForbiddenError(BkyzError):
 class NotFoundError(BkyzError):
     status = 404
 
-    def __init__(self, resource: str = "resouse", value: int | str | None = None):
+    def __init__(self, resource: str = "resource", value: int | str | None = None):
         msg = [resource]
         if value:
             msg.append(str(value))
@@ -50,13 +50,12 @@ def register_error_handlers(app):
 
     @app.errorhandler(BkyzError)
     def handle_bkyz_error(e: BkyzError):
-        logger.exception(f"bykz error: {request.method}, {request.path}")
-        if app.config["DEBUG"]:
-            raise e
-        return {"error": "internal server error"}, e.status
+        """Catch expected errors"""
+        return {"error": str(e)}, e.status
 
     @app.errorhandler(Exception)
     def handle_unexpected_erorr(e: Exception):
+        """Catch unexpected, uncaught errors"""
         logger.exception(f"uncaught error: {request.method}, {request.path}")
         if app.config["DEBUG"]:
             raise e
