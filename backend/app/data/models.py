@@ -1,5 +1,5 @@
 from enum import StrEnum, auto
-from typing import Self
+from typing import TYPE_CHECKING, Any, Self
 
 from flask_login import UserMixin
 from sqlalchemy import (
@@ -12,7 +12,6 @@ from sqlalchemy import (
     select,
 )
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -33,6 +32,10 @@ class CRUDMixin:
 
     Wrappers around plain database calls, to keep database out of view layer.
     """
+
+    if TYPE_CHECKING:
+
+        def __init__(self, **kwargs: Any) -> None: ...
 
     @classmethod
     def get_one(cls, *criteria: ColumnExpressionArgument) -> Self:
@@ -102,8 +105,8 @@ class CRUDMixin:
 
 
 class FetchStatus(StrEnum):
-    """An enum to store the results from external fetches to ensure we can properly proceed all subsiquent
-    for the same query."""
+    """An enum to store the results from external fetches to ensure we can
+    properly proceed all subsiquent for the same query."""
 
     not_attempted = auto()
     unreachable = auto()
@@ -168,7 +171,7 @@ class Author(CRUDMixin, db.Model):
     def from_string(cls, authors_raw: "str | list[str] | None") -> list["Author"]:
         """Takes a raw string or list of strings and converts them into a list of author objects.
 
-        Checks if the authors already exist, if not it will create them. 
+        Checks if the authors already exist, if not it will create them.
         """
         if not authors_raw:
             return []
@@ -187,7 +190,7 @@ class Author(CRUDMixin, db.Model):
                 authors.append(author)
                 continue
 
-            # If not we'll create a new author 
+            # If not we'll create a new author
             author = cls(name=name)
             db.session.add(author)
             db.session.flush()
@@ -209,7 +212,9 @@ class Playlist(CRUDMixin, db.Model):
     user: Mapped["User | None"] = relationship(back_populates="playlists")
 
     # Delete all tracks when a playlist is deleted
-    tracks: Mapped[list["Track"]] = relationship(back_populates="playlist", cascade="all, delete-orphan", passive_deletes=True)
+    tracks: Mapped[list["Track"]] = relationship(
+        back_populates="playlist", cascade="all, delete-orphan", passive_deletes=True
+    )
 
 
 class Medium(StrEnum):
