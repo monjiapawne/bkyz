@@ -1,4 +1,5 @@
 import logging
+from typing import Self
 
 from flask import Blueprint, current_app, send_file, url_for
 from pydantic import (
@@ -34,16 +35,17 @@ class BookIn(BaseModel):
     """ISBN 13 only.
     Note this will attempt to fill missing fields based on an isbn lookup."""
     lookup: bool = True
-    """If true and isbn is provided thebackend will attempt to lookup the book details from an external source."""
+    """If true and isbn is provided the backend will attempt to lookup the book
+    details from an external source."""
 
     @model_validator(mode="after")
-    def title_or_isbn(self):
+    def title_or_isbn(self) -> Self:
         if not (self.title or self.isbn):
             raise ValueError("Provide either a title or isbn")
         return self
 
     @model_validator(mode="after")
-    def check_isbn(self):
+    def check_isbn(self) -> Self:
         if self.isbn is None:
             return self
 
