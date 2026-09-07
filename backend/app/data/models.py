@@ -213,7 +213,7 @@ class Playlist(CRUDMixin, db.Model):
 
     # Delete all tracks when a playlist is deleted
     tracks: Mapped[list["Track"]] = relationship(
-        back_populates="playlist", cascade="all, delete-orphan", passive_deletes=True
+        back_populates="playlist", cascade="all, delete-orphan"
     )
 
 
