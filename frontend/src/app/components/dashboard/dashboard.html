@@ -13,10 +13,13 @@
     <button (click)="addPlaylistModal.open()"
         class="flex px-4 py-2 mx-4 bg-[#7c7eff] hover:bg-[#6466f1] text-white font-medium rounded-lg shadow transition-colors cursor-pointer">+
     </button>
+    @if (playlists().length > 0) {
     <button (click)="deletePlaylist()"
         class="ml-auto p-2 mx-4 bg-[#ff7c7c] hover:bg-[#f16464] text-white font-medium rounded-lg shadow transition-colors cursor-pointer">
         Delete Playlist
     </button>
+    }
+
 </div>
 
 <app-add-playlist #addPlaylistModal (playlistAdded)="onPlaylistAdded($event)"></app-add-playlist>
@@ -43,7 +46,7 @@
 
     <div class="p-4">
         @if (book) {
-        <app-track-row [track]="track" [book]="book" />
+        <app-track-row [track]="track" [book]="book" (delete)="onDeleteTrack($event)" />
         } @else {
         Loading...
         }
