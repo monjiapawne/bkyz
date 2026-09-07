@@ -167,4 +167,10 @@ export class Dashboard {
     this.selectedBookId = book.id;
     this.addTrackModal.open();
   }
+
+  onDeleteTrack(track: Track) {
+    this.trackService.deleteTrackFromPlaylist(this.playlistId, track.id).subscribe(() => {
+      this.tracks.update(tracks => tracks.filter(t => t.id !== track.id));
+    });
+  }
 }

@@ -1,4 +1,4 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 import { UpperCasePipe } from '@angular/common';
 import { Track } from '../../../interfaces/track';
 import { Book } from '../../../interfaces/book';
@@ -13,9 +13,15 @@ export class TrackRowComponent {
   track = input.required<Track>();
   book = input.required<Book>();
 
+  delete = output<Track>();
+
   progress(): number {
     const track = this.track();
     const progress = Math.round(track.position / track.total * 100);
     return Math.min(progress, 100);
-  } 
+  }
+
+  deleteTrack() {
+    this.delete.emit(this.track());
+  }
 }
