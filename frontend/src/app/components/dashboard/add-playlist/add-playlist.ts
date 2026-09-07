@@ -23,7 +23,7 @@ export class AddPlaylistComponent {
   ) {
     this.playlistForm = this.fb.group({
       name: ['', Validators.required],
-      description: ['', Validators.required]
+      description: ['']
     });
   }
 

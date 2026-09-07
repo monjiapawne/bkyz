@@ -51,10 +51,13 @@ def register_error_handlers(app):
     @app.errorhandler(BkyzError)
     def handle_bkyz_error(e: BkyzError):
         """Catch expected errors"""
+        logger.warning(f"{request.method} {request.path} -> {e.status}: {e}")
+        if app.config["DEBUG"]:
+            raise e
         return {"error": str(e)}, e.status
 
     @app.errorhandler(Exception)
-    def handle_unexpected_erorr(e: Exception):
+    def handle_unexpected_error(e: Exception):
         """Catch unexpected, uncaught errors"""
         logger.exception(f"uncaught error: {request.method}, {request.path}")
         if app.config["DEBUG"]:
