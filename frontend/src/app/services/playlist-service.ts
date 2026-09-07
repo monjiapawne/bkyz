@@ -15,10 +15,10 @@ export class PlaylistService {
     return this.http.get<Playlist[]>(this.API_URL, { withCredentials: true });
   }
 
-  postPlaylist(name: string, description: string) {
+  postPlaylist(name: string, description?: string) {
     const body = {
       name: name,
-      description: description
+      ...(description && {description})
     };
 
     return this.http.post<Playlist>(this.API_URL, body, { withCredentials: true });

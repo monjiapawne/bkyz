@@ -1,55 +1,54 @@
-<div class="flex gap-3 overflow-x-auto py-2 my-4 mx-auto max-w-7xl">
-    <span class="text-3xl font-semibold text-[rgb(26,26,26)]">{{ username() | titlecase }}'s Playlists</span>
-</div>
+<div class="px-5">
+    <div class="flex gap-3 overflow-x-auto py-2 my-4 mx-auto max-w-7xl">
+        <span class="text-3xl font-semibold text-[rgb(26,26,26)]">{{ username() | titlecase }}'s Playlists</span>
+    </div>
 
-<div class="flex gap-3 overflow-x-auto py-2 my-4 mx-auto max-w-7xl">
-    @for (playlist of playlists(); track playlist.id) {
-    <button type="button" [routerLink]="['/playlists', playlist.id]" routerLinkActive="playlist-active"
-        [routerLinkActiveOptions]="{ exact: true }"
-        class="bg-[#cfcece38] shrink-0 rounded-lg px-4 py-2 hover:bg-gray-300/80 shadow transition-colors cursor-pointer">
-        {{ playlist.name }}
-    </button>
-    }
-    <button (click)="addPlaylistModal.open()"
-        class="flex px-4 py-2 mx-4 bg-[#7c7eff] hover:bg-[#6466f1] text-white font-medium rounded-lg shadow transition-colors cursor-pointer">+
-    </button>
-    @if (playlists().length > 0) {
-    <button (click)="deletePlaylist()"
-        class="ml-auto p-2 mx-4 bg-[#ff7c7c] hover:bg-[#f16464] text-white font-medium rounded-lg shadow transition-colors cursor-pointer">
-        Delete Playlist
-    </button>
-    }
-
-</div>
-
-<app-add-playlist #addPlaylistModal (playlistAdded)="onPlaylistAdded($event)"></app-add-playlist>
-
-
-
-<div class="flex flex-col gap-3 overflow-x-auto py-2 my-4 mx-auto max-w-7xl">
-
-    @if (playlists().length > 0) {
-    <button (click)="searchBookModal.open()"
-        class="flex justify-center px-4 py-2 bg-[#5457ff] hover:bg-[#4c4ee6] text-white font-medium rounded-lg shadow transition-colors cursor-pointer">
-        Add Book
-    </button>
-    }
-
-    <app-search-book #searchBookModal (bookSelected)="onBookSelected($event)"></app-search-book>
-
-    <app-add-track #addTrackModal [playlistId]="playlistId" [bookId]="selectedBookId"
-        (trackAdded)="loadTracks(playlistId)">
-    </app-add-track>
-
-    @for (track of tracks(); track track.id) {
-    @let book = getBookForTrack(track);
-
-    <div class="p-4">
-        @if (book) {
-        <app-track-row [track]="track" [book]="book" (delete)="onDeleteTrack($event)" />
-        } @else {
-        Loading...
+    <div class="flex gap-3 overflow-x-auto py-2 my-4 mx-auto max-w-7xl">
+        @for (playlist of playlists(); track playlist.id) {
+        <button type="button" [routerLink]="['/playlists', playlist.id]" routerLinkActive="playlist-active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            class="bg-[#cfcece38] shrink-0 rounded-lg px-4 py-2 hover:bg-gray-300/80 shadow transition-colors cursor-pointer">
+            {{ playlist.name }}
+        </button>
+        }
+        <button (click)="addPlaylistModal.open()"
+            class="flex px-4 py-2 mx-4 bg-[#7c7eff] hover:bg-[#6466f1] text-white font-medium rounded-lg shadow transition-colors cursor-pointer">+
+        </button>
+        @if (playlists().length > 0) {
+        <button (click)="deletePlaylist()"
+            class="ml-auto p-2 mx-4 bg-[#ff7c7c] hover:bg-[#f16464] text-white font-medium rounded-lg shadow transition-colors cursor-pointer">
+            Delete Playlist
+        </button>
         }
     </div>
-    }
+
+    <app-add-playlist #addPlaylistModal (playlistAdded)="onPlaylistAdded($event)"></app-add-playlist>
+
+    <div class="flex flex-col gap-3 overflow-x-auto py-2 my-4 mx-auto max-w-7xl">
+
+        @if (playlists().length > 0) {
+        <button (click)="searchBookModal.open()"
+            class="flex justify-center px-4 py-2 bg-[#5457ff] hover:bg-[#4c4ee6] text-white font-medium shadow transition-colors cursor-pointer">
+            Add Book
+        </button>
+        }
+
+        <app-search-book #searchBookModal (bookSelected)="onBookSelected($event)"></app-search-book>
+
+        <app-add-track #addTrackModal [playlistId]="playlistId" [bookId]="selectedBookId"
+            (trackAdded)="loadTracks(playlistId)">
+        </app-add-track>
+
+        @for (track of tracks(); track track.id) {
+        @let book = getBookForTrack(track);
+
+        <div class="p-4">
+            @if (book) {
+            <app-track-row [track]="track" [book]="book" (delete)="onDeleteTrack($event)" />
+            } @else {
+            Loading...
+            }
+        </div>
+        }
+    </div>
 </div>
