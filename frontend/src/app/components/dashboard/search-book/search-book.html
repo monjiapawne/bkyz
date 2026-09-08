@@ -32,13 +32,13 @@
 
         <div class="flex justify-between gap-2 mt-4">
             <button type="button" (click)="close()"
-                class="btn btn-neutral">
+                class="btn-neutral">
                 Cancel
             </button>
 
             @if (!isSearching() && results().length === 0) {
             <button type="button" (click)="addBookModal.open()"
-                class="btn btn-primary">
+                class="btn-primary">
                 Add a new book
             </button>
             }

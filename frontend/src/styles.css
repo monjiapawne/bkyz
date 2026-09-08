@@ -7,24 +7,23 @@
     --color-bkyz-hover: #4c4ee6;
 }
 
-@layer components {
-    .btn {
-        @apply px-4 py-2 font-medium shadow transition-colors cursor-pointer
-        inline-flex items-center justify-center;
-    }
-
-    .btn-primary {
-        @apply bg-bkyz hover:bg-bkyz-hover text-white;
-    }
-
-    .btn-neutral {
-        @apply bg-[#cfcece38] hover:bg-[#a2a2a238];
-    }
-
-    .btn-danger {
-        @apply bg-[#ee5858] hover:bg-[#f34848] text-white;
-    }
+@utility btn {
+    @apply px-4 py-2 font-medium shadow transition-colors cursor-pointer
+    inline-flex items-center justify-center;
 }
+
+@utility btn-primary {
+    @apply btn bg-bkyz hover:bg-bkyz-hover text-white;
+}
+
+@utility btn-neutral {
+    @apply btn bg-[#cfcece38] hover:bg-[#a2a2a238];
+}
+
+@utility btn-danger {
+    @apply btn bg-[#ee5858] hover:bg-[#f34848] text-white;
+}
+
 
 body {
   background-color: #f1f1f1;
