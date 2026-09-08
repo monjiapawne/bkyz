@@ -1,5 +1,5 @@
 <div class="flex justify-center items-center min-h-[calc(100dvh-120px)]">
-    <form class="bg-[#cfcece38] border-1 rounded-2xl border-[#969696a6] p-10">
+    <form class="bg-[#cfcece38] border-1  border-[#969696a6] p-10">
 
         <svg class="mx-auto block m-6 w-24 h-24" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
             viewBox="0 0 24 24">
@@ -14,15 +14,12 @@
         <div class="text-xs max-w-xs text-center text-[#ff2929] mb-6">{{
             invalidLoginErrorMessage() }}</div>
         }
-        <input name="usernameInput"
-            class="bg-[#ffffff] rounded-lg p-2 mt-2 w-80 focus:outline-0 border border-[#8080808c]"
+        <input name="usernameInput" class="bg-[#ffffff] p-2 mt-2 w-80 focus:outline-0 border border-[#8080808c]"
             placeholder="Username" type="text" [(ngModel)]="username">
 
-        <input name="passwordInput"
-            class="block bg-[#ffffff] rounded-lg p-2 mt-2 w-80 focus:outline-0 border border-[#8080808c]"
+        <input name="passwordInput" class="block bg-[#ffffff] p-2 mt-2 w-80 focus:outline-0 border border-[#8080808c]"
             placeholder="Password" type="password" [(ngModel)]="password">
-        <button (click)="attemptLogin()"
-            class="btn btn-primary block mx-auto mt-8">Sign
+        <button (click)="attemptLogin()" class="btn btn-primary block mx-auto mt-8">Sign
             in</button>
         <h2 class="block text-base text-center justify-center mt-6 text-[rgb(26,26,26)]">Don't have an account?</h2>
         <a routerLink="/register" routerLinkActive="active"

@@ -1,8 +1,8 @@
 """initial schema
 
-Revision ID: 9bd0c017f00b
+Revision ID: 847a788fc348
 Revises: 
-Create Date: 2026-09-02 23:21:19.116239
+Create Date: 2026-09-07 17:46:20.950826
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '9bd0c017f00b'
+revision = '847a788fc348'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -60,11 +60,11 @@ def upgrade():
     sa.Column('position', sa.Integer(), server_default='1', nullable=False),
     sa.Column('unit', sa.String(length=30), nullable=True),
     sa.Column('total', sa.Integer(), nullable=True),
-    sa.Column('medium', sa.Enum('pdf', 'physical', 'audio', name='medium'), server_default='physical', nullable=False),
+    sa.Column('medium', sa.Enum('pdf', 'physical', 'audio', 'ebook', name='medium'), server_default='physical', nullable=False),
     sa.Column('playlist_id', sa.Integer(), nullable=False),
     sa.Column('book_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['book_id'], ['books.id'], name=op.f('fk_tracks_book_id_books')),
-    sa.ForeignKeyConstraint(['playlist_id'], ['playlists.id'], name=op.f('fk_tracks_playlist_id_playlists')),
+    sa.ForeignKeyConstraint(['playlist_id'], ['playlists.id'], name=op.f('fk_tracks_playlist_id_playlists'), ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_tracks'))
     )
     # ### end Alembic commands ###
