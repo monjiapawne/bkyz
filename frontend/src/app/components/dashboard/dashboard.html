@@ -7,16 +7,16 @@
         @for (playlist of playlists(); track playlist.id) {
         <button type="button" [routerLink]="['/playlists', playlist.id]" routerLinkActive="playlist-active"
             [routerLinkActiveOptions]="{ exact: true }"
-            class="btn btn-neutral shrink-0">
+            class="btn-neutral shrink-0">
             {{ playlist.name }}
         </button>
         }
         <button (click)="addPlaylistModal.open()"
-            class="btn btn-neutral">+
+            class="btn-neutral">+
         </button>
         @if (playlists().length > 0) {
         <button (click)="deletePlaylist()"
-            class="btn btn-danger ml-auto">
+            class="btn-danger ml-auto">
             Delete Playlist
         </button>
         }
@@ -28,7 +28,7 @@
 
         @if (playlists().length > 0) {
         <button (click)="searchBookModal.open()"
-            class="btn btn-primary">
+            class="btn-primary">
             Add Book
         </button>
         }
