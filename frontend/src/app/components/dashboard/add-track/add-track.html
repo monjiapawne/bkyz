@@ -12,7 +12,7 @@
                 </label>
 
                 <input id="position" type="number" formControlName="position"
-                    class="w-full rounded border border-gray-300 px-3 py-2" min="0" />
+                    class="input-box w-full" min="0" />
             </div>
 
             <div>
@@ -21,7 +21,7 @@
                 </label>
 
                 <input id="total" type="number" formControlName="total"
-                    class="w-full rounded border border-gray-300 px-3 py-2" min="1" />
+                    class="input-box w-full" min="1" />
             </div>
 
             <div>
@@ -29,7 +29,7 @@
                     Unit
                 </label>
 
-                <select id="unit" formControlName="unit" class="w-full rounded border border-gray-300 px-3 py-2">
+                <select id="unit" formControlName="unit" class="input-box w-full">
                     <option value="pages">Pages</option>
                     <option value="chapters">Chapters</option>
                     <option value="percent">Percent</option>
@@ -38,7 +38,7 @@
 
                 @if (trackForm.value.unit === 'other'){
                     <input type="text" formControlName="customUnit" placeholder="e.g. sections"
-                    class="w-full rounded border border-gray-300 px-3 py-2 mt-2"/>
+                    class="input-box w-full"/>
                 }
             </div>
 
@@ -47,7 +47,7 @@
                     Medium
                 </label>
 
-                <select id="medium" formControlName="medium" class="w-full rounded border border-gray-300 px-3 py-2">
+                <select id="medium" formControlName="medium" class="input-box w-full">
                     <option value="physical">Physical</option>
                     <option value="ebook">E-book</option>
                     <option value="audiobook">Audiobook</option>

@@ -2,11 +2,11 @@
     <form [formGroup]="playlistForm" (ngSubmit)="onSubmit()">
         <label for="name" class="block text-sm font-medium text-gray-700 mt-2">Name</label>
         <input id="name" type="text" formControlName="name" placeholder="Enter playlist name"
-            class="w-full rounded border border-gray-300 px-3 py-2 my-2" />
+            class="input-box w-full my-2" />
 
         <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
         <textarea id="description" formControlName="description" placeholder="Enter playlist description (optional)"
-            class="w-full rounded border border-gray-300 px-3 py-2" rows="4">
+            class="input-box w-full" rows="4">
     </textarea>
 
         <div class="flex flex-col justify-center gap-2 mt-4">

@@ -14,15 +14,15 @@
         <div class="text-xs max-w-xs text-center text-[#ff2929] mb-6">{{
             invalidLoginErrorMessage() }}</div>
         }
-        <input name="usernameInput" class="bg-[#ffffff] p-2 mt-2 w-80 focus:outline-0 border border-[#8080808c]"
+        <input name="usernameInput" class="input-box w-80"
             placeholder="Username" type="text" [(ngModel)]="username">
 
-        <input name="passwordInput" class="block bg-[#ffffff] p-2 mt-2 w-80 focus:outline-0 border border-[#8080808c]"
+        <input name="passwordInput" class="input-box w-80"
             placeholder="Password" type="password" [(ngModel)]="password">
         <button (click)="attemptLogin()" class="btn-primary block mx-auto mt-8">Sign
             in</button>
         <h2 class="block text-base text-center justify-center mt-6 text-[rgb(26,26,26)]">Don't have an account?</h2>
         <a routerLink="/register" routerLinkActive="active"
-            class="block text-base font-bold text-center justify-center underline text-[bkyz]">Register</a>
+            class="block text-base font-bold text-center justify-center underline text-bkyz">Register</a>
     </form>
 </div>
