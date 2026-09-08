@@ -1,8 +1,15 @@
 import { Component, ElementRef, EventEmitter, Output, signal, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
 import { BookService } from '../../../services/book-service';
 import { Book } from '../../../interfaces/book';
+
+// Validate minimal requirements to submit a book
+const validateBookPost: ValidatorFn = (group: AbstractControl): ValidationErrors | null => {
+  const title = group.get('title')?.value?.trim();
+  const isbn = group.get('isbn')?.value?.trim();
+  return title || isbn ? null : { titleOrIsbn: true };
+}
 
 @Component({
   selector: 'app-add-book',
@@ -24,18 +31,16 @@ export class AddBookComponent {
     private bookService: BookService
   ) {
     this.bookForm = this.fb.group({
-      title: ['', Validators.required],
-      authors: ['', Validators.required],
+      title: [''],
+      authors: [''],
       isbn: ['', [
-        Validators.required,
         Validators.pattern(/^\d+$/)
       ]],
       number_of_pages: [null, [
-        Validators.required,
         Validators.min(1),
         Validators.pattern(/^\d+$/)
       ]]
-    });
+    }, {validators: validateBookPost});
   }
 
   open(): void {
