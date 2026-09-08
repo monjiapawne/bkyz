@@ -7,16 +7,16 @@
         @for (playlist of playlists(); track playlist.id) {
         <button type="button" [routerLink]="['/playlists', playlist.id]" routerLinkActive="playlist-active"
             [routerLinkActiveOptions]="{ exact: true }"
-            class="bg-[#cfcece38] shrink-0 px-4 py-2 hover:bg-gray-300/80 shadow transition-colors cursor-pointer">
+            class="btn btn-neutral shrink-0">
             {{ playlist.name }}
         </button>
         }
         <button (click)="addPlaylistModal.open()"
-            class="flex px-4 py-2 mx-0 bg-[#cfcece38] hover:bg-gray-300/80 hover:text-[#000000] font-medium shadow transition-colors cursor-pointer">+
+            class="btn btn-neutral">+
         </button>
         @if (playlists().length > 0) {
         <button (click)="deletePlaylist()"
-            class="ml-auto p-2 mx-0 bg-[#ee5858] hover:bg-[#f34848] text-white font-medium shadow transition-colors cursor-pointer">
+            class="btn btn-danger ml-auto">
             Delete Playlist
         </button>
         }
@@ -28,7 +28,7 @@
 
         @if (playlists().length > 0) {
         <button (click)="searchBookModal.open()"
-            class="flex justify-center px-4 py-2 bg-[#5457ff] hover:bg-[#4c4ee6] text-white font-medium shadow transition-colors cursor-pointer">
+            class="btn btn-primary">
             Add Book
         </button>
         }

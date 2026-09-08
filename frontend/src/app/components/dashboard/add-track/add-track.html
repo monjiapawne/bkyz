@@ -57,7 +57,7 @@
             <div class="flex flex-col justify-center">
 
                 <button type="submit" [disabled]="trackForm.invalid || isSubmitting()"
-                    class="flex items-center justify-center gap-2 px-4 py-2 bg-[#5457ff] hover:bg-[#4c4ee6] text-white font-medium rounded-md my-4 disabled:opacity-50">
+                    class="btn btn-primary gap-2 my-4 disabled:opacity-50">
 
                     @if (isSubmitting()) {
                     <span class="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
@@ -69,7 +69,7 @@
                 </button>
 
                 <button type="button" (click)="modal.close()"
-                    class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md">
+                    class="btn btn-neutral">
                     Cancel
                 </button>
 
