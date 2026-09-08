@@ -84,14 +84,14 @@ nav a:hover {
 }
 
 nav a.active {
-  background-color: #5457ff;
+  background-color: var(--color-bkyz);
   color: #ffffff;
   border-radius: 8px;
   transition: background-color 0.15s ease;
 }
 
 nav a.active:hover {
-  background-color: #4c4ee6;
+  background-color: var(--color-bkyz-hover);
 }
 
 footer {
@@ -121,7 +121,7 @@ footer p {
 }
 
 .footer-links a:hover {
-  color: #5457ff;
+  color: var(--color-bkyz);
 }
 
 .page {
