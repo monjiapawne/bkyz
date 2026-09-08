@@ -1,12 +1,14 @@
-/* You can add global styles to this file, and also import other style files */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @theme {
   --color-bkyz: #5457ff;
   --color-bkyz-hover: #4c4ee6;
+  --color-surface: #ffffff;
+  --color-line: #8080808c;
 }
 
+/* buttons */ 
 @utility btn {
     @apply px-4 py-2 font-medium shadow transition-colors cursor-pointer
     inline-flex items-center justify-center;
@@ -24,6 +26,12 @@
     @apply btn bg-[#ee5858] hover:bg-[#f34848] text-white;
 }
 
+/* input-box */ 
+
+@utility input-box {
+    @apply block bg-surface p-2 mt-2 border border-line
+    transition-colors focus:outline-0 focus:border-bkyz;
+}
 
 body {
   background-color: #f1f1f1;
@@ -67,11 +75,13 @@ nav a {
 
 nav a:hover {
   background-color: #d6d6d6;
+  border-radius: 5px;
 }
 
 nav a.active {
   background-color: #5457ff;
   color: #ffffff;
+  border-radius: 8px;
   transition: background-color 0.15s ease;
 }
 
