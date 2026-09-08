@@ -14,10 +14,10 @@
         <div class="text-xs max-w-xs text-center text-[#ff2929] mb-6">{{
             invalidLoginErrorMessage() }}</div>
         }
-        <input name="usernameInput" class="input-box w-80"
+        <input name="usernameInput" class="input-box w-80 mt-2"
             placeholder="Username" type="text" [(ngModel)]="username">
 
-        <input name="passwordInput" class="input-box w-80"
+        <input name="passwordInput" class="input-box w-80 mt-2"
             placeholder="Password" type="password" [(ngModel)]="password">
         <button (click)="attemptLogin()" class="btn-primary block mx-auto mt-8">Sign
             in</button>
