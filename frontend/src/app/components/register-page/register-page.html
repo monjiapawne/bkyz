@@ -17,7 +17,7 @@
         }
         @if(accountCreatedSuccessMessage())
         {
-        <div class="text-xs max-w-xs text-center text-[#5457ff] mb-6">{{
+        <div class="text-xs max-w-xs text-center text-[bkyz] mb-6">{{
             accountCreatedSuccessMessage() }}</div>
         }
 
@@ -34,12 +34,10 @@
             class="block bg-[#ffffff] rounded-lg p-2 mt-2 w-80 focus:outline-0 border border-[#8080808c]"
             placeholder="Confirm Password" type="password" [(ngModel)]="confirmPassword">
 
-        <button
-            class="btn-primary block mx-auto mt-8"
-            (click)="attemptRegistration()">Register</button>
+        <button class="btn-primary block mx-auto mt-8" (click)="attemptRegistration()">Register</button>
         <h2 class="block text-base text-center justify-center mt-6 text-[rgb(26,26,26)]">Already have an account?</h2>
         <a routerLink="/login" routerLinkActive="active"
-            class="block text-base font-bold text-center justify-center underline text-[#5457ff]">Login</a>
+            class="block text-base font-bold text-center justify-center underline text-[bkyz]">Login</a>
         <h3 class="text-xs max-w-xs text-center pt-8 text-[#444444]">By clicking 'Register' you agree to the Terms of
             Service and our
             Privacy
