@@ -22,16 +22,16 @@
         }
 
         <input name="usernameInput"
-            class="input-box w-80"
+            class="input-box w-80 mt-2"
             placeholder="Username" type="text" [(ngModel)]="username">
 
         <hr class="my-2 h-px bg-[#00000021] border-[#69696923] border">
 
         <input name="passwordInput"
-            class="input-box w-80"
+            class="input-box w-80 mt-2"
             placeholder="Password" type="password" [(ngModel)]="password">
         <input name="confirmPasswordInput"
-            class="input-box w-80"
+            class="input-box w-80 mt-2"
             placeholder="Confirm Password" type="password" [(ngModel)]="confirmPassword">
 
         <button class="btn-primary block mx-auto mt-8" (click)="attemptRegistration()">Register</button>

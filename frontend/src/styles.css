@@ -6,12 +6,18 @@
   --color-bkyz-hover: #4c4ee6;
   --color-surface: #ffffff;
   --color-line: #8080808c;
+  --color-muted: #cfcece38;
+  --color-muted-hover: #a2a2a238;
+  --color-danger: #ee5858;
+  --color-danger-hover: #f34848;
 }
 
 /* buttons */ 
 @utility btn {
     @apply px-4 py-2 font-medium shadow transition-colors cursor-pointer
-    inline-flex items-center justify-center;
+    inline-flex items-center justify-center
+    disabled:opacity-50 disabled:pointer-events-none
+    focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bkyz;
 }
 
 @utility btn-primary {
@@ -19,17 +25,16 @@
 }
 
 @utility btn-neutral {
-    @apply btn bg-[#cfcece38] hover:bg-[#a2a2a238];
+    @apply btn bg-muted hover:bg-muted-hover;
 }
 
 @utility btn-danger {
-    @apply btn bg-[#ee5858] hover:bg-[#f34848] text-white;
+    @apply btn bg-danger hover:bg-danger-hover text-white;
 }
 
 /* input-box */ 
-
 @utility input-box {
-    @apply block bg-surface p-2 mt-2 border border-line
+    @apply block bg-surface p-2 border border-line
     transition-colors focus:outline-0 focus:border-bkyz;
 }
 
