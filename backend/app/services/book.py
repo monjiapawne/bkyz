@@ -41,7 +41,9 @@ def _openlib_fetch_book(s: requests.Session, isbn: str) -> FetchResult:
     try:
         r.raise_for_status()
     except requests.exceptions.HTTPError:
-        status = FetchStatus.not_found if r.status_code == 404 else FetchStatus.http_error
+        status = (
+            FetchStatus.not_found if r.status_code == 404 else FetchStatus.http_error
+        )
 
         return FetchResult(status)
 
@@ -92,3 +94,38 @@ def _lookup_authors(s: requests.Session, author_ids: list[str] | None) -> list[s
                 authors.append(name)
 
     return authors
+
+
+def search_book(**kwargs):
+    """Fetches book info from external source"""
+    with requests.session() as s:
+        s.headers.update(OPENLIB_HEADERS)
+        return _openlib_search_book(s, **kwargs)
+
+
+def _openlib_search_book(s: requests.Session, title: str, size: str = "M"):
+    URL = "https://openlibrary.org/search.json"
+
+    params = {
+        "title": title,
+        "fields": ["author_name", "title", "publish_date", "isbn"],
+        "limit": 1,
+        "sort": "new",
+    }
+    response = s.get(URL, params=params)
+
+    book_info = response.json().get("docs")[0]
+
+    isbn = book_info["isbn"][0]
+
+    cover = f"https://covers.openlibrary.org/b/isbn/{isbn}-{size}.jpg"
+
+    book_final = {
+        "author": book_info["author_name"],
+        "title": book_info["title"],
+        "published": book_info["publish_date"][0],
+        "isbn": isbn,
+        "cover": cover,
+    }
+
+    return book_final
