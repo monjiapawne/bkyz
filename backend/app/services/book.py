@@ -41,9 +41,7 @@ def _openlib_fetch_book(s: requests.Session, isbn: str) -> FetchResult:
     try:
         r.raise_for_status()
     except requests.exceptions.HTTPError:
-        status = (
-            FetchStatus.not_found if r.status_code == 404 else FetchStatus.http_error
-        )
+        status = FetchStatus.not_found if r.status_code == 404 else FetchStatus.http_error
 
         return FetchResult(status)
 
