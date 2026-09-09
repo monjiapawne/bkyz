@@ -1,7 +1,7 @@
 import pytest
 
 from app.data.models import FetchStatus
-from app.services.book import fetch_book
+from app.services.book import fetch_book, search_book
 from tests.helpers import assert_dict_subset
 
 
@@ -25,3 +25,11 @@ def test_fetch_book(name: str, isbn: str, exp_json: dict, exp_status: FetchStatu
     r = fetch_book(isbn)
     assert r.status == exp_status
     assert_dict_subset(r.dict_, exp_json, name=name)
+
+
+def test_search_book():
+    res = search_book(title="head first python")
+    assert res["author"] == ["Paul Barry"]
+    assert res["isbn"] == "9789350231883"
+    assert res["cover"] == "https://covers.openlibrary.org/b/isbn/9789350231883-M.jpg"
+    assert res["title"] == "Head First Python"
