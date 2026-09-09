@@ -1,0 +1,31 @@
+services:
+  api:
+    build:
+      context: ../backend/
+      dockerfile: Dockerfile
+    environment:
+      - APP_CONFIG=config.LocalConfig
+      - DATABASE_URL=postgresql+psycopg://bkyz:${POSTGRES_PASSWORD:-password}@db:5432/bkyz
+      - SECRET_KEY=${SECRET_KEY:-please_change_me}
+      - CORS_ALLOW_LIST=http://localhost:8080
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - ACCESS_LOG=${ACCESS_LOG:-true}
+    ports:
+      - "8000:8000"
+
+  ui:
+    build:
+      context: ../frontend/
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+  db:
+    image: postgres:17-alpine
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-bkyz}
+      - POSTGRES_DB=${POSTGRES_DB:-bkyz}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bkyz"]
+      interval: 5s
+      retries: 10

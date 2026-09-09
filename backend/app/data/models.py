@@ -260,7 +260,7 @@ class User(CRUDMixin, UserMixin, db.Model):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     username: Mapped[str] = mapped_column(String(30), unique=True)
-    password_hash: Mapped[str] = mapped_column(String(128))
+    password_hash: Mapped[str] = mapped_column(String(256), nullable=False)
 
     playlists: Mapped[list["Playlist"]] = relationship(back_populates="user")
 
