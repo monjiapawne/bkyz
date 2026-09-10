@@ -132,5 +132,3 @@ def validate_config(app):
 
     if app.config["SECRET_KEY"] == "please_change_me_only_for_dev":
         raise RuntimeError("SECRET_KEY must be set outside of debug")
-    if not app.config["CORS_ALLOW_LIST"]:
-        app.logger.warning("CORS_ALLOW_LIST is empty; cross-origin browser clients will fail")

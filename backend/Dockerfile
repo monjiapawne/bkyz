@@ -30,4 +30,4 @@ ENV FLASK_APP=bkyz
 ENV PATH="/app/.venv/bin:$PATH" 
 
 EXPOSE 8000
-CMD ["sh", "-c", "flask db upgrade && gunicorn -c gunicorn_config.py 'bkyz:create_app()'"]
+CMD ["sh", "-c", "flask db upgrade && gunicorn -c gunicorn_config.py bkyz:app"]

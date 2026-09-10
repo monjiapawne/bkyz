@@ -5,6 +5,12 @@ from os import environ as env
 # ref: https://gunicorn.org/reference/settings/#access_log_format
 
 
+def strasbool(v: str | None) -> bool:
+    if v is None:
+        return False
+    return v.lower() in ("true", "1")
+
+
 # Performance
 workers = int(env.get("WORKERS", "4"))
 
@@ -12,5 +18,5 @@ workers = int(env.get("WORKERS", "4"))
 bind = f":{int(env.get('PORT', '8000'))}"
 
 # Logging
-accesslog = "-" if env.get("ACCESS_LOG") == "true" else None
+accesslog = "-" if strasbool(env.get("ACCESS_LOG")) else None
 loglevel = env.get("LOG_LEVEL", "info")
