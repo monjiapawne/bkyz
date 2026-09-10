@@ -4,10 +4,10 @@ services:
       context: ../backend/
       dockerfile: Dockerfile
     environment:
-      - APP_CONFIG=config.LocalConfig
+      - APP_CONFIG=config.ProdConfig
       - DATABASE_URL=postgresql+psycopg://bkyz:${POSTGRES_PASSWORD:-password}@db:5432/bkyz
       - SECRET_KEY=${SECRET_KEY:-please_change_me}
-      - CORS_ALLOW_LIST=http://localhost:8080
+      - CORS_ALLOW_LIST=${CORS_ALLOW_LIST:-http://localhost:8080}
       - LOG_LEVEL=${LOG_LEVEL:-info}
       - ACCESS_LOG=${ACCESS_LOG:-true}
     ports:

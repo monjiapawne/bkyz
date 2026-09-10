@@ -64,7 +64,7 @@ spec = SpecTree(
 
 def create_app(config_object=None):
     app = Flask(__name__)
-    app.config.from_object(config_object or os.environ.get("APP_CONFIG", "config.DevConfig"))
+    app.config.from_object(config_object or os.environ.get("APP_CONFIG", "config.LocalConfig"))
     validate_config(app)
 
     db.init_app(app)
@@ -87,7 +87,7 @@ def create_app(config_object=None):
 
 def config_docs(app):
     """Register API docs, grouping endpoints by blueprint."""
-    if not app.config.get("ENABLE_DOCS", app.config["DEBUG"]):
+    if not app.config.get("ENABLE_DOCS"):
         return
 
     if app.config["DEBUG"]:
