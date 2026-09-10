@@ -13,8 +13,8 @@ services:
 
   ui:
     build:
-      context: ../frontend/docker
-      dockerfile: Dockerfile
+      context: ../frontend
+      dockerfile: docker/Dockerfile
     container_name: "bkyz-ui"
   db:
     image: postgres:17-alpine
