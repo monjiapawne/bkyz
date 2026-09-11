@@ -64,7 +64,9 @@ spec = SpecTree(
 
 def create_app(config_object=None):
     app = Flask(__name__)
-    app.config.from_object(config_object or os.environ.get("APP_CONFIG", "config.LocalConfig"))
+    app.config.from_object(
+        config_object or os.environ.get("APP_CONFIG", "config.LocalConfig")
+    )
     validate_config(app)
 
     db.init_app(app)
@@ -92,9 +94,15 @@ def config_docs(app):
 
     if app.config["DEBUG"]:
         for endpoint, view in app.view_functions.items():
-            view.tags = [bp.name] if (bp := app.blueprints.get(endpoint.rpartition(".")[0])) else []
+            view.tags = (
+                [bp.name]
+                if (bp := app.blueprints.get(endpoint.rpartition(".")[0]))
+                else []
+            )
         spec.register(app)
-        app.add_url_rule("/api/docs", "docs", app.view_functions["openapi_api/docs_swagger"])
+        app.add_url_rule(
+            "/api/docs", "docs", app.view_functions["openapi_api/docs_swagger"]
+        )
 
 
 def config_flask_login(app):
@@ -130,5 +138,6 @@ def validate_config(app):
     if not app.config["STRICT"]:
         return
 
-    if app.config["SECRET_KEY"] == "please_change_me_only_for_dev":
+    key = app.config.get("SECRET_KEY")
+    if not key or key.startswith("please_change_me"):
         raise RuntimeError("SECRET_KEY must be set outside of debug")
