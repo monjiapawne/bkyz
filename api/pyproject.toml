@@ -13,11 +13,13 @@ dependencies = [
 ]
 
 [tool.ruff]
-extend-select = ["E501"]
 line-length = 100
 exclude = [
     "migrations"
 ]
+
+[tool.ruff.lint]
+extend-select = ["E501"]
 
 
 [dependency-groups]
@@ -25,3 +27,4 @@ dev = [
     "ruff>=0.16.6",
 ]
 test = ["pytest"]
+deploy = ["gunicorn", "psycopg[binary]"]

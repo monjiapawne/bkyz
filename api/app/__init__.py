@@ -1,4 +1,5 @@
 import logging
+import os
 from pathlib import Path
 
 from flask import Flask
@@ -60,14 +61,13 @@ spec = SpecTree(
     before=reshape_validation,
 )
 
-# Avoiding cyclical import error
-# after spec importing app.api.errors initializes the app.api package,
-# whose blueprints do `from app import spec`
 
-
-def create_app(config_object="config.Config"):
+def create_app(config_object=None):
     app = Flask(__name__)
-    app.config.from_object(config_object)
+    app.config.from_object(
+        config_object or os.environ.get("APP_CONFIG", "config.LocalConfig")
+    )
+    validate_config(app)
 
     db.init_app(app)
     migrate.init_app(app, db)
@@ -89,11 +89,20 @@ def create_app(config_object="config.Config"):
 
 def config_docs(app):
     """Register API docs, grouping endpoints by blueprint."""
+    if not app.config.get("ENABLE_DOCS"):
+        return
+
     if app.config["DEBUG"]:
         for endpoint, view in app.view_functions.items():
-            view.tags = [bp.name] if (bp := app.blueprints.get(endpoint.rpartition(".")[0])) else []
+            view.tags = (
+                [bp.name]
+                if (bp := app.blueprints.get(endpoint.rpartition(".")[0]))
+                else []
+            )
         spec.register(app)
-        app.add_url_rule("/api/docs", "docs", app.view_functions["openapi_api/docs_swagger"])
+        app.add_url_rule(
+            "/api/docs", "docs", app.view_functions["openapi_api/docs_swagger"]
+        )
 
 
 def config_flask_login(app):
@@ -122,3 +131,13 @@ def config_covers(app):
     if not placeholder.is_file():
         app.logger.warning(f"missing cover placeholder at {placeholder}")
     app.config["PLACEHOLDER_COVER"] = placeholder
+
+
+def validate_config(app):
+    """Fail fast when not in debug."""
+    if not app.config["STRICT"]:
+        return
+
+    key = app.config.get("SECRET_KEY")
+    if not key or key.startswith("please_change_me"):
+        raise RuntimeError("SECRET_KEY must be set outside of debug")

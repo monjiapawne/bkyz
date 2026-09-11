@@ -1,0 +1,38 @@
+services:
+  api:
+    build:
+      context: ../api
+      dockerfile: Dockerfile
+    container_name: "bkyz-api"
+    environment:
+      - APP_CONFIG=config.ProdConfig
+      - DATABASE_URL=postgresql+psycopg://bkyz:${POSTGRES_PASSWORD:-password}@db:5432/bkyz
+      - SECRET_KEY=${SECRET_KEY:?SECRET_KEY must be set}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - ACCESS_LOG=${ACCESS_LOG:-false}
+
+  ui:
+    build:
+      context: ../ui
+      dockerfile: docker/Dockerfile
+    container_name: "bkyz-ui"
+    ports:
+      - "${NGINX_PORT:-8080}:8080"
+    depends_on:
+      - api
+  db:
+    image: postgres:17-alpine
+    container_name: "bkyz-db"
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-bkyz}
+      - POSTGRES_DB=${POSTGRES_DB:-bkyz}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER"]
+      interval: 5s
+      retries: 10
+    volumes:
+      - bkyz-db:/var/lib/postgresql/data
+
+volumes:
+  bkyz-db:
