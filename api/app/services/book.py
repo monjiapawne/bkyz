@@ -1,69 +1,43 @@
-import logging
-from dataclasses import dataclass, field
-
 import requests
 
-from app.data.models import FetchStatus
-from app.services import OPENLIB_HEADERS
-
-TIMEOUT = 5
-
-logger = logging.getLogger(__name__)
-
-
-@dataclass
-class FetchResult:
-    """Helper for external fetches to"""
-
-    status: FetchStatus
-    dict_: dict = field(default_factory=dict)
-
-    @property
-    def ok(self) -> bool:
-        return self.status == FetchStatus.ok
+from . import OPENLIB_HEADERS, TIMEOUT, logger
+from .result import FetchError, FetchResult, FetchStatus, fetch_result
 
 
 def fetch_book(isbn: str) -> FetchResult:
     """Fetches book info from external source"""
     with requests.session() as s:
         s.headers.update(OPENLIB_HEADERS)
-        return _openlib_fetch_book(s, isbn)
+        return _openlib_fetch_by_isbn(s, isbn)
 
 
-def _openlib_fetch_book(s: requests.Session, isbn: str) -> FetchResult:
-    try:
-        r = s.get(f"https://openlibrary.org/isbn/{isbn}", timeout=TIMEOUT)
-    except requests.exceptions.ConnectionError:
-        return FetchResult(FetchStatus.unreachable)
-    except requests.exceptions.Timeout:
-        return FetchResult(FetchStatus.timeout)
+@fetch_result
+def _openlib_fetch_by_isbn(s: requests.Session, isbn: str) -> dict:
+    logger.info(f"fetching book by ISBN: {isbn}")
 
+    r = s.get(f"https://openlibrary.org/isbn/{isbn}", timeout=TIMEOUT)
     try:
         r.raise_for_status()
     except requests.exceptions.HTTPError:
         status = FetchStatus.not_found if r.status_code == 404 else FetchStatus.http_error
+        raise FetchError(status)
 
-        return FetchResult(status)
-
-    try:
-        book = r.json()
-    except requests.exceptions.JSONDecodeError:
-        return FetchResult(FetchStatus.invalid_format)
+    book = r.json()
 
     raw_author_ids = book.get("authors")
     if not raw_author_ids:
-        return FetchResult(FetchStatus.ok, book)
+        return book
 
     author_ids = [k.split("/")[-1] for v in raw_author_ids if (k := v.get("key"))]
 
     names = _lookup_authors(s, author_ids)
 
     if not names:
-        return FetchResult(FetchStatus.ok, book)
+        return book
 
     book["authors"] = names
 
-    return FetchResult(FetchStatus.ok, book)
+    return book
 
 
 def _lookup_authors(s: requests.Session, author_ids: list[str] | None) -> list[str]:

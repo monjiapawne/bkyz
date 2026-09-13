@@ -2,7 +2,7 @@ import logging
 
 from flask import request
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("api")
 
 
 class BkyzError(Exception):
@@ -51,7 +51,7 @@ def register_error_handlers(app):
     @app.errorhandler(BkyzError)
     def handle_bkyz_error(e: BkyzError):
         """Catch expected errors"""
-        logger.warning(f"{request.method} {request.path} -> {e.status}: {e}")
+        logger.warning(f"{e.status} -> {request.method} {request.path}: {e}")
         if app.config["DEBUG"]:
             raise e
         return {"error": str(e)}, e.status
