@@ -57,10 +57,10 @@ export class AddBookComponent {
     const form = this.bookForm.getRawValue();
 
     this.bookService.postBooks(
-      form.authors!,
-      form.isbn!,
-      form.number_of_pages!,
-      form.title!
+      form.authors || undefined,
+      form.isbn! || undefined,
+      form.number_of_pages! || undefined,
+      form.title! || undefined
     )
       .pipe(
         finalize(() => this.isSubmitting.set(false))
