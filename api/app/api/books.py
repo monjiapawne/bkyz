@@ -105,7 +105,6 @@ def create_book(json: BookIn):
 
         # Merge the two looked up, input fields taking priority
         result = fetch_book(isbn)
-        fetch_status = result.status
 
         if result.ok:
             book = result.dict_ | book
