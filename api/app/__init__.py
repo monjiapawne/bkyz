@@ -64,9 +64,7 @@ spec = SpecTree(
 
 def create_app(config_object=None):
     app = Flask(__name__)
-    app.config.from_object(
-        config_object or os.environ.get("APP_CONFIG", "config.LocalConfig")
-    )
+    app.config.from_object(config_object or os.environ.get("APP_CONFIG", "config.Config"))
     validate_config(app)
 
     db.init_app(app)
