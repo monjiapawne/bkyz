@@ -47,18 +47,6 @@ def test_get_book(client_book, name: str, id: int, exp_status: int):
     assert_status_code(exp_status, r)
 
 
-def test_create_book_integration(client):
-    r = client.post("/books", json={"isbn": "978-1718503540"})
-    if r.status_code == 503:
-        pytest.skip("ISBN lookup timed out")
-
-    j = r.get_json()
-
-    assert j["title"] == "Linux Basics for Hackers"
-    assert len(j["authors"]) == 1
-    assert j["publish_date"] == "2024"
-
-
 def test_patch_book(client):
     r = client.post("/books", json={"title": "Dune"})
     book_id = str(r.get_json()["id"])
@@ -90,3 +78,15 @@ def test_get_book_queries(client, name: str, query_string: str, exp_len: int, ex
     assert_status_code(exp_code, r)
     book_count = len(r.get_json()["books"])
     assert book_count == exp_len, f"expected len: {exp_len}, got {book_count}"
+
+
+def test_create_book_integration(client):
+    r = client.post("/books", json={"isbn": "978-1718503540"})
+    if r.status_code == 503:
+        pytest.skip("ISBN lookup timed out")
+
+    j = r.get_json()
+
+    assert j["title"] == "Linux Basics for Hackers"
+    assert len(j["authors"]) == 1
+    assert j["publish_date"] == "2024"
