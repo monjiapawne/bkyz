@@ -25,7 +25,7 @@ export class BookService {
     return this.http.get(`${this.API_URL}/${id}/cover`, { responseType: 'blob', withCredentials: true });
   }
 
-  postBooks(authors: string, isbn: number, numberOfPages: number, title: string) {
+  postBooks(authors?: string, isbn?: number, numberOfPages?: number, title?: string) {
     const body = {
       "authors": authors,
       "isbn": isbn,
