@@ -10,6 +10,9 @@ services:
       - SECRET_KEY=${SECRET_KEY:?SECRET_KEY must be set}
       - LOG_LEVEL=${LOG_LEVEL:-info}
       - ACCESS_LOG=${ACCESS_LOG:-false}
+      - COVER_PATH=${COVER_DIR:-/data/covers}
+    volumes:
+      - bkyz-api-covers:/data
 
   ui:
     build:
@@ -36,3 +39,4 @@ services:
 
 volumes:
   bkyz-db:
+  bkyz-api-covers:
