@@ -4,11 +4,14 @@ from . import OPENLIB_HEADERS, TIMEOUT, logger
 from .result import FetchError, FetchResult, FetchStatus, fetch_result
 
 
-def fetch_book(isbn: str) -> FetchResult:
+def fetch_book(*, isbn: str | None = None, title: str | None = None) -> FetchResult:
     """Fetches book info from external source"""
     with requests.session() as s:
         s.headers.update(OPENLIB_HEADERS)
-        return _openlib_fetch_by_isbn(s, isbn)
+        if isbn:
+            return _openlib_fetch_by_isbn(s, isbn)
+        if title:
+            return _openlib_fetch_by_title(s, title)
 
 
 @fetch_result
@@ -67,15 +70,8 @@ def _lookup_authors(s: requests.Session, author_ids: list[str] | None) -> list[s
 
     return authors
 
-
-def search_book(**kwargs):
-    """Fetches book info from external source"""
-    with requests.session() as s:
-        s.headers.update(OPENLIB_HEADERS)
-        return _openlib_search_book(s, **kwargs)
-
-
-def _openlib_search_book(s: requests.Session, title: str, size: str = "M"):
+@fetch_result
+def _openlib_fetch_by_title(s: requests.Session, title: str, size: str = "M") -> dict:
     URL = "https://openlibrary.org/search.json"
 
     params = {
