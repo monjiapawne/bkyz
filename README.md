@@ -1,5 +1,3 @@
-
-
 <img src="docs/booktracker.svg" alt="logo" width="200" align="left">
 
 **bkyz** track your reading progress!
@@ -8,37 +6,31 @@
 
 <br clear="left">
 
-## Usage
+## Deployment
 
-
-## Backend
+Requirements: `docker` / `docker-compose`
 
 ```sh
-# Setup
-cd backend
-uv venv
-source .venv/bin/activate
-uv sync
+cd docker
+cp template.env .env
+# Update SECRET_KEY in .env - runtime if you don't (security)
+docker-compose up -d # Build and start all containers
+```
+## Local Dev
 
-# Upgrade database
-flask db upgrade
+```sh
+cd api && flask db upgrade && flask run
+# http://localhost:5000
 
-# Run
-flask run
+cd ui && ng serve
+# http://localhost:4200
+```
 
-# Test
-uv sync --group=test
+Swagger docs at `<flask-endpoint>/api/docs` when `DEBUG` is enabled.
+
+## Tests
+
+```sh
+cd api
 pytest
 ```
-
-## Frontend
-
-```sh
-cd frontend
-npm run dev
-```
-
-## Links
-
-- http://localhost:5000/api/docs
-- http://localhost:5173/
