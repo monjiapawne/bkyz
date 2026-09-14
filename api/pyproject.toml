@@ -12,6 +12,14 @@ dependencies = [
     "spectree",
 ]
 
+[dependency-groups]
+dev = [
+    "ruff>=0.16.6",
+]
+test = ["pytest"]
+deploy = ["gunicorn", "psycopg[binary]"]
+
+
 [tool.ruff]
 line-length = 100
 exclude = [
@@ -21,10 +29,6 @@ exclude = [
 [tool.ruff.lint]
 extend-select = ["E501"]
 
-
-[dependency-groups]
-dev = [
-    "ruff>=0.16.6",
-]
-test = ["pytest"]
-deploy = ["gunicorn", "psycopg[binary]"]
+[tool.pytest.ini_options]
+log_cli = true
+log_cli_level = "WARNING"

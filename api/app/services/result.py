@@ -1,3 +1,4 @@
+import logging
 from dataclasses import dataclass, field
 from functools import wraps
 
@@ -5,7 +6,7 @@ import requests
 
 from app.data.models import FetchStatus
 
-from . import logger
+logger = logging.getLogger("svc")
 
 
 def fetch_result(func):
@@ -20,7 +21,7 @@ def fetch_result(func):
             status = FetchStatus.unreachable
         except requests.exceptions.Timeout:
             status = FetchStatus.timeout
-        except requests.exceptions.JSONDecodeError:
+        except (requests.exceptions.JSONDecodeError, KeyError, IndexError):
             status = FetchStatus.invalid_format
         except FetchError as e:
             status = e.status
@@ -28,8 +29,7 @@ def fetch_result(func):
         res = FetchResult(status, res)
 
         if not res.ok:
-            # properly shouldn't log at this layer..?
-            logger.warning(f"book fetch response: {res.status}")
+            logger.warning(f"{func.__qualname__} -> {res.status}")
 
         return res
 
@@ -37,9 +37,10 @@ def fetch_result(func):
 
 
 class FetchError(Exception):
-    def __init__(self, status: FetchStatus):
-        self.status = status
+    status = FetchStatus.unknown
 
+class NotFoundError(FetchError):
+    status = FetchStatus.not_found
 
 @dataclass
 class FetchResult:

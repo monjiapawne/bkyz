@@ -1,7 +1,7 @@
 import pytest
 
 from app.data.models import FetchStatus
-from app.services.book import fetch_book
+from app.services.book.books import fetch_book
 from tests.helpers import assert_dict_subset
 
 
@@ -10,7 +10,7 @@ from tests.helpers import assert_dict_subset
     [
         (
             "good isbn",
-            "978-1718503540",
+            "9781718503540",
             {
                 "authors": ["OccupyTheWeb"],
                 "title": "Linux Basics for Hackers",
@@ -18,7 +18,7 @@ from tests.helpers import assert_dict_subset
             },
             FetchStatus.ok,
         ),
-        ("not found isbn", "978-9999999999", {}, FetchStatus.not_found),
+        ("not found isbn", "9789999999999", {}, FetchStatus.not_found),
     ],
 )
 def test_fetch_book(name: str, isbn: str, exp_json: dict, exp_status: FetchStatus):

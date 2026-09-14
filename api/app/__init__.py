@@ -16,6 +16,7 @@ from app.errors import BadRequestError, register_error_handlers
 # Disable logging of requests like:
 # 127.0.0.1 - - [08/Aug/2026 10:13:40] "GET /api/v1/books/ HTTP/1.1" 200
 logging.getLogger("werkzeug").setLevel(logging.ERROR)
+logging.getLogger("alembic").setLevel(logging.WARNING)
 # Setup logging
 logging.basicConfig(
     level=logging.INFO,

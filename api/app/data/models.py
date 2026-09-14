@@ -114,6 +114,7 @@ class FetchStatus(StrEnum):
     not_found = auto()
     http_error = auto()
     invalid_format = auto()
+    unknown = auto()
     ok = auto()
 
 
