@@ -95,6 +95,7 @@ class TrackPatch(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     book_id: int | None = None
+    position: int | None = None
     unit: str | None = None
     total: int | None = None
     medium: Medium | None = None

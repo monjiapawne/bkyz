@@ -14,6 +14,7 @@ export class TrackRowComponent {
   book = input.required<Book>();
 
   delete = output<Track>();
+  edit = output<Track>();
 
   progress(): number {
     const track = this.track();

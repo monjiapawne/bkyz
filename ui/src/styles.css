@@ -32,10 +32,21 @@
     @apply btn bg-danger hover:bg-danger-hover text-white;
 }
 
+@utility btn-icon {
+    @apply size-6 cursor-pointer text-gray-500 hover:text-bkyz transition-colors
+    [&>svg]:size-full;
+}
+
 /* input-box */ 
 @utility input-box {
     @apply block bg-surface p-2 border border-line
     transition-colors focus:outline-0 focus:border-bkyz;
+}
+
+/* modal */
+@utility modal {
+    @apply m-auto w-full max-w-md p-6 bg-surface shadow-xl border border-line
+    open:flex open:flex-col gap-4 backdrop:bg-black/75;
 }
 
 body {
@@ -67,7 +78,6 @@ nav li {
   list-style: none;
   display: inline-block;
   padding: 0px 10px;
-  justify-content: end;
 }
 
 nav a {
@@ -87,7 +97,6 @@ nav a.active {
   background-color: var(--color-bkyz);
   color: #ffffff;
   border-radius: 8px;
-  transition: background-color 0.15s ease;
 }
 
 nav a.active:hover {

@@ -7,7 +7,6 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
   selector: 'app-register-page',
   imports: [FormsModule, RouterLink, RouterLinkActive],
   templateUrl: './register-page.html',
-  styleUrl: './register-page.css',
 })
 export class RegisterPage {
 

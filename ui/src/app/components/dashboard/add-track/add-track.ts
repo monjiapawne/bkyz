@@ -2,6 +2,7 @@ import { Component, ElementRef, EventEmitter, Input, Output, signal, ViewChild }
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
 import { TrackService } from '../../../services/track-service';
+import { Track } from '../../../interfaces/track';
 
 @Component({
   selector: 'app-add-track',
@@ -17,6 +18,7 @@ export class AddTrackComponent {
   @ViewChild('modal') modal!: ElementRef<HTMLDialogElement>;
 
   isSubmitting = signal(false);
+  editing: Track | null = null;
 
   trackForm: FormGroup;
 
@@ -41,7 +43,11 @@ export class AddTrackComponent {
     });
   }
 
-  open(): void {
+  open(track?: Track): void {
+    this.editing = track ?? null;
+    if (track) {
+      this.trackForm.patchValue(track);
+    }
     this.modal.nativeElement.showModal();
   }
 
@@ -56,14 +62,23 @@ export class AddTrackComponent {
 
     const unit = form.unit === 'other' ? form.customUnit.trim() : form.unit;
 
-    this.trackService.postTrackToPlaylist(
-      this.playlistId,
-      this.bookId,
-      form.position!,
-      form.total!,
-      unit,
-      form.medium!
-    )
+    const request = this.editing
+      ? this.trackService.patchTrack(this.playlistId, this.editing.id, {
+        position: form.position!,
+        total: form.total!,
+        unit,
+        medium: form.medium!
+      })
+      : this.trackService.postTrackToPlaylist(
+        this.playlistId,
+        this.bookId,
+        form.position!,
+        form.total!,
+        unit,
+        form.medium!
+      );
+
+    request
       .pipe(
         finalize(() => this.isSubmitting.set(false))
       )

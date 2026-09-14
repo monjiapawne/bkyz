@@ -15,7 +15,7 @@ class Openlib(
         url = "https://openlibrary.org/search.json"
         params = {
             "isbn": isbn,
-            "fields": "title,author_name,publish_date,number_of_pages_median,cover_i",
+            "fields": "title,author_name,publish_date,number_of_pages_median",
             "sort": "new",
         }
         r = self.s.get(url, params=params, timeout=self.timeout)

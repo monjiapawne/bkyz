@@ -1,4 +1,4 @@
-<dialog #modal class="m-auto w-full max-w-md rounded-lg p-6 shadow-lg backdrop:bg-black/50">
+<dialog #modal class="modal">
     <form [formGroup]="playlistForm" (ngSubmit)="onSubmit()">
         <label for="name" class="block text-sm font-medium text-gray-700 mt-2">Name</label>
         <input id="name" type="text" formControlName="name" placeholder="Enter playlist name"
