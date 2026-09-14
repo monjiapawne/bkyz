@@ -39,8 +39,10 @@ def fetch_result(func):
 class FetchError(Exception):
     status = FetchStatus.unknown
 
+
 class NotFoundError(FetchError):
     status = FetchStatus.not_found
+
 
 @dataclass
 class FetchResult:

@@ -1,6 +1,6 @@
 import logging
 
-from app.services.result import fetch_result, NotFoundError
+from app.services.result import NotFoundError, fetch_result
 
 from ._base import BookClient
 
@@ -20,12 +20,12 @@ class Openlib(
         params = {
             "isbn": isbn,
             "fields": "title,author_name,publish_date,number_of_pages_median",
-            "sort":"new",
-        } 
+            "sort": "new",
+        }
         r = self.s.get(url, params=params, timeout=self.timeout)
         r.raise_for_status()
 
-        res_json = r.json() 
+        res_json = r.json()
 
         if res_json["numFound"] == 0:
             raise NotFoundError
@@ -37,7 +37,6 @@ class Openlib(
         book["authors"] = b.get("author_name", "")
         book["pages"] = b.get("number_of_pages_median")
         return book
-        
 
     @fetch_result
     def by_title(self, title: str, size: str = "M") -> dict:
