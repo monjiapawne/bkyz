@@ -1,6 +1,7 @@
 import logging
 
 from flask import request
+from werkzeug.exceptions import HTTPException
 
 logger = logging.getLogger("api")
 
@@ -55,6 +56,12 @@ def register_error_handlers(app):
         if app.config["DEBUG"]:
             raise e
         return {"error": str(e)}, e.status
+
+    @app.errorhandler(HTTPException)
+    def handle_http_error(e: HTTPException):
+        """Pass through framework errors (404, 405, etc) in json shape"""
+        logger.warning(f"{e.code} -> {request.method} {request.path}: {e.name}")
+        return {"error": e.description}, e.code
 
     @app.errorhandler(Exception)
     def handle_unexpected_error(e: Exception):
