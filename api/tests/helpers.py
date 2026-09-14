@@ -2,7 +2,9 @@ import pytest
 import requests
 
 
-def assert_dict_subset(res: dict, exp: dict, *, name: str | None = None, resp_text: str | None = None):
+def assert_dict_subset(
+    res: dict, exp: dict, *, name: str | None = None, resp_text: str | None = None
+):
     """Goes through each key in b, check if it exists in a and if the values match.
     If the key doesn't exist, the test fails, if it exists but the values don't match
     the assert will fail and propegate up.

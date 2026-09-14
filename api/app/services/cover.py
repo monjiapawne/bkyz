@@ -13,8 +13,8 @@ TIMEOUT = 2
 def fetch_cover(covers_dir: str, book_id: int, isbn: str) -> None:
     # TODO: We should store the different sizes required by the frontend
     # TODO: We should store the response in the database and then check before re-requesting
-    # from openlib. If it's missing from openlib it should just be skipped on future posts of the isbn.
-    # Not fully convinced it's needed yet.
+    # from openlib. If it's missing from openlib it should just be skipped on future
+    # posts of the isbn. Not fully convinced it's needed yet.
     size = "M"
     url = f"https://covers.openlibrary.org/b/isbn/{isbn}-{size}.jpg?default=false"
 
