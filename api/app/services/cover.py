@@ -1,6 +1,11 @@
 import requests
 
-from app.services import OPENLIB_HEADERS
+"""This needs to removed/migrated do not use."""
+
+OPENLIB_HEADERS = {
+    "accept": "application/json",
+    "User-Agent": "bkyz/0.1.0 example@example.com>",
+}
 
 TIMEOUT = 2
 
