@@ -16,7 +16,7 @@ from app import spec
 from app.api.schemas import Out
 from app.data.models import Book
 from app.errors import BadRequestError
-from app.services.book.books import fetch_book
+from app.services.book import fetch_book
 from app.services.cover import fetch_cover
 
 logger = logging.getLogger(__name__)

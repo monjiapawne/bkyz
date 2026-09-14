@@ -117,8 +117,8 @@ def update_track(playlist_id: int, track_id: int, json: TrackPatch):
 class TrackProgressIn(BaseModel):
     position: int = Field(
         examples=[50],
-        description="Takes the current page of the track " +
-        "and adds the provied pages (e.g., 101 + 50)",
+        description="Takes the current page of the track "
+        + "and adds the provied pages (e.g., 101 + 50)",
     )
 
 
