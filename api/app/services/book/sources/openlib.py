@@ -1,10 +1,6 @@
-import logging
-
 from app.services.result import NotFoundError, fetch_result
 
 from ._base import BookClient
-
-logger = logging.getLogger(__name__)
 
 
 class Openlib(
@@ -19,7 +15,7 @@ class Openlib(
         url = "https://openlibrary.org/search.json"
         params = {
             "isbn": isbn,
-            "fields": "title,author_name,publish_date,number_of_pages_median",
+            "fields": "title,author_name,publish_date,number_of_pages_median,cover_i",
             "sort": "new",
         }
         r = self.s.get(url, params=params, timeout=self.timeout)
@@ -55,14 +51,11 @@ class Openlib(
 
         isbn = book_info["isbn"][0]
 
-        cover = f"https://covers.openlibrary.org/b/isbn/{isbn}-{size}.jpg"
-
         book_final = {
             "author": book_info["author_name"],
             "title": book_info["title"],
             "published": book_info["publish_date"][0],
             "isbn": isbn,
-            "cover": cover,
         }
 
         return book_final
