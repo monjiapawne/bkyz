@@ -15,10 +15,8 @@
             class="btn-neutral">+
         </button>
         @if (playlists().length > 0) {
-        <button (click)="deletePlaylist()"
-            class="btn-danger ml-auto">
-            Delete Playlist
-        </button>
+            <app-confirm-dialog #confirmPlaylist resourceName="playlist" (confirmed)="deletePlaylist()" />
+            <button (click)="confirmPlaylist.open()" class="btn-danger ml-auto">Delete Playlist</button>
         }
     </div>
 
@@ -38,6 +36,7 @@
         <app-add-track #addTrackModal [playlistId]="playlistId" [bookId]="selectedBookId"
             (trackAdded)="loadTracks(playlistId)">
         </app-add-track>
+        <app-confirm-dialog #confirmTrack resourceName="track" (confirmed)="deleteTrack()" />
 
         @for (track of tracks(); track track.id) {
             @let book = getBookForTrack(track);

@@ -12,6 +12,7 @@ import { AddPlaylistComponent } from './add-playlist/add-playlist';
 import { AddTrackComponent } from './add-track/add-track';
 import { SearchBookComponent } from './search-book/search-book';
 import { TrackRowComponent } from './track-row/track-row';
+import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'app-dashboard',
@@ -22,7 +23,8 @@ import { TrackRowComponent } from './track-row/track-row';
     AddPlaylistComponent,
     AddTrackComponent,
     SearchBookComponent,
-    TrackRowComponent
+    TrackRowComponent,
+    ConfirmDialog
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
@@ -168,7 +170,16 @@ export class Dashboard {
     this.addTrackModal.open();
   }
 
+  @ViewChild('confirmTrack') confirmTrack!: ConfirmDialog;
+  pendingTrack?: Track;
+
   onDeleteTrack(track: Track) {
+    this.pendingTrack = track;
+    this.confirmTrack.open();
+  }
+
+  deleteTrack() {
+    const track = this.pendingTrack!;
     this.trackService.deleteTrackFromPlaylist(this.playlistId, track.id).subscribe(() => {
       this.tracks.update(tracks => tracks.filter(t => t.id !== track.id));
     });
