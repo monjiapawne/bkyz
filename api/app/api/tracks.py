@@ -32,6 +32,7 @@ class TrackOut(Out):
     total: int
     medium: Medium
     book_id: int
+    playlist_position: int
 
 
 @tracks.get("")
@@ -71,11 +72,11 @@ def create_track(playlist_id: int, json: TrackIn):
         json.total = Book.get_by_id(json.book_id).pages
 
     track = Track.create(
+        playlist_id=playlist_id,
         position=json.position,
         unit=json.unit,
         total=json.total,
         medium=json.medium,
-        playlist_id=playlist_id, # move validation here...
         book_id=json.book_id,
     )  # fmt: skip
 

@@ -10,6 +10,7 @@ from sqlalchemy import (
     String,
     Table,
     select,
+    func
 )
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -235,6 +236,7 @@ class Track(CRUDMixin, db.Model):
     unit: Mapped[str | None] = mapped_column(String(30), default=None)
     total: Mapped[int | None] = mapped_column(default=None)
     medium: Mapped[Medium] = mapped_column(Enum(Medium), server_default=Medium.physical.name)
+    playlist_position: Mapped[int]
 
     playlist_id: Mapped[int] = mapped_column(ForeignKey("playlists.id", ondelete="CASCADE"))
     book_id: Mapped["Book | None"] = mapped_column(ForeignKey("books.id"))
@@ -250,10 +252,19 @@ class Track(CRUDMixin, db.Model):
         return playlist.user_id == uid
 
     @classmethod
-    def create(cls, **kwargs) -> Self:
+    def create(cls, playlist_id: int, **kwargs) -> Self:
+        kwargs["playlist_position"] = cls._next_position(playlist_id)
         # verify playlist exists
         # verify ownership
         return super().create(**kwargs)
+
+    @classmethod
+    def _next_position(cls, playlist_id: int) -> int:
+        """Calculates the next position for a track in a playlist"""
+        return db.session.scalar(
+            select(func.coalesce(func.max(cls.position), 0) + 1)
+            .where(cls.playlist_id == playlist_id)
+        )
 
 
 class User(CRUDMixin, UserMixin, db.Model):
