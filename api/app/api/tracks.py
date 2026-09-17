@@ -129,7 +129,7 @@ def add_progress(playlist_id: int, track_id: int, json: TrackProgressIn):
     if not track:
         raise NotFoundError("track", track_id)
 
-    if not track.verify_track_owner(current_user.id): # wrong layer?
+    if not track.verify_track_owner(current_user.id):  # wrong layer?
         raise ForbiddenError("track")
 
     track.progress_track(json.new_position)
