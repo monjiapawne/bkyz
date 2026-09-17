@@ -1,4 +1,5 @@
 from enum import StrEnum, auto
+from datetime import datetime
 from typing import TYPE_CHECKING, Any, Self
 
 from flask_login import UserMixin
@@ -11,6 +12,7 @@ from sqlalchemy import (
     Table,
     func,
     select,
+    DateTime
 )
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -239,17 +241,46 @@ class Track(CRUDMixin, db.Model):
     playlist_position: Mapped[int]
 
     playlist_id: Mapped[int] = mapped_column(ForeignKey("playlists.id", ondelete="CASCADE"))
-    book_id: Mapped["Book | None"] = mapped_column(ForeignKey("books.id"))
+    book_id: Mapped[int | None] = mapped_column(ForeignKey("books.id"))
 
     playlist: Mapped["Playlist"] = relationship(back_populates="tracks")
     book: Mapped["Book"] = relationship()
+    progress_log: Mapped[list["TrackProgress"]] = relationship(
+        back_populates="track", cascade="all, delete-orphan"
+    )
 
     def verify_track_owner(self, uid: int) -> bool:
         playlist = Playlist.get_by_id(self.playlist_id)
+        # should raise
         if not playlist:
             return False
 
         return playlist.user_id == uid
+
+    def progress_track(self, new_position: int):
+        new_position = max(1, new_position)
+        # Guard to > total
+        if self.total is not None: 
+            new_position = min(self.total, new_position)
+
+        # Avoid spamming log if there's no change
+        old = self.position
+        if old == new_position:
+            return self
+
+        self.position = new_position
+        db.session.add(
+            TrackProgress(
+                track_id=self.id,
+                user_id=self.playlist.user_id ,
+                from_position=old,
+                to_position=new_position,
+                delta=new_position - old,
+            )
+        )
+        db.session.commit()
+        return self
+
 
     @classmethod
     def create(cls, playlist_id: int, **kwargs) -> Self:
@@ -265,6 +296,22 @@ class Track(CRUDMixin, db.Model):
             select(func.coalesce(func.max(cls.position), 0) + 1)
             .where(cls.playlist_id == playlist_id)
         )
+
+class TrackProgress(CRUDMixin, db.Model):
+    """Append only log of position changes on a track."""
+    __tablename__ = "track_progress"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    track_id:  Mapped[int] = mapped_column(ForeignKey("tracks.id", ondelete="CASCADE"), index=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    from_position: Mapped[int]
+    to_position: Mapped[int]
+    delta: Mapped[int]
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    track: Mapped["Track"] = relationship(back_populates="progress_log")
+
+    # TODO: add indexing for user_id and track_id for speed
 
 
 class User(CRUDMixin, UserMixin, db.Model):
