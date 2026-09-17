@@ -9,8 +9,8 @@ from sqlalchemy import (
     ForeignKey,
     String,
     Table,
+    func,
     select,
-    func
 )
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -215,7 +215,7 @@ class Playlist(CRUDMixin, db.Model):
 
     # Delete all tracks when a playlist is deleted
     tracks: Mapped[list["Track"]] = relationship(
-        back_populates="playlist", cascade="all, delete-orphan"
+        back_populates="playlist", cascade="all, delete-orphan", order_by="Track.playlist_position"
     )
 
 
