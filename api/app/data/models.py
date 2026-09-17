@@ -1,18 +1,18 @@
-from enum import StrEnum, auto
 from datetime import datetime
+from enum import StrEnum, auto
 from typing import TYPE_CHECKING, Any, Self
 
 from flask_login import UserMixin
 from sqlalchemy import (
     Column,
     ColumnExpressionArgument,
+    DateTime,
     Enum,
     ForeignKey,
     String,
     Table,
     func,
     select,
-    DateTime
 )
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -260,7 +260,7 @@ class Track(CRUDMixin, db.Model):
     def progress_track(self, new_position: int):
         new_position = max(1, new_position)
         # Guard to > total
-        if self.total is not None: 
+        if self.total is not None:
             new_position = min(self.total, new_position)
 
         # Avoid spamming log if there's no change
@@ -272,7 +272,7 @@ class Track(CRUDMixin, db.Model):
         db.session.add(
             TrackProgress(
                 track_id=self.id,
-                user_id=self.playlist.user_id ,
+                user_id=self.playlist.user_id,
                 from_position=old,
                 to_position=new_position,
                 delta=new_position - old,
@@ -280,7 +280,6 @@ class Track(CRUDMixin, db.Model):
         )
         db.session.commit()
         return self
-
 
     @classmethod
     def create(cls, playlist_id: int, **kwargs) -> Self:
@@ -293,16 +292,19 @@ class Track(CRUDMixin, db.Model):
     def _next_position(cls, playlist_id: int) -> int:
         """Calculates the next position for a track in a playlist"""
         return db.session.scalar(
-            select(func.coalesce(func.max(cls.position), 0) + 1)
-            .where(cls.playlist_id == playlist_id)
+            select(func.coalesce(func.max(cls.position), 0) + 1).where(
+                cls.playlist_id == playlist_id
+            )
         )
+
 
 class TrackProgress(CRUDMixin, db.Model):
     """Append only log of position changes on a track."""
+
     __tablename__ = "track_progress"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    track_id:  Mapped[int] = mapped_column(ForeignKey("tracks.id", ondelete="CASCADE"), index=True)
+    track_id: Mapped[int] = mapped_column(ForeignKey("tracks.id", ondelete="CASCADE"), index=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     from_position: Mapped[int]
     to_position: Mapped[int]
