@@ -6,6 +6,10 @@
 
 <br clear="left">
 
+## Features
+
+- Progress logging of book progress (for analytics)
+
 ## Deployment
 
 Requirements: `docker` / `docker-compose`
