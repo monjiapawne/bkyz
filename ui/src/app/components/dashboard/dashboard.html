@@ -43,7 +43,7 @@
 
             <div class="p-0">
                 @if (book) {
-                <app-track-row [track]="track" [book]="book" (delete)="onDeleteTrack($event)" (edit)="addTrackModal.open($event)" />
+                <app-track-row [track]="track" [book]="book" (delete)="onDeleteTrack($event)" (edit)="addTrackModal.open($event)" (progressChange)="onProgress(track, $event)"/>
                 } @else {
                 Loading...
                 }

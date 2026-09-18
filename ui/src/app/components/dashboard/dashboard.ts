@@ -184,4 +184,10 @@ export class Dashboard {
       this.tracks.update(tracks => tracks.filter(t => t.id !== track.id));
     });
   }
+
+  onProgress(track: Track, position: number) {
+    this.trackService.progressTrack(this.playlistId, track.id, position).subscribe(updated => {
+      this.tracks.update(tracks => tracks.map(t => t.id === updated.id ? updated : t));
+    });
+  }
 }
