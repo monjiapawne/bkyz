@@ -37,6 +37,11 @@ export class TrackService {
     return this.http.patch<Track>(`${this.API_URL}/${playlistId}/tracks/${trackId}`, body, { withCredentials: true });
   }
 
+  progressTrack(playlistId: number, trackId: number, newPosition: number) {
+    return this.http.post<Track>(`${this.API_URL}/${playlistId}/tracks/${trackId}/progress`,
+      { new_position: newPosition }, { withCredentials: true });
+  }
+
   deleteTrackFromPlaylist(playlistId: number, trackId: number) {
     return this.http.delete(`${this.API_URL}/${playlistId}/tracks/${trackId}`, { withCredentials: true });
   }
