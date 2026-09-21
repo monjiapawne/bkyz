@@ -1,4 +1,5 @@
 from pydantic import BaseModel, ConfigDict
+from typing import Literal
 
 
 class Out(BaseModel):
@@ -10,3 +11,8 @@ class Out(BaseModel):
     def json_(cls, obj):
         """Validate and dump the obj"""
         return cls.model_validate(obj).model_dump()
+
+
+class ViewQuery(BaseModel):
+    view: Literal['basic', 'full'] = 'basic'
+    """Response shape, 'full' embeds related resources."""

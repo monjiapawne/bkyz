@@ -4,6 +4,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from app import spec
 from app.api.schemas import Out
+from app.api.books import BookOut
 from app.data.models import Book, Medium, Playlist, Track
 from app.errors import ForbiddenError, NotFoundError
 
@@ -33,6 +34,9 @@ class TrackOut(Out):
     medium: Medium
     book_id: int
     playlist_position: int
+
+class TrackFullOut(TrackOut):
+    book: BookOut
 
 
 @tracks.get("")
