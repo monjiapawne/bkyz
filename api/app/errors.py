@@ -43,7 +43,7 @@ class ResourceExistsError(BkyzError):
     status = 409
 
     def __init__(self, resource: str = "resource") -> None:
-        super().__init__("{resource} already exists")
+        super().__init__(f"{resource} already exists")
 
 
 def register_error_handlers(app):

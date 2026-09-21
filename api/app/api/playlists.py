@@ -3,8 +3,9 @@ from flask_login import current_user, login_required
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from app import spec
-from app.api.schemas import Out
+from app.api.schemas import Out, ViewQuery
 from app.data.models import Playlist
+from app.api.tracks import TrackFullOut
 
 playlist = Blueprint("playlists", __name__)
 
@@ -31,13 +32,18 @@ class PlaylistOut(Out):
     description: str
     user_id: int
 
+class PlaylistFullOut(PlaylistOut):
+    tracks: list[TrackFullOut]
 
 @playlist.get("")
 @login_required
-def get_all_playlists():
+@spec.validate(query=ViewQuery)
+def get_all_playlists(query: ViewQuery):
     """Get all playlists of the logged in user."""
     playlists = Playlist.get_all(Playlist.user_id == current_user.id)
-    return [PlaylistOut.json_(s) for s in playlists]
+    if query.view == "full":
+        return [PlaylistFullOut.json_(p) for p in playlists]
+    return [PlaylistOut.json_(p) for p in playlists]
 
 
 @playlist.post("")
