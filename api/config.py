@@ -1,6 +1,10 @@
 import os
 
 
+def _str_to_bool(value: str) -> bool:
+    """Converts a string to a bool."""
+    return value.lower().strip() in ("true", "1")
+
 class Config:
     STRICT = False
     PROPAGATE_EXCEPTIONS = False
@@ -26,7 +30,7 @@ class TestingConfig(Config):
 
 class ProdConfig(Config):
     STRICT = True
-    ENABLE_DOCS = False
+    ENABLE_DOCS = _str_to_bool(os.environ.get("ENABLE_DOCS", "false"))
     SESSION_COOKIE_SECURE = True
     CORS_ALLOW_LIST = tuple(
         origin for origin in os.environ.get("CORS_ALLOW_LIST", "").split(",") if origin
