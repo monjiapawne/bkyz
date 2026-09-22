@@ -28,7 +28,7 @@ export class SearchBookComponent {
         filter((query): query is string => !!query && query.trim().length > 0),
         switchMap(query => {
           this.isSearching.set(true);
-          return this.bookService.searchBooks(query);
+          return this.bookService.getBooks(query);
         })
       )
       .subscribe({
