@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Playlist } from '../interfaces/playlist';
+import { PlaylistFull } from '../interfaces/playlist-full';
 
 @Injectable({
   providedIn: 'root',
@@ -11,8 +12,9 @@ export class PlaylistService {
 
   constructor(private http: HttpClient) { }
 
-  getPlaylists() {
-    return this.http.get<Playlist[]>(this.API_URL, { withCredentials: true });
+  getPlaylistsFull() {
+    const params = new HttpParams().set('view', 'full');
+    return this.http.get<PlaylistFull[]>(this.API_URL, { params, withCredentials: true });
   }
 
   postPlaylist(name: string, description?: string) {

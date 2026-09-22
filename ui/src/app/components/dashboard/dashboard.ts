@@ -1,10 +1,10 @@
-import { Component, signal, ViewChild, WritableSignal } from '@angular/core';
+import { Component, computed, signal, ViewChild, WritableSignal } from '@angular/core';
 import { PlaylistService } from '../../services/playlist-service';
-import { Playlist } from '../../interfaces/playlist';
+import { PlaylistFull } from '../../interfaces/playlist-full';
 import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { TrackService } from '../../services/track-service';
 import { Track } from '../../interfaces/track';
-import { BookService } from '../../services/book-service';
+import { TrackFull } from '../../interfaces/track-full';
 import { Book } from '../../interfaces/book';
 import { TitleCasePipe } from '@angular/common';
 import { Auth } from '../../services/auth-service';
@@ -34,7 +34,6 @@ export class Dashboard {
   constructor(
     private playlistService: PlaylistService,
     private trackService: TrackService,
-    private bookService: BookService,
     private auth: Auth,
     private route: ActivatedRoute,
     private router: Router
@@ -43,36 +42,37 @@ export class Dashboard {
 
   @ViewChild('addTrackModal') addTrackModal!: AddTrackComponent;
 
-  playlistId!: number;
+  playlistId: WritableSignal<number> = signal(0);
   selectedBookId!: number;
 
-  playlists: WritableSignal<Playlist[]> = signal([]);
-  tracks: WritableSignal<Track[]> = signal([]);
-  books: WritableSignal<Book[]> = signal([]);
+  playlists: WritableSignal<PlaylistFull[]> = signal([]);
+
+  tracks = computed(() =>
+    this.playlists().find(p => p.id === this.playlistId())?.tracks ?? []
+  );
 
   username: WritableSignal<string> = signal("");
 
   ngOnInit() {
     this.getUsername();
-    this.loadPlaylists();
+    this.loadDashboard();
 
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
 
       if (id) {
-        this.playlistId = Number(id);
-        this.loadTracks(this.playlistId);
+        this.playlistId.set(Number(id));
       }
     });
   }
 
-  loadPlaylists() {
-    this.playlistService.getPlaylists()
+  loadDashboard() {
+    this.playlistService.getPlaylistsFull()
       .subscribe({
         next: responseData => {
           this.playlists.set(responseData);
 
-          if (responseData.length > 0) {
+          if (responseData.length > 0 && !this.playlistId()) {
             this.router.navigate(['/playlists', responseData[0].id]);
           }
         },
@@ -83,7 +83,7 @@ export class Dashboard {
   }
 
   deletePlaylist() {
-    const deletedId = this.playlistId;
+    const deletedId = this.playlistId();
 
     this.playlistService.deletePlaylist(deletedId)
       .subscribe({
@@ -94,8 +94,6 @@ export class Dashboard {
           if (remaining.length > 0) {
             this.router.navigate(['/playlists', remaining[0].id]);
           } else {
-            this.tracks.set([]);
-            this.books.set([]);
             this.router.navigate(['/playlists']);
           }
         },
@@ -106,51 +104,16 @@ export class Dashboard {
   }
 
   onPlaylistAdded(newPlaylistId: number): void {
-    this.playlistService.getPlaylists()
-      .subscribe({
-        next: responseData => {
-          this.playlists.set(responseData);
-          this.router.navigate(['/playlists', newPlaylistId]);
-        },
-        error: err => {
-          console.log(err);
-        }
-      });
+    this.loadDashboard();
+    this.router.navigate(['/playlists', newPlaylistId]);
   }
 
-  loadTracks(playlistId: number) {
-    this.tracks.set([]);
-    this.books.set([]);
-
-    this.trackService.getAllTracksFromPlaylist(playlistId)
-      .subscribe({
-        next: responseData => {
-          this.tracks.set(responseData.tracks);
-
-          responseData.tracks.forEach(track => {
-            this.loadBook(track.book_id);
-          });
-        },
-        error: err => {
-          console.log(err);
-        }
-      });
-  }
-
-  loadBook(bookId: number) {
-    this.bookService.getBook(bookId)
-      .subscribe({
-        next: responseData => {
-          this.books.update(books => [...books, responseData]);
-        },
-        error: err => {
-          console.log(err);
-        }
-      });
-  }
-
-  getBookForTrack(track: Track): Book | undefined {
-    return this.books().find(book => book.id === track.book_id);
+  private updateTracks(update: (tracks: TrackFull[]) => TrackFull[]) {
+    this.playlists.update(playlists => playlists.map(playlist =>
+      playlist.id === this.playlistId()
+        ? { ...playlist, tracks: update(playlist.tracks) }
+        : playlist
+    ));
   }
 
   getUsername() {
@@ -180,14 +143,15 @@ export class Dashboard {
 
   deleteTrack() {
     const track = this.pendingTrack!;
-    this.trackService.deleteTrackFromPlaylist(this.playlistId, track.id).subscribe(() => {
-      this.tracks.update(tracks => tracks.filter(t => t.id !== track.id));
+    this.trackService.deleteTrackFromPlaylist(this.playlistId(), track.id).subscribe(() => {
+      this.updateTracks(tracks => tracks.filter(t => t.id !== track.id));
     });
   }
 
   onProgress(track: Track, position: number) {
-    this.trackService.progressTrack(this.playlistId, track.id, position).subscribe(updated => {
-      this.tracks.update(tracks => tracks.map(t => t.id === updated.id ? updated : t));
+    this.trackService.progressTrack(this.playlistId(), track.id, position).subscribe(updated => {
+      // progress returns a bare track, so merge to keep the embedded book
+      this.updateTracks(tracks => tracks.map(t => t.id === updated.id ? { ...t, ...updated } : t));
     });
   }
 }
