@@ -52,7 +52,7 @@ def register_error_handlers(app):
     @app.errorhandler(BkyzError)
     def handle_bkyz_error(e: BkyzError):
         """Catch expected errors"""
-        logger.warning(f"{e.status} -> {request.method} {request.path}: {e}")
+        logger.info(f"{e.status} -> {request.method} {request.path}: {e}")
         if app.config["DEBUG"]:
             raise e
         return {"error": str(e)}, e.status
@@ -60,7 +60,7 @@ def register_error_handlers(app):
     @app.errorhandler(HTTPException)
     def handle_http_error(e: HTTPException):
         """Pass through framework errors (404, 405, etc) in json shape"""
-        logger.warning(f"{e.code} -> {request.method} {request.path}: {e.name}")
+        logger.info(f"{e.code} -> {request.method} {request.path}: {e.name}")
         return {"error": e.description}, e.code
 
     @app.errorhandler(Exception)
