@@ -121,7 +121,7 @@ def update_track(playlist_id: int, track_id: int, json: TrackPatch):
 
 
 class TrackProgressIn(BaseModel):
-    new_position: int = Field(examples=[50])
+    position: int = Field(examples=[50])
 
 
 @tracks.post("/<int:track_id>/progress")
@@ -136,6 +136,6 @@ def add_progress(playlist_id: int, track_id: int, json: TrackProgressIn):
     if not track.verify_track_owner(current_user.id):  # wrong layer?
         raise ForbiddenError("track")
 
-    track.progress_track(json.new_position)
+    track.progress_track(json.position)
 
     return TrackOut.json_(track), 200

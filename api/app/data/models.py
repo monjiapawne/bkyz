@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 from enum import StrEnum, auto
 from typing import TYPE_CHECKING, Any, Self
@@ -20,6 +21,8 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from app import db
 from app.errors import NotFoundError, ResourceExistsError
+
+logger = logging.getLogger(__name__)
 
 # Junction table of books and their authors (since there can be many to many)
 book_authors = Table(
@@ -88,8 +91,9 @@ class CRUDMixin:
     def create(cls, **kwargs) -> Self:
         try:
             return cls(**kwargs)._save()
-        except IntegrityError:
+        except IntegrityError as e:
             db.session.rollback()
+            logger.warning(f"integrity error creating {cls.__name__}: {e.orig}")
             raise ResourceExistsError(cls.__name__)
 
     def delete(self) -> None:
@@ -283,6 +287,7 @@ class Track(CRUDMixin, db.Model):
 
     @classmethod
     def create(cls, playlist_id: int, **kwargs) -> Self:
+        kwargs["playlist_id"] = playlist_id
         kwargs["playlist_position"] = cls._next_position(playlist_id)
         # verify playlist exists
         # verify ownership
@@ -292,7 +297,7 @@ class Track(CRUDMixin, db.Model):
     def _next_position(cls, playlist_id: int) -> int:
         """Calculates the next position for a track in a playlist"""
         return db.session.scalar(
-            select(func.coalesce(func.max(cls.position), 0) + 1).where(
+            select(func.coalesce(func.max(cls.playlist_position), 0) + 1).where(
                 cls.playlist_id == playlist_id
             )
         )

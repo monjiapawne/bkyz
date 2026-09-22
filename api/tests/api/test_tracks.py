@@ -61,7 +61,7 @@ def test_delete_track(client_track):
 
 def test_progress_track(client_track):
     client = client_track
-    r = client.post("/playlists/1/tracks/1/progress", json={"position": 49})
+    r = client.post("/playlists/1/tracks/1/progress", json={"position": 50})
     assert r.get_json()["position"] == 50
 
 
