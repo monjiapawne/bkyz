@@ -5,6 +5,7 @@ def _str_to_bool(value: str) -> bool:
     """Converts a string to a bool."""
     return value.lower().strip() in ("true", "1")
 
+
 class Config:
     STRICT = False
     PROPAGATE_EXCEPTIONS = False

@@ -4,8 +4,8 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from app import spec
 from app.api.schemas import Out, ViewQuery
-from app.data.models import Playlist
 from app.api.tracks import TrackFullOut
+from app.data.models import Playlist
 
 playlist = Blueprint("playlists", __name__)
 
@@ -32,8 +32,10 @@ class PlaylistOut(Out):
     description: str
     user_id: int
 
+
 class PlaylistFullOut(PlaylistOut):
     tracks: list[TrackFullOut]
+
 
 @playlist.get("")
 @login_required
