@@ -1,5 +1,6 @@
-from pydantic import BaseModel, ConfigDict
 from typing import Literal
+
+from pydantic import BaseModel, ConfigDict
 
 
 class Out(BaseModel):
@@ -14,5 +15,5 @@ class Out(BaseModel):
 
 
 class ViewQuery(BaseModel):
-    view: Literal['basic', 'full'] = 'basic'
+    view: Literal["basic", "full"] = "basic"
     """Response shape, 'full' embeds related resources."""
