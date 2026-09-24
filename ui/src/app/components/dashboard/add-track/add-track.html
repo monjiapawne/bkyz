@@ -87,6 +87,13 @@
                     Cancel
                 </button>
 
+                @if (editing) {
+                <button type="button" (click)="modal.close(); trackDeleted.emit(editing)"
+                    class="btn-danger flex-1">
+                    Delete
+                </button>
+                }
+
             </div>
 
         </form>

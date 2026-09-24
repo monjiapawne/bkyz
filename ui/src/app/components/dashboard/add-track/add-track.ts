@@ -15,6 +15,7 @@ export class AddTrackComponent {
   @Input() playlistId!: number;
   @Input() bookId!: number;
   @Output() trackAdded = new EventEmitter<void>();
+  @Output() trackDeleted = new EventEmitter<Track>();
   @ViewChild('modal') modal!: ElementRef<HTMLDialogElement>;
 
   isSubmitting = signal(false);
