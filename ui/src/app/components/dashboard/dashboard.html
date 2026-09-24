@@ -7,7 +7,7 @@
         @for (playlist of playlists(); track playlist.id) {
         <button type="button" [routerLink]="['/playlists', playlist.id]" routerLinkActive="playlist-active"
             [routerLinkActiveOptions]="{ exact: true }"
-            class="btn-neutral shrink-0 shadow-none">
+            class="btn-neutral shrink-0 shadow-none border-r border-black/10">
             {{ playlist.name }}
         </button>
         }

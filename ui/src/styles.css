@@ -1,7 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;500;600;700&family=Source+Serif+4:wght@400;600;700&display=swap');
 @import "tailwindcss";
 
 @theme {
+  --font-serif: "Source Serif 4", Georgia, serif;
   --color-bkyz: #2563eb;
   --color-bkyz-hover: #1d4ed8;
   --color-bkyz-light: #60a5fa;
@@ -67,8 +68,8 @@ html {
 
 body {
   background-color: #f1f1f1;
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 500;
+  font-family: 'Fira Sans', sans-serif;
+  font-weight: 400;
   font-size: 1.125rem;
   line-height: 1.6;
 }
