@@ -1,13 +1,13 @@
 <dialog #modal class="modal">
 
     <div class="py-2 text-gray-700">
-        <label for="bookSearch" class="block mb-1 font-medium">Search for a book</label>
+        <label for="bookSearch" class="form-label">Search for a book</label>
         <input id="bookSearch" type="text" [formControl]="searchControl" placeholder="Enter book title"
             class="input-box w-full" />
 
         @if (isSearching()) {
         <div class="flex justify-center mt-4">
-            <span class="h-5 w-5 animate-spin rounded-full border-2 border-bkyz border-t-transparent"></span>
+            <span class="spinner text-bkyz"></span>
         </div>
         } @else {
         <div class="flex flex-col gap-2 mt-4 max-h-80 overflow-y-auto">

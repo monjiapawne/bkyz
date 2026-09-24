@@ -39,12 +39,22 @@ export class AddTrackComponent {
       ]],
       unit: ['pages', Validators.required],
       customUnit: [''],
-      medium: ['physical', Validators.required]
+      medium: ['physical', Validators.required],
+      active: [false],
+      notes: ['']
     });
   }
 
   open(track?: Track): void {
     this.editing = track ?? null;
+    this.trackForm.reset({
+      position: 0,
+      total: null,
+      unit: 'pages',
+      medium: 'physical',
+      active: false,
+      notes: ''
+    });
     if (track) {
       this.trackForm.patchValue(track);
     }
@@ -67,7 +77,9 @@ export class AddTrackComponent {
         position: form.position!,
         total: form.total!,
         unit,
-        medium: form.medium!
+        medium: form.medium!,
+        active: form.active,
+        notes: form.notes.trim() || null
       })
       : this.trackService.postTrackToPlaylist(
         this.playlistId,
@@ -75,7 +87,9 @@ export class AddTrackComponent {
         form.position!,
         form.total!,
         unit,
-        form.medium!
+        form.medium!,
+        form.active,
+        form.notes.trim() || null
       );
 
     request
@@ -84,12 +98,6 @@ export class AddTrackComponent {
       )
       .subscribe({
         next: () => {
-          this.trackForm.reset({
-            position: 0,
-            total: null,
-            unit: 'pages',
-            medium: 'physical'
-          });
           this.modal.nativeElement.close();
           this.trackAdded.emit();
         },
