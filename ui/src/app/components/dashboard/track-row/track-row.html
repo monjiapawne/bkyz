@@ -1,21 +1,24 @@
-<div class="flex gap-4 py-3 border-b border-stone-300">
-    <img [src]="book().cover_url" [alt]="book().title" class="block shrink-0 h-32 w-24 object-fill rounded-md shadow-sm">
+<div class="flex gap-4 py-3 -mx-3 px-3 border-b border-stone-300 transition-colors duration-200 hover:bg-black/[0.02]">
+    <div class="relative shrink-0 h-32 w-24 overflow-hidden rounded-r-sm rounded-l-xs shadow-sm ring-1 ring-black/10">
+        <img [src]="book().cover_url" [alt]="book().title" class="block h-full w-full object-fill">
+        <div class="pointer-events-none absolute inset-0 bg-linear-to-r from-black/20 via-white/10 via-6% to-transparent to-20%"></div>
+    </div>
 
     <div class="flex flex-col flex-1 min-w-0">
         <div class="flex items-start gap-3">
             <div class="min-w-0">
-                <div class="text-bkyz font-bold text-xs">
+                <div class="text-bkyz font-bold text-xs leading-none mb-1">
                     {{ track().medium | uppercase }}
                 </div>
-                <div class="font-bold text-xl leading-snug">
+                <div class="font-serif font-bold text-xl leading-tight">
                     <!-- this should link to a page to view the books info (however useless)-->
                     <a href="{{book().id}}">{{book().title }}</a>
                 </div>
-                <div class="text-sm text-gray-500">
+                <div class="text-sm text-gray-500 leading-snug">
                     {{ book().authors }}
                 </div>
                 @if (track().notes) {
-                <p class="mt-1 text-sm text-gray-600 italic">{{ track().notes }}</p>
+                <p class="mt-0.5 text-xs text-gray-600 italic leading-tight">{{ track().notes }}</p>
                 }
             </div>
 
@@ -57,7 +60,7 @@
                 }
             </div>
 
-            <div class="h-1.5 w-full overflow-hidden rounded-full bg-gray-200">
+            <div class="h-1.5 w-full overflow-hidden rounded-full bg-gray-300">
                 <div class="h-full rounded-full bg-bkyz-light transition-[width] duration-700 ease-out" [style.width.%]="progress()"></div>
             </div>
         </div>
