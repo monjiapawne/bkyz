@@ -1,8 +1,6 @@
 .playlist-active {
     background-color: var(--color-bkyz);
-    color: white;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-}
+    color: white;}
 
 .playlist-active:hover {
     background-color: var(--color-bkyz-hover);

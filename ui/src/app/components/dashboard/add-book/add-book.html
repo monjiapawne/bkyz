@@ -2,7 +2,7 @@
 
     <div class="text-sm text-gray-700">
 
-        <form [formGroup]="bookForm" (ngSubmit)="onSubmit()" class="space-y-2">
+        <form [formGroup]="bookForm" (ngSubmit)="onSubmit()" (keydown.control.enter)="$event.preventDefault(); onSubmit()" class="space-y-2">
 
             <div>
                 <label for="title" class="form-label">

@@ -3,10 +3,10 @@
 
 @theme {
   --font-serif: "Source Serif 4", Georgia, serif;
-  --color-bkyz: #b4532a;
-  --color-bkyz-hover: #9a4522;
-  --color-bkyz-light: #e0a47c;
-  --color-bkyz-dark: #7a3519;
+  --color-bkyz: #2563eb;
+  --color-bkyz-hover: #1d4ed8;
+  --color-bkyz-light: #60a5fa;
+  --color-bkyz-dark: #1e3a8a;
   --color-surface: #ffffff;
   --color-line: #8080808c;
   --color-muted: #cfcece38;
@@ -118,36 +118,6 @@ nav a.active {
 
 nav a.active:hover {
   background-color: var(--color-bkyz-hover);
-}
-
-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 15px 20px;
-  border-top: 1px solid #d6d6d6;
-  background-color: #f1f1f1;
-  color: #666;
-  font-size: 14px;
-}
-
-footer p {
-  margin: 0;
-}
-
-.footer-links {
-  display: flex;
-  gap: 20px;
-}
-
-.footer-links a {
-  color: #666;
-  text-decoration: none;
-  transition: color 0.2s ease;
-}
-
-.footer-links a:hover {
-  color: var(--color-bkyz);
 }
 
 .page {
