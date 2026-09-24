@@ -9,15 +9,15 @@
                 d="M12 7.333C12 5.5 10.5 4 8.667 4H2v12h6.708C12 16 12 19.334 12 19.334m0-12C12 5.5 13.5 4 15.333 4H22v12h-6.667C12 16 12 19.334 12 19.334m0-12v12m1.875 1.124A2.58 2.58 0 0 1 16.167 19H21m-10.875 1.458A2.54 2.54 0 0 0 7.833 19H3" />
         </svg>
 
-        <h1 class="font-bold text-5xl text-center mb-10 text-[rgb(26,26,26)]">Register</h1>
+        <h1 class="font-bold text-5xl text-center mb-10 text-ink">Register</h1>
         @if(invalidRegisterErrorMessage())
         {
-        <div class="text-xs max-w-xs text-center text-[#ff2929] mb-6">{{
+        <div class="text-xs max-w-xs text-center text-error mb-6">{{
             invalidRegisterErrorMessage() }}</div>
         }
         @if(accountCreatedSuccessMessage())
         {
-        <div class="text-xs max-w-xs text-center text-[bkyz] mb-6">{{
+        <div class="text-xs max-w-xs text-center text-bkyz mb-6">{{
             accountCreatedSuccessMessage() }}</div>
         }
 
@@ -35,9 +35,9 @@
             placeholder="Confirm Password" type="password" [(ngModel)]="confirmPassword">
 
         <button class="btn-primary block mx-auto mt-8" (click)="attemptRegistration()">Register</button>
-        <h2 class="block text-base text-center justify-center mt-6 text-[rgb(26,26,26)]">Already have an account?</h2>
+        <h2 class="block text-base text-center justify-center mt-6 text-ink">Already have an account?</h2>
         <a routerLink="/login" routerLinkActive="active"
-            class="block text-base font-bold text-center justify-center underline text-[bkyz]">Login</a>
+            class="block text-base font-bold text-center justify-center underline text-bkyz">Login</a>
         <h3 class="text-xs max-w-xs text-center pt-8 text-[#444444]">By clicking 'Register' you agree to the Terms of
             Service and our
             Privacy

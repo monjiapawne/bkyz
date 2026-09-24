@@ -12,13 +12,15 @@ export class TrackService {
 
   constructor(private http: HttpClient) { }
 
-  postTrackToPlaylist(playlistId: number, bookId: number, currentPosition: number, totalPosition: number, unit: string, medium: string) {
+  postTrackToPlaylist(playlistId: number, bookId: number, currentPosition: number, totalPosition: number, unit: string, medium: string, active: boolean, notes: string | null) {
     const body = {
       "book_id": bookId,
       "position": currentPosition,
       "total": totalPosition,
       "unit": unit,
-      "medium": medium
+      "medium": medium,
+      "active": active,
+      "notes": notes
     };
 
     return this.http.post<Track>(`${this.API_URL}/${playlistId}/tracks`, body, { withCredentials: true });

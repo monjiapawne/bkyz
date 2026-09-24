@@ -5,4 +5,6 @@ export interface Track {
     unit: string;
     medium: string;
     book_id: number;
+    active: boolean;
+    notes: string | null;
 }
