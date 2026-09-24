@@ -2,7 +2,7 @@
 
     <div class="text-sm text-gray-700">
 
-        <form [formGroup]="trackForm" (ngSubmit)="onSubmit()" class="space-y-2">
+        <form [formGroup]="trackForm" (ngSubmit)="onSubmit()" (keydown.control.enter)="$event.preventDefault(); onSubmit()" class="space-y-2">
 
             <div>
                 <label for="position" class="form-label">
