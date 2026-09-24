@@ -56,7 +56,7 @@ export class AddTrackComponent {
       notes: ''
     });
     if (track) {
-      this.trackForm.patchValue(track);
+      this.trackForm.patchValue({ ...track, notes: track.notes ?? '' });
     }
     this.modal.nativeElement.showModal();
   }
