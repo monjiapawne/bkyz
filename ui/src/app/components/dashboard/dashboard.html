@@ -39,14 +39,14 @@
     <app-search-book #searchBookModal (bookSelected)="onBookSelected($event)"></app-search-book>
 
     <app-add-track #addTrackModal [playlistId]="playlistId()" [bookId]="selectedBookId"
-        (trackAdded)="loadDashboard()">
+        (trackAdded)="loadDashboard()" (trackDeleted)="onDeleteTrack($event)">
     </app-add-track>
     <app-confirm-dialog #confirmTrack resourceName="track" (confirmed)="deleteTrack()" />
 
     <div class="flex flex-col gap-2 overflow-x-auto mt-2 mb-4 mx-auto max-w-7xl">
 
         @for (track of tracks(); track track.id) {
-            <app-track-row [track]="track" [book]="track.book" (delete)="onDeleteTrack($event)" (edit)="addTrackModal.open($event)" (progressChange)="onProgress(track, $event)"/>
+            <app-track-row [track]="track" [book]="track.book" (edit)="addTrackModal.open($event)" (progressChange)="onProgress(track, $event)"/>
         }
     </div>
 </div>

@@ -13,7 +13,6 @@ export class TrackRowComponent {
   track = input.required<Track>();
   book = input.required<Book>();
 
-  delete = output<Track>();
   edit = output<Track>();
   progressChange = output<number>();
 
@@ -23,9 +22,5 @@ export class TrackRowComponent {
     const track = this.track();
     const progress = Math.round(track.position / track.total * 100);
     return Math.min(progress, 100);
-  }
-
-  deleteTrack() {
-    this.delete.emit(this.track());
   }
 }
