@@ -34,7 +34,6 @@ export class AddTrackComponent {
         Validators.pattern(/^\d+$/)
       ]],
       total: [null, [
-        Validators.required,
         Validators.min(1),
         Validators.pattern(/^\d+$/)
       ]],
