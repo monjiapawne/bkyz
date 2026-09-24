@@ -3,23 +3,23 @@
 
 @theme {
   --font-serif: "Source Serif 4", Georgia, serif;
-  --color-bkyz: #2563eb;
-  --color-bkyz-hover: #1d4ed8;
-  --color-bkyz-light: #60a5fa;
-  --color-bkyz-dark: #1e3a8a;
+  --color-bkyz: #b4532a;
+  --color-bkyz-hover: #9a4522;
+  --color-bkyz-light: #e0a47c;
+  --color-bkyz-dark: #7a3519;
   --color-surface: #ffffff;
   --color-line: #8080808c;
   --color-muted: #cfcece38;
   --color-muted-hover: #a2a2a238;
-  --color-danger: #ee5858;
-  --color-danger-hover: #f34848;
+  --color-danger: #e02424;
+  --color-danger-hover: #c81e1e;
   --color-ink: #1a1a1a;
   --color-error: #ff2929;
 }
 
 /* buttons */ 
 @utility btn {
-    @apply px-3 py-1 text-base font-medium shadow transition-colors cursor-pointer
+    @apply px-3 py-1 text-base font-medium shadow rounded-lg transition-colors cursor-pointer
     inline-flex items-center justify-center
     disabled:opacity-50 disabled:pointer-events-none
     focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bkyz;
@@ -44,7 +44,7 @@
 
 /* input-box */ 
 @utility input-box {
-    @apply block bg-surface p-2 border border-line
+    @apply block bg-surface p-2 border border-line rounded-md
     transition-colors focus:outline-0 focus:border-bkyz;
 }
 
@@ -58,12 +58,8 @@
 
 /* modal */
 @utility modal {
-    @apply m-auto w-full max-w-md p-6 bg-surface shadow-xl border border-line
+    @apply m-auto w-full max-w-md p-6 bg-surface shadow-xl border border-line rounded-xl
     open:flex open:flex-col gap-4 backdrop:bg-black/10;
-}
-
-html {
-  font-size: 140%;
 }
 
 body {
