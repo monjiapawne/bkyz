@@ -22,6 +22,8 @@ class TrackIn(BaseModel):
     total: int | None = Field(None, examples=[24])
     """Total number of unit, if none is provided, it will be inherited from the book"""
     medium: Medium = Medium.physical
+    active: bool = Field(False, examples=True)
+    notes: str | None = Field(None, max_length=255)
 
 
 class TrackOut(Out):
@@ -34,6 +36,8 @@ class TrackOut(Out):
     medium: Medium
     book_id: int
     playlist_position: int
+    active: bool
+    notes: str | None
 
 
 class TrackFullOut(TrackOut):
@@ -83,6 +87,8 @@ def create_track(playlist_id: int, json: TrackIn):
         total=json.total,
         medium=json.medium,
         book_id=json.book_id,
+        active=json.active,
+        notes=json.notes
     )  # fmt: skip
 
     return TrackOut.json_(track), 201
@@ -105,6 +111,8 @@ class TrackPatch(BaseModel):
     unit: str | None = None
     total: int | None = None
     medium: Medium | None = None
+    active: bool | None = None
+    notes: str | None = None
 
 
 @tracks.patch("/<int:track_id>")
@@ -116,6 +124,8 @@ def update_track(playlist_id: int, track_id: int, json: TrackPatch):
         raise NotFoundError("track", track_id)
 
     changes = json.model_dump(exclude_unset=True, exclude_none=True)
+    if "notes" in json.model_fields_set:
+        changes["notes"] = json.notes
     track.update(**changes)
 
     return TrackOut.json_(track)

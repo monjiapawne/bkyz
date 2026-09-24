@@ -1,42 +1,49 @@
 <div class="px-5">
     <div class="flex gap-3 overflow-x-auto py-2 my-4 mx-auto max-w-7xl">
-        <span class="text-3xl font-semibold text-[rgb(26,26,26)]">{{ username() | titlecase }}'s Playlists</span>
+        <span class="text-3xl font-semibold text-ink">{{ username() | titlecase }}'s Playlists</span>
     </div>
 
-    <div class="flex overflow-x-auto py-2 my-4 mx-auto max-w-7xl">
+    <div class="flex overflow-x-auto pt-2 mt-4 mx-auto max-w-7xl">
         @for (playlist of playlists(); track playlist.id) {
         <button type="button" [routerLink]="['/playlists', playlist.id]" routerLinkActive="playlist-active"
             [routerLinkActiveOptions]="{ exact: true }"
-            class="btn-neutral shrink-0">
+            class="btn-neutral shrink-0 shadow-none">
             {{ playlist.name }}
         </button>
         }
         <button (click)="addPlaylistModal.open()"
-            class="btn-neutral">+
+            class="btn-neutral shadow-none">+
         </button>
         @if (playlists().length > 0) {
             <app-confirm-dialog #confirmPlaylist resourceName="playlist" (confirmed)="deletePlaylist()" />
-            <button (click)="confirmPlaylist.open()" class="btn-danger ml-auto">Delete Playlist</button>
+            <button (click)="searchBookModal.open()" class="btn-primary ml-auto gap-1" aria-label="Add book">+
+                <svg xmlns="http://www.w3.org/2000/svg" width="1.25em" height="1.25em" viewBox="0 0 24 24">
+                    <path d="M0 0h24v24H0z" fill="none" />
+                    <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M5 19.5V6.2c0-1.12 0-1.68.218-2.108c.192-.377.497-.682.874-.874C6.52 3 7.08 3 8.2 3h9.2c.56 0 .84 0 1.055.109a1 1 0 0 1 .436.437C19 3.76 19 4.04 19 4.6v11.8c0 .56 0 .84-.11 1.054a1 1 0 0 1-.435.437C18.24 18 17.96 18 17.402 18H7.25A2.25 2.25 0 0 0 5 20.25c0 .414.336.75.75.75h10.652c.559 0 .84 0 1.053-.109a1 1 0 0 0 .436-.437C18 20.24 18 19.96 18 19.4V18" />
+                </svg>
+            </button>
+            <button (click)="confirmPlaylist.open()" class="btn-neutral ml-2" aria-label="Edit playlist">
+                <svg xmlns="http://www.w3.org/2000/svg" width="1.25em" height="1.25em" viewBox="0 0 24 24">
+                    <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                        <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2" />
+                        <circle cx="12" cy="12" r="3" />
+                    </g>
+                </svg>
+            </button>
         }
     </div>
 
     <app-add-playlist #addPlaylistModal (playlistAdded)="onPlaylistAdded($event)"></app-add-playlist>
 
-    <div class="flex flex-col gap-2 overflow-x-auto py-2 my-4 mx-auto max-w-7xl">
+    <app-search-book #searchBookModal (bookSelected)="onBookSelected($event)"></app-search-book>
 
-        @if (playlists().length > 0) {
-        <button (click)="searchBookModal.open()"
-            class="btn-primary">
-            Add Book
-        </button>
-        }
+    <app-add-track #addTrackModal [playlistId]="playlistId()" [bookId]="selectedBookId"
+        (trackAdded)="loadDashboard()">
+    </app-add-track>
+    <app-confirm-dialog #confirmTrack resourceName="track" (confirmed)="deleteTrack()" />
 
-        <app-search-book #searchBookModal (bookSelected)="onBookSelected($event)"></app-search-book>
-
-        <app-add-track #addTrackModal [playlistId]="playlistId()" [bookId]="selectedBookId"
-            (trackAdded)="loadDashboard()">
-        </app-add-track>
-        <app-confirm-dialog #confirmTrack resourceName="track" (confirmed)="deleteTrack()" />
+    <div class="flex flex-col gap-1 overflow-x-auto mb-4 px-3 bg-black/[0.03] mx-auto max-w-7xl">
 
         @for (track of tracks(); track track.id) {
             <app-track-row [track]="track" [book]="track.book" (delete)="onDeleteTrack($event)" (edit)="addTrackModal.open($event)" (progressChange)="onProgress(track, $event)"/>

@@ -243,6 +243,8 @@ class Track(CRUDMixin, db.Model):
     total: Mapped[int | None] = mapped_column(default=None)
     medium: Mapped[Medium] = mapped_column(Enum(Medium), server_default=Medium.physical.name)
     playlist_position: Mapped[int]
+    active: Mapped[bool] = mapped_column(default=True)
+    notes: Mapped[str | None] = mapped_column(default=None)
 
     playlist_id: Mapped[int] = mapped_column(ForeignKey("playlists.id", ondelete="CASCADE"))
     book_id: Mapped[int | None] = mapped_column(ForeignKey("books.id"))
