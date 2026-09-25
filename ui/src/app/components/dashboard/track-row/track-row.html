@@ -8,8 +8,7 @@
                     {{ track().medium | uppercase }}
                 </div>
                 <div class="font-serif font-bold text-3xl leading-tight">
-                    <!-- this should link to a page to view the books info (however useless)-->
-                    <a href="{{book().id}}" draggable="false">{{book().title }}</a>
+                    {{ book().title }}
                 </div>
                 <div class="text-lg text-gray-500 leading-snug">
                     {{ book().authors }}
