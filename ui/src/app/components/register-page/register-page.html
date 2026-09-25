@@ -1,9 +1,9 @@
 <div class="flex justify-center items-center min-h-[calc(100dvh-120px)]">
-    <form class="bg-muted border rounded-2xl border-[#969696a6] p-10">
+    <form class="bg-muted border rounded-2xl border-[#969696a6] p-6">
 
-        <img src="logo.svg" alt="bkyz" class="mx-auto block m-6 w-24 h-24" draggable="false">
+        <img src="logo.svg" alt="bkyz" class="mx-auto block mb-2 w-16 h-16" draggable="false">
 
-        <h1 class="font-bold text-5xl text-center mb-10 text-ink">Register</h1>
+        <h1 class="font-bold text-3xl text-center mb-6 text-ink">Register</h1>
         @if(invalidRegisterErrorMessage())
         {
         <div class="text-xs max-w-xs text-center text-error mb-6">{{
@@ -16,20 +16,20 @@
         }
 
         <input name="usernameInput"
-            class="input-box w-80 mt-2"
+            class="input-box w-64 mt-2"
             placeholder="Username" type="text" [(ngModel)]="username">
 
         <hr class="my-2 h-px bg-[#00000021] border-[#69696923] border">
 
         <input name="passwordInput"
-            class="input-box w-80 mt-2"
+            class="input-box w-64 mt-2"
             placeholder="Password" type="password" [(ngModel)]="password">
         <input name="confirmPasswordInput"
-            class="input-box w-80 mt-2"
+            class="input-box w-64 mt-2"
             placeholder="Confirm Password" type="password" [(ngModel)]="confirmPassword">
 
-        <button class="btn-primary block mx-auto mt-8" (click)="attemptRegistration()">Register</button>
-        <h2 class="block text-base text-center justify-center mt-6 text-ink">Already have an account?</h2>
+        <button class="btn-primary block mx-auto mt-6" (click)="attemptRegistration()">Register</button>
+        <h2 class="block text-base text-center justify-center mt-4 text-ink">Already have an account?</h2>
         <a routerLink="/login" routerLinkActive="active"
             class="block text-base font-bold text-center justify-center underline text-bkyz">Login</a>
         <h3 class="text-xs max-w-xs text-center pt-8 text-[#444444]">By clicking 'Register' you agree to the Terms of
