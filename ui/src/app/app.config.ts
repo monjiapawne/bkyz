@@ -11,7 +11,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideHttpClient(withInterceptors([
       (req, next) => next(req).pipe(catchError(err => {
-        alert(err.error?.error ?? err.message);
+        if (err.status !== 401) alert(err.error?.error ?? err.message);
         return throwError(() => err);
       }))
     ]))

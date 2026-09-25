@@ -1,6 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { User } from '../interfaces/user';
 
 @Injectable({
@@ -10,7 +11,7 @@ export class Auth {
 
   private apiURL = environment.apiUrl;
 
-  constructor(private httpClient: HttpClient) {
+  constructor(private httpClient: HttpClient, private router: Router) {
     this.checkSession();
   }
 
@@ -59,6 +60,7 @@ export class Auth {
         next: (user) => {
           this.user.set(null);
           this.isLoggedIn.set(false);
+          this.router.navigate(['/']);
         }
       })
   }
