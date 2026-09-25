@@ -14,5 +14,5 @@ export class App {
 
   accountMenuOpen = false;
 
-  protected readonly title = signal('BookTracker');
+  protected readonly title = signal('bkyz');
 }

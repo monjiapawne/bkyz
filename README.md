@@ -1,4 +1,4 @@
-<img src="docs/booktracker.svg" alt="logo" width="200" align="left">
+<img src="docs/bkyz.svg" alt="logo" width="200" align="left">
 
 **bkyz** track your reading progress!
 

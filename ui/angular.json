@@ -7,7 +7,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "BookTracker": {
+    "bkyz": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -67,10 +67,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "BookTracker:build:production"
+              "buildTarget": "bkyz:build:production"
             },
             "development": {
-              "buildTarget": "BookTracker:build:development"
+              "buildTarget": "bkyz:build:development"
             }
           },
           "defaultConfiguration": "development"
