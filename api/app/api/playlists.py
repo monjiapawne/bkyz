@@ -40,18 +40,24 @@ class PlaylistFullOut(PlaylistOut):
 @playlist.get("")
 @login_required
 @spec.validate(query=ViewQuery)
-def get_all_playlists(query: ViewQuery):
+def list_playlists(query: ViewQuery):
     """Get all playlists of the logged in user."""
     playlists = Playlist.get_all(Playlist.user_id == current_user.id)
     if query.view == "full":
         return [PlaylistFullOut.json_(p) for p in playlists]
     return [PlaylistOut.json_(p) for p in playlists]
 
+@playlist.get("<int:playlist_id>")
+@login_required
+def get_playlist(playlist_id: int):
+    playlist = Playlist.get_by_id(playlist_id)
+    return PlaylistOut.json_(playlist), 2002
+
 
 @playlist.post("")
 @login_required
 @spec.validate(json=PlaylistIn)
-def add_shelf(json: PlaylistIn):
+def add_playlist(json: PlaylistIn):
     """Adds a new Playlist to the logged user."""
     playlist = Playlist.create(
         name=json.name, description=json.description, user_id=current_user.id
@@ -61,7 +67,17 @@ def add_shelf(json: PlaylistIn):
 
 @playlist.delete("<int:playlist_id>")
 @login_required
-def delete_shelf(playlist_id: int):
+def delete_playlist(playlist_id: int):
     """Delete a Playlist."""
     Playlist.delete_by_id(playlist_id)
     return "", 204
+
+
+@playlist.patch("<int:playlist_id>")
+@login_required
+@spec.validate(json=PlaylistIn)
+def update_playlist(playlist_id: int, json: PlaylistIn):
+    playlist = Playlist.get_by_id(playlist_id)
+    changes = json.model_dump(exclude_unset=True, exclude_none=True) 
+    playlist.update(**changes)
+    return PlaylistOut.json_(playlist), 200

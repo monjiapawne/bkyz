@@ -26,6 +26,10 @@ export class PlaylistService {
     return this.http.post<Playlist>(this.API_URL, body, { withCredentials: true });
   }
 
+  patchPlaylist(id: number, name: string, description?: string) {
+    return this.http.patch<Playlist>(`${this.API_URL}/${id}`, { name, description }, { withCredentials: true });
+  }
+
   deletePlaylist(id: number) {
     return this.http.delete(`${this.API_URL}/${id}`, { withCredentials: true });
   }

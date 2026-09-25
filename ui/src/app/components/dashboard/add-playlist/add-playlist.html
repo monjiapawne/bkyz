@@ -1,21 +1,55 @@
 <dialog #modal class="modal">
-    <form [formGroup]="playlistForm" (ngSubmit)="onSubmit()" (keydown.control.enter)="$event.preventDefault(); onSubmit()">
-        <label for="name" class="block text-sm font-medium text-gray-700 mt-2">Name</label>
-        <input id="name" type="text" formControlName="name" placeholder="Enter playlist name"
-            class="input-box w-full my-2" />
 
-        <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
-        <textarea id="description" formControlName="description" placeholder="Enter playlist description (optional)"
-            class="input-box w-full" rows="4">
-    </textarea>
+    <div class="text-sm text-gray-700">
 
-        <div class="flex flex-col justify-center gap-2 mt-4">
-            <button
-                class="btn-primary block mx-auto mt-4"
-                type="submit">Add Playlist</button>
-            <button
-                class="btn-neutral block mx-auto mt-2"
-                type="button" (click)="modal.close()">Cancel</button>
-        </div>
-    </form>
+        <form [formGroup]="playlistForm" (ngSubmit)="onSubmit()" (keydown.control.enter)="$event.preventDefault(); onSubmit()" class="space-y-2">
+
+            <div>
+                <label for="name" class="form-label">
+                    Name
+                </label>
+
+                <input id="name" type="text" formControlName="name"
+                    class="input-box w-full p-1.5" />
+            </div>
+
+            <div>
+                <label for="description" class="form-label">
+                    Description
+                </label>
+
+                <textarea id="description" formControlName="description" rows="3"
+                    class="input-box w-full p-1.5"></textarea>
+            </div>
+
+            <div class="flex justify-end gap-2 pt-2">
+
+                @if (editing) {
+                <button type="button" (click)="modal.close(); playlistDeleted.emit()"
+                    class="btn-danger mr-auto">
+                    Delete
+                </button>
+                }
+
+                <button type="button" (click)="modal.close()"
+                    class="btn-neutral">
+                    Cancel
+                </button>
+
+                <button type="submit" [disabled]="playlistForm.invalid || isSubmitting()"
+                    class="btn-primary gap-2">
+
+                    @if (isSubmitting()) {
+                    <span class="spinner text-white"></span>
+                    }
+                    <span>{{ editing ? 'Save' : 'Add Playlist' }}</span>
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
 </dialog>

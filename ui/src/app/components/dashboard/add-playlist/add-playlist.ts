@@ -1,6 +1,8 @@
 import { Component, ElementRef, EventEmitter, Output, ViewChild, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { finalize } from 'rxjs';
 import { PlaylistService } from '../../../services/playlist-service';
+import { Playlist } from '../../../interfaces/playlist';
 
 @Component({
   selector: 'app-add-playlist',
@@ -11,9 +13,11 @@ import { PlaylistService } from '../../../services/playlist-service';
 export class AddPlaylistComponent {
 
   @Output() playlistAdded = new EventEmitter<number>();
+  @Output() playlistDeleted = new EventEmitter<void>();
   @ViewChild('modal') modal!: ElementRef<HTMLDialogElement>;
 
   isSubmitting = signal(false);
+  editing: Playlist | null = null;
 
   playlistForm: FormGroup;
 
@@ -27,7 +31,12 @@ export class AddPlaylistComponent {
     });
   }
 
-  open(): void {
+  open(playlist?: Playlist): void {
+    this.editing = playlist ?? null;
+    this.playlistForm.reset({
+      name: playlist?.name ?? '',
+      description: playlist?.description ?? ''
+    });
     this.modal.nativeElement.showModal();
   }
 
@@ -40,20 +49,21 @@ export class AddPlaylistComponent {
 
     const form = this.playlistForm.getRawValue();
 
-    this.playlistService.postPlaylist(
-      form.name!,
-      form.description!
-    )
+    const request = this.editing
+      ? this.playlistService.patchPlaylist(this.editing.id, form.name, form.description)
+      : this.playlistService.postPlaylist(form.name, form.description);
+
+    request
+      .pipe(
+        finalize(() => this.isSubmitting.set(false))
+      )
       .subscribe({
         next: responseData => {
-          this.playlistForm.reset();
-          this.isSubmitting.set(false);
           this.modal.nativeElement.close();
           this.playlistAdded.emit(responseData.id);
         },
         error: err => {
-          console.log(err);
-          this.isSubmitting.set(false);
+          console.error(err);
         }
       });
   }

@@ -47,6 +47,10 @@ export class Dashboard {
 
   playlists: WritableSignal<PlaylistFull[]> = signal([]);
 
+  playlist = computed(() =>
+    this.playlists().find(p => p.id === this.playlistId())
+  );
+
   tracks = computed(() =>
     this.playlists().find(p => p.id === this.playlistId())?.tracks ?? []
   );
