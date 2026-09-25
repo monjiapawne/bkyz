@@ -17,6 +17,7 @@ export class TrackRowComponent {
   progressChange = output<number>();
 
   position = linkedSignal(() => this.track().position);
+  year = computed(() => this.book().publish_date?.match(/\d{4}/)?.[0]);
 
   progress(): number {
     const track = this.track();

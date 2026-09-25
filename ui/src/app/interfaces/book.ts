@@ -3,7 +3,7 @@ export interface Book {
     id: number;
     isbn: string;
     pages: number;
-    publish_date: string;
+    publish_date: string | null;
     title: string;
     cover_url: string;
 }
