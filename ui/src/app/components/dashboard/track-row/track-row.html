@@ -43,7 +43,7 @@
                     <label class="flex items-baseline gap-1 cursor-text">
                         <input type="text" inputmode="numeric" class="p-0 bg-transparent text-right border-b border-gray-400 focus:outline-0 focus:border-bkyz"
                             [value]="position()" [style.width.ch]="(position() + '').length + 0.5" (input)="position.set(+pos.value)" (keydown.enter)="progressChange.emit(position())" #pos />
-                        <span>/ {{ track().total }}{{ track().unit }}</span>
+                        <span>/ {{ track().total }} {{ track().unit }}</span>
                     </label>
                 </div>
                 }
