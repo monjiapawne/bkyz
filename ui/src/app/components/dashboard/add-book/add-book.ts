@@ -33,9 +33,7 @@ export class AddBookComponent {
     this.bookForm = this.fb.group({
       title: [''],
       authors: [''],
-      isbn: ['', [
-        Validators.pattern(/^\d+$/)
-      ]],
+      isbn: [''],
       number_of_pages: [null, [
         Validators.min(1),
         Validators.pattern(/^\d+$/)
