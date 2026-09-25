@@ -120,8 +120,6 @@ class TrackPatch(BaseModel):
 @spec.validate(json=TrackPatch)
 def update_track(playlist_id: int, track_id: int, json: TrackPatch):
     track = Track.get_by_id(track_id)
-    if not track:
-        raise NotFoundError("track", track_id)
 
     changes = json.model_dump(exclude_unset=True, exclude_none=True)
     if "notes" in json.model_fields_set:
