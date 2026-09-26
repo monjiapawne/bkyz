@@ -1,6 +1,7 @@
 import { Component, ElementRef, EventEmitter, Output, signal, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
+import { Field } from '../../shared/field/field';
 import { BookService } from '../../../services/book-service';
 import { Book } from '../../../interfaces/book';
 
@@ -14,7 +15,7 @@ const validateBookPost: ValidatorFn = (group: AbstractControl): ValidationErrors
 @Component({
   selector: 'app-add-book',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, Field],
   templateUrl: './add-book.html'
 })
 export class AddBookComponent {

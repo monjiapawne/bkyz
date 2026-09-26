@@ -1,6 +1,7 @@
 import { Component, ElementRef, EventEmitter, Input, Output, signal, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
+import { Field } from '../../shared/field/field';
 import { TrackService } from '../../../services/track-service';
 import { Track } from '../../../interfaces/track';
 import { Playlist } from '../../../interfaces/playlist';
@@ -8,7 +9,7 @@ import { Playlist } from '../../../interfaces/playlist';
 @Component({
   selector: 'app-add-track',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, Field],
   templateUrl: './add-track.html'
 })
 export class AddTrackComponent {

@@ -4,23 +4,13 @@
 
         <form [formGroup]="playlistForm" (ngSubmit)="onSubmit()" (keydown.control.enter)="$event.preventDefault(); onSubmit()" class="space-y-2">
 
-            <div>
-                <label for="name" class="form-label">
-                    Name
-                </label>
+            <app-field label="Name">
+                <input type="text" formControlName="name" class="input-box w-full p-1.5" />
+            </app-field>
 
-                <input id="name" type="text" formControlName="name"
-                    class="input-box w-full p-1.5" />
-            </div>
-
-            <div>
-                <label for="description" class="form-label">
-                    Description
-                </label>
-
-                <textarea id="description" formControlName="description" rows="3"
-                    class="input-box w-full p-1.5"></textarea>
-            </div>
+            <app-field label="Description">
+                <textarea formControlName="description" rows="3" class="input-box w-full p-1.5"></textarea>
+            </app-field>
 
             <div class="flex justify-end gap-2 pt-2">
 
