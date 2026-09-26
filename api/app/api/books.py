@@ -75,7 +75,7 @@ class BookOut(Out):
     @computed_field
     @property
     def cover_url(self) -> str:
-        return url_for("api.books.get_book_cover", book_id=self.id, _external=True)
+        return url_for("api.books.get_book_cover", book_id=self.id)
 
 
 class BookPatch(BaseModel):
