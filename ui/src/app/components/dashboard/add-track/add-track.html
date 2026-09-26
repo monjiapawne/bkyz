@@ -4,6 +4,18 @@
 
         <form [formGroup]="trackForm" (ngSubmit)="onSubmit()" (keydown.control.enter)="$event.preventDefault(); onSubmit()" class="space-y-2">
 
+            <div>
+                <label for="playlist" class="form-label">
+                    Playlist
+                </label>
+
+                <select id="playlist" formControlName="playlistId" class="input-box w-full p-1.5">
+                    @for (playlist of playlists; track playlist.id) {
+                    <option [ngValue]="playlist.id">{{ playlist.name }}</option>
+                    }
+                </select>
+            </div>
+
             <div class="flex items-center gap-2">
                 <input id="active" type="checkbox" formControlName="active" />
                 <label for="active" class="font-medium">

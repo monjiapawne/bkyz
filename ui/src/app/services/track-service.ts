@@ -26,7 +26,7 @@ export class TrackService {
     return this.http.post<Track>(`${this.API_URL}/${playlistId}/tracks`, body, { withCredentials: true });
   }
 
-  patchTrack(playlistId: number, trackId: number, body: Partial<Track>) {
+  patchTrack(playlistId: number, trackId: number, body: Partial<Track> & { playlist_id?: number }) {
     return this.http.patch<Track>(`${this.API_URL}/${playlistId}/tracks/${trackId}`, body, { withCredentials: true });
   }
 

@@ -38,7 +38,7 @@
 
     <app-search-book #searchBookModal (bookSelected)="onBookSelected($event)"></app-search-book>
 
-    <app-add-track #addTrackModal [playlistId]="playlistId()" [bookId]="selectedBookId"
+    <app-add-track #addTrackModal [playlistId]="playlistId()" [bookId]="selectedBookId" [playlists]="playlists()"
         (trackAdded)="loadDashboard()" (trackDeleted)="onDeleteTrack($event)">
     </app-add-track>
     <app-confirm-dialog #confirmTrack resourceName="track" (confirmed)="deleteTrack()" />
