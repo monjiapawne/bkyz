@@ -4,41 +4,21 @@
 
         <form [formGroup]="bookForm" (ngSubmit)="onSubmit()" (keydown.control.enter)="$event.preventDefault(); onSubmit()" class="space-y-2">
 
-            <div>
-                <label for="title" class="form-label">
-                    Title
-                </label>
+            <app-field label="Title">
+                <input type="text" formControlName="title" class="input-box w-full p-1.5" placeholder="Enter book title" />
+            </app-field>
 
-                <input id="title" type="text" formControlName="title"
-                    class="input-box w-full p-1.5" placeholder="Enter book title" />
-            </div>
+            <app-field label="Authors">
+                <input type="text" formControlName="authors" class="input-box w-full p-1.5" placeholder="J.K. Rowling, Stephen King" />
+            </app-field>
 
-            <div>
-                <label for="authors" class="form-label">
-                    Authors
-                </label>
+            <app-field label="ISBN">
+                <input type="text" formControlName="isbn" class="input-box w-full p-1.5" />
+            </app-field>
 
-                <input id="authors" type="text" formControlName="authors"
-                    class="input-box w-full p-1.5" placeholder="J.K. Rowling, Stephen King" />
-            </div>
-
-            <div>
-                <label for="isbn" class="form-label">
-                    ISBN
-                </label>
-
-                <input id="isbn" type="text" formControlName="isbn"
-                    class="input-box w-full p-1.5" />
-            </div>
-
-            <div>
-                <label for="number_of_pages" class="form-label">
-                    Number of Pages
-                </label>
-
-                <input id="number_of_pages" type="number" formControlName="number_of_pages"
-                    class="input-box w-full p-1.5" min="1" />
-            </div>
+            <app-field label="Number of Pages">
+                <input type="number" formControlName="number_of_pages" class="input-box w-full p-1.5" min="1" />
+            </app-field>
 
             <div class="flex gap-2 pt-2">
 

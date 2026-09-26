@@ -12,31 +12,17 @@
             </div>
 
             @if (trackForm.value.active) {
-            <div>
-                <label for="position" class="form-label">
-                    Position
-                </label>
-
-                <input id="position" type="number" formControlName="position"
-                    class="input-box w-full p-1.5" min="0" />
-            </div>
+            <app-field label="Position">
+                <input type="number" formControlName="position" class="input-box w-full p-1.5" min="0" />
+            </app-field>
             }
 
-            <div>
-                <label for="total" class="form-label">
-                    Total
-                </label>
+            <app-field label="Total">
+                <input type="number" formControlName="total" class="input-box w-full p-1.5" min="1" />
+            </app-field>
 
-                <input id="total" type="number" formControlName="total"
-                    class="input-box w-full p-1.5" min="1" />
-            </div>
-
-            <div>
-                <label for="unit" class="form-label">
-                    Unit
-                </label>
-
-                <select id="unit" formControlName="unit" class="input-box w-full p-1.5">
+            <app-field label="Unit">
+                <select formControlName="unit" class="input-box w-full p-1.5">
                     <option value="pages">Pages</option>
                     <option value="chapters">Chapters</option>
                     <option value="%">Percent</option>
@@ -47,40 +33,27 @@
                     <input type="text" formControlName="customUnit" placeholder="e.g. sections"
                     class="input-box w-full p-1.5 mt-1"/>
                 }
-            </div>
+            </app-field>
 
-            <div>
-                <label for="medium" class="form-label">
-                    Medium
-                </label>
-
-                <select id="medium" formControlName="medium" class="input-box w-full p-1.5">
+            <app-field label="Medium">
+                <select formControlName="medium" class="input-box w-full p-1.5">
                     <option value="physical">Physical</option>
                     <option value="ebook">E-book</option>
                     <option value="audiobook">Audiobook</option>
                 </select>
-            </div>
+            </app-field>
 
-            <div>
-                <label for="notes" class="form-label">
-                    Notes
-                </label>
+            <app-field label="Notes">
+                <textarea formControlName="notes" rows="2" maxlength="255" class="input-box w-full p-1.5"></textarea>
+            </app-field>
 
-                <textarea id="notes" formControlName="notes" rows="2" maxlength="255"
-                    class="input-box w-full p-1.5"></textarea>
-            </div>
-
-            <div>
-                <label for="playlist" class="form-label">
-                    Playlist
-                </label>
-
-                <select id="playlist" formControlName="playlistId" class="input-box w-full p-1.5">
+            <app-field label="Playlist">
+                <select formControlName="playlistId" class="input-box w-full p-1.5">
                     @for (playlist of playlists; track playlist.id) {
                     <option [ngValue]="playlist.id">{{ playlist.name }}</option>
                     }
                 </select>
-            </div>
+            </app-field>
 
             <div class="flex justify-end gap-2 pt-2">
 

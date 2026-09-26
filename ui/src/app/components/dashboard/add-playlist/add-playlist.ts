@@ -1,13 +1,14 @@
 import { Component, ElementRef, EventEmitter, Output, ViewChild, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
+import { Field } from '../../shared/field/field';
 import { PlaylistService } from '../../../services/playlist-service';
 import { Playlist } from '../../../interfaces/playlist';
 
 @Component({
   selector: 'app-add-playlist',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, Field],
   templateUrl: './add-playlist.html'
 })
 export class AddPlaylistComponent {
