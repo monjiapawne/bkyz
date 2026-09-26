@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { finalize } from 'rxjs';
 import { TrackService } from '../../../services/track-service';
 import { Track } from '../../../interfaces/track';
+import { Playlist } from '../../../interfaces/playlist';
 
 @Component({
   selector: 'app-add-track',
@@ -14,6 +15,7 @@ export class AddTrackComponent {
 
   @Input() playlistId!: number;
   @Input() bookId!: number;
+  @Input() playlists: Playlist[] = [];
   @Output() trackAdded = new EventEmitter<void>();
   @Output() trackDeleted = new EventEmitter<Track>();
   @ViewChild('modal') modal!: ElementRef<HTMLDialogElement>;
@@ -28,6 +30,7 @@ export class AddTrackComponent {
     private trackService: TrackService
   ) {
     this.trackForm = this.fb.group({
+      playlistId: [null, Validators.required],
       position: [0, [
         Validators.required,
         Validators.min(0),
@@ -48,6 +51,7 @@ export class AddTrackComponent {
   open(track?: Track): void {
     this.editing = track ?? null;
     this.trackForm.reset({
+      playlistId: this.playlistId,
       position: 0,
       total: null,
       unit: 'pages',
@@ -79,10 +83,11 @@ export class AddTrackComponent {
         unit,
         medium: form.medium!,
         active: form.active,
-        notes: form.notes.trim() || null
+        notes: form.notes.trim() || null,
+        playlist_id: form.playlistId
       })
       : this.trackService.postTrackToPlaylist(
-        this.playlistId,
+        form.playlistId,
         this.bookId,
         form.position!,
         form.total!,
