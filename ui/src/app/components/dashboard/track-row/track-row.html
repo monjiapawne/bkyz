@@ -1,23 +1,23 @@
-<div class="flex gap-5 overflow-hidden rounded-xl border border-stone-300 transition-colors duration-200 hover:bg-black/[0.01]">
-    <img [src]="book().cover_url" [alt]="book().title" class="block shrink-0 h-44 w-32 object-fill border-r border-black/10">
+<div class="flex h-44 gap-5 overflow-hidden rounded-xl border border-stone-300 transition-colors duration-200 hover:bg-black/[0.01]">
+    <img [src]="book().cover_url" [alt]="book().title" class="block shrink-0 h-full w-32 object-fill border-r border-black/10">
 
-    <div class="flex flex-col flex-1 min-w-0 py-3 pr-4">
+    <div class="@container flex flex-col flex-1 min-w-0 min-h-0 py-3 pr-4">
         <div class="flex items-start gap-3">
             <div class="min-w-0">
                 <div class="text-bkyz font-bold text-sm leading-none mb-1.5">
                     {{ track().medium | uppercase }}
                 </div>
-                <div class="font-serif font-bold text-3xl leading-tight">
+                <div class="font-serif font-bold text-3xl leading-tight truncate" [title]="book().title">
                     {{ book().title }}
                 </div>
-                <div class="text-lg text-gray-500 leading-snug">
+                <div class="text-lg text-gray-500 leading-snug truncate">
                     {{ book().authors }}
                     @if (year()) {
                     <span class="font-serif text-gray-400">({{ year() }})</span>
                     }
                 </div>
                 @if (track().notes) {
-                <p class="mt-1 text-sm text-gray-600 italic leading-tight whitespace-pre-line">{{ track().notes }}</p>
+                <p class="hidden @md:block mt-1 text-sm text-gray-600 italic leading-tight whitespace-pre-line line-clamp-2">{{ track().notes }}</p>
                 }
             </div>
 
