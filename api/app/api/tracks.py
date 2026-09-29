@@ -6,7 +6,7 @@ from app import spec
 from app.api.books import BookOut
 from app.api.schemas import Out
 from app.data.models import Book, Medium, Playlist, Track
-from app.errors import ForbiddenError, NotFoundError
+from app.errors import NotFoundError
 
 tracks = Blueprint("tracks", __name__)
 
@@ -22,7 +22,7 @@ class TrackIn(BaseModel):
     total: int | None = Field(None, examples=[24])
     """Total number of unit, if none is provided, it will be inherited from the book"""
     medium: Medium = Medium.physical
-    active: bool = Field(False, examples=True)
+    active: bool = Field(False, examples=[True])
     notes: str | None = Field(None, max_length=255)
 
 
@@ -59,17 +59,7 @@ def list_tracks(playlist_id: int):
 @login_required
 def get_track(playlist_id: int, track_id: int):
     """Get a track."""
-    track = Track.get_one(
-        Track.id == track_id,
-        Track.playlist_id == playlist_id,
-    )
-
-    if not track:
-        raise NotFoundError("track_id", track_id)
-    if not track.verify_track_owner(current_user.id):
-        raise ForbiddenError("track")
-
-    return TrackOut.json_(track), 200
+    return TrackOut.json_(Track.get_owned(track_id, current_user.id)), 200
 
 
 @tracks.post("")
@@ -98,8 +88,7 @@ def create_track(playlist_id: int, json: TrackIn):
 @login_required
 def delete_track(playlist_id: int, track_id: int):
     """Delete a track."""
-    # validate
-    Track.delete_by_id(track_id)
+    Track.get_owned(track_id, current_user.id).delete()
     return "", 204
 
 
@@ -121,7 +110,6 @@ class TrackPatch(BaseModel):
 @spec.validate(json=TrackPatch)
 def update_track(playlist_id: int, track_id: int, json: TrackPatch):
     track = Track.get_by_id(track_id)
-
     changes = json.model_dump(exclude_unset=True, exclude_none=True)
     if "notes" in json.model_fields_set:
         changes["notes"] = json.notes
@@ -139,13 +127,6 @@ class TrackProgressIn(BaseModel):
 @spec.validate(json=TrackProgressIn)
 def add_progress(playlist_id: int, track_id: int, json: TrackProgressIn):
     """Adds progress to a track"""
-    track = Track.get_by_id(track_id)
-    if not track:
-        raise NotFoundError("track", track_id)
-
-    if not track.verify_track_owner(current_user.id):  # wrong layer?
-        raise ForbiddenError("track")
-
+    track = Track.get_owned(track_id, current_user.id)
     track.progress_track(json.position)
-
     return TrackOut.json_(track), 200

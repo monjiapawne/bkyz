@@ -27,10 +27,11 @@ export class Auth {
     return this.httpClient.post<User>(this.apiURL + '/user/register', body);
   }
 
-  login(username: string, password: string) {
+  login(username: string, password: string, rememberMe: boolean) {
     const body = {
       "username": username,
-      "password": password
+      "password": password,
+      "remember_me": rememberMe
     };
 
     return this.httpClient.post<User>(this.apiURL + '/user/login', body, { withCredentials: true });

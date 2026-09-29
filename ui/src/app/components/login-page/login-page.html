@@ -13,6 +13,11 @@
 
         <input name="passwordInput" class="input-box w-80 mt-2"
             placeholder="Password" type="password" [(ngModel)]="password">
+
+        <label class="flex items-center gap-2 mt-4 text-sm text-ink">
+            <input name="rememberMeInput" type="checkbox" [(ngModel)]="rememberMe">
+            Remember me
+        </label>
         <button (click)="attemptLogin()" class="btn-primary block mx-auto mt-8">Sign
             in</button>
         <h2 class="block text-base text-center justify-center mt-6 text-ink">Don't have an account?</h2>

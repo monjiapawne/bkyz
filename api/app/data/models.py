@@ -224,6 +224,14 @@ class Playlist(CRUDMixin, db.Model):
         back_populates="playlist", cascade="all, delete-orphan", order_by="Track.playlist_position"
     )
 
+    @classmethod
+    def get_owned(cls, playlist_id: int, user_id: int) -> Self:
+        playlist = db.session.scalar(select(cls).where(cls.id == playlist_id, cls.id == user_id))
+        if playlist is None:
+            raise NotFoundError("playlist")
+
+        return playlist
+
 
 class Medium(StrEnum):
     pdf = auto()
@@ -255,14 +263,6 @@ class Track(CRUDMixin, db.Model):
         back_populates="track", cascade="all, delete-orphan"
     )
 
-    def verify_track_owner(self, uid: int) -> bool:
-        playlist = Playlist.get_by_id(self.playlist_id)
-        # should raise
-        if not playlist:
-            return False
-
-        return playlist.user_id == uid
-
     def progress_track(self, new_position: int):
         new_position = max(1, new_position)
         # Guard to > total
@@ -288,21 +288,28 @@ class Track(CRUDMixin, db.Model):
         return self
 
     @classmethod
+    def get_owned(cls, track_id: int, uid: int) -> Self:
+        track = db.session.scalar(
+            select(cls).join(Playlist).where(cls.id == track_id, Playlist.user_id == uid)
+        )
+        if track is None:
+            raise NotFoundError("track")
+        return track
+
+    @classmethod
     def create(cls, playlist_id: int, **kwargs) -> Self:
         kwargs["playlist_id"] = playlist_id
         kwargs["playlist_position"] = cls._next_position(playlist_id)
-        # verify playlist exists
-        # verify ownership
         return super().create(**kwargs)
 
     @classmethod
     def _next_position(cls, playlist_id: int) -> int:
         """Calculates the next position for a track in a playlist"""
-        return db.session.scalar(
+        return db.session.execute(
             select(func.coalesce(func.max(cls.playlist_position), 0) + 1).where(
                 cls.playlist_id == playlist_id
             )
-        )
+        ).scalar_one()
 
 
 class TrackProgress(CRUDMixin, db.Model):

@@ -15,7 +15,7 @@ class PlaylistIn(BaseModel):
     description: str | None = Field(None, examples=["Future books I'll read..."])
 
     @model_validator(mode="after")
-    def validate(self):
+    def validate_fields(self):
         if self.name is None:
             # This should should check the db and make a logic name
             # like, Page 1. For now just simple.
@@ -47,6 +47,7 @@ def list_playlists(query: ViewQuery):
         return [PlaylistFullOut.json_(p) for p in playlists]
     return [PlaylistOut.json_(p) for p in playlists]
 
+
 @playlist.get("<int:playlist_id>")
 @login_required
 def get_playlist(playlist_id: int):
@@ -69,7 +70,7 @@ def add_playlist(json: PlaylistIn):
 @login_required
 def delete_playlist(playlist_id: int):
     """Delete a Playlist."""
-    Playlist.delete_by_id(playlist_id)
+    Playlist.get_owned(playlist_id, current_user.id).delete()
     return "", 204
 
 
@@ -78,6 +79,6 @@ def delete_playlist(playlist_id: int):
 @spec.validate(json=PlaylistIn)
 def update_playlist(playlist_id: int, json: PlaylistIn):
     playlist = Playlist.get_by_id(playlist_id)
-    changes = json.model_dump(exclude_unset=True, exclude_none=True) 
+    changes = json.model_dump(exclude_unset=True, exclude_none=True)
     playlist.update(**changes)
     return PlaylistOut.json_(playlist), 200
