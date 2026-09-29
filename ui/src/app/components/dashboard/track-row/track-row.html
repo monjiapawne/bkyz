@@ -1,4 +1,4 @@
-<div class="flex min-h-44 gap-5 overflow-hidden rounded-xl border border-stone-300 transition-colors duration-200 hover:bg-black/[0.01]">
+<div class="flex h-44 gap-5 overflow-hidden rounded-xl border border-stone-300 transition-colors duration-200 hover:bg-black/[0.01]">
     <img [src]="book().cover_url" [alt]="book().title" class="hidden min-[300px]:block shrink-0 w-32 object-cover border-r border-black/10">
 
     <div class="@container flex flex-col flex-1 min-w-0 min-h-0 py-3 pr-4 pl-4 min-[300px]:pl-0">
@@ -7,10 +7,10 @@
                 <div class="text-bkyz font-bold text-sm leading-none mb-1.5">
                     {{ track().medium | uppercase }}
                 </div>
-                <div class="font-serif font-bold text-xl @sm:text-3xl leading-tight" [title]="book().title">
+                <div class="font-serif font-bold text-xl @sm:text-3xl leading-tight line-clamp-2" [title]="book().title">
                     {{ book().title }}
                 </div>
-                <div class="text-base @sm:text-lg text-gray-500 leading-snug">
+                <div class="text-base @sm:text-lg text-gray-500 leading-snug truncate">
                     {{ book().authors }}
                     @if (year()) {
                     <span class="font-serif text-gray-400">({{ year() }})</span>
