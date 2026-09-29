@@ -1,4 +1,4 @@
-import { Component, computed, signal, ViewChild, WritableSignal } from '@angular/core';
+import { afterRenderEffect, Component, computed, ElementRef, signal, ViewChild, WritableSignal } from '@angular/core';
 import { PlaylistService } from '../../services/playlist-service';
 import { PlaylistFull } from '../../interfaces/playlist-full';
 import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from '@angular/router';
@@ -41,6 +41,26 @@ export class Dashboard {
 
 
   @ViewChild('addTrackModal') addTrackModal!: AddTrackComponent;
+  @ViewChild('tabs', { static: true }) tabs!: ElementRef<HTMLElement>;
+
+  tabsFade = signal(false);
+
+  private tabsFadeEffect = afterRenderEffect(() => {
+    this.playlists();
+    this.fadeTabs();
+  });
+
+  fadeTabs() {
+    const el = this.tabs.nativeElement;
+    this.tabsFade.set(el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
+  }
+
+  scrollTabs(event: WheelEvent) {
+    const el = this.tabs.nativeElement;
+    if (el.scrollWidth <= el.clientWidth || Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
+    event.preventDefault();
+    el.scrollLeft += event.deltaY;
+  }
 
   playlistId: WritableSignal<number> = signal(0);
   selectedBookId!: number;

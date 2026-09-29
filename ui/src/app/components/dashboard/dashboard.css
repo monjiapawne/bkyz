@@ -5,3 +5,7 @@
 .playlist-active:hover {
     background-color: var(--color-bkyz-hover);
 }
+
+.tabs-fade {
+    mask-image: linear-gradient(to right, black calc(100% - 3rem), transparent);
+}
