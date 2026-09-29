@@ -16,10 +16,11 @@ export class LoginPage {
 
   username: string = '';
   password: string = '';
+  rememberMe: boolean = false;
   userId: number = -1;
 
   attemptLogin() {
-    this.auth.login(this.username, this.password)
+    this.auth.login(this.username, this.password, this.rememberMe)
       .subscribe(
         {
           next: responseData => {
