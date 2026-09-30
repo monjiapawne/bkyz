@@ -8,8 +8,8 @@ logger = logging.getLogger("api")
 
 class BkyzError(Exception):
     """Base class for every exception bkyz raises."""
-
     status = 500
+    log_level = logging.INFO
 
 
 class BadRequestError(BkyzError):
@@ -38,6 +38,9 @@ class NotFoundError(BkyzError):
 
         super().__init__(" ".join(msg))
 
+class ForbiddenAsNotFound(NotFoundError):
+    """Resource exists but isn't the caller's, served as a 404."""       
+    log_level = logging.WARNING
 
 class ResourceExistsError(BkyzError):
     status = 409
@@ -52,7 +55,7 @@ def register_error_handlers(app):
     @app.errorhandler(BkyzError)
     def handle_bkyz_error(e: BkyzError):
         """Catch expected errors"""
-        logger.info(f"{e.status} -> {request.method} {request.path}: {e}")
+        logger.log(e.log_level, f"{e.status} -> {request.method} {request.path}: {e}")
         if app.config["DEBUG"]:
             raise e
         return {"error": str(e)}, e.status
