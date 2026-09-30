@@ -11,6 +11,7 @@ import { AddTrackComponent } from './add-track/add-track';
 import { SearchBookComponent } from './search-book/search-book';
 import { TrackRowComponent } from './track-row/track-row';
 import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
+import { Page } from '../shared/page/page';
 
 
 @Component({
@@ -22,7 +23,8 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
     AddTrackComponent,
     SearchBookComponent,
     TrackRowComponent,
-    ConfirmDialog
+    ConfirmDialog,
+    Page
   ],
   templateUrl: './dashboard.html',
 })
@@ -37,8 +39,6 @@ export class Dashboard {
 
 
   @ViewChild('addTrackModal') addTrackModal!: AddTrackComponent;
-  desktop = matchMedia('(min-width: 768px)');
-  sidebarOpen = signal(this.desktop.matches);
 
   playlistId: WritableSignal<number> = signal(0);
   selectedBookId!: number;

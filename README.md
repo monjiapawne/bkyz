@@ -19,6 +19,8 @@ cd docker
 cp template.env .env
 # Update SECRET_KEY in .env - runtime if you don't (security)
 docker-compose up -d # Build and start all containers
+# Access database through docker
+docker compose exec db psql -U bkyz
 ```
 ## Local Dev
 

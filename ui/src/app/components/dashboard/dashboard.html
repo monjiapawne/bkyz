@@ -1,18 +1,8 @@
-<div class="flex min-h-[calc(100vh-3rem)]">
-    <aside [class.hidden]="!sidebarOpen()"
-        class="fixed top-12 bottom-0 left-0 z-20 w-full md:w-60 shrink-0 border-r border-line bg-sidebar md:static">
-        <div class="flex items-center justify-between px-3 py-2 text-sm md:text-xs font-semibold text-subtle">
-            Playlists
-            <button type="button" (click)="sidebarOpen.set(false)" class="btn-icon size-4" aria-label="Hide sidebar">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
-                    <rect x="3" y="4" width="18" height="16" />
-                    <path d="M9 4v16" />
-                </svg>
-            </button>
-        </div>
+<app-page sidebarTitle="Playlists" [title]="playlist()?.name" [description]="playlist()?.description">
+    <div sidebar>
         @for (playlist of playlists(); track playlist.id) {
         <a [routerLink]="['/playlists', playlist.id]" routerLinkActive="bg-muted-hover font-semibold"
-            [routerLinkActiveOptions]="{ exact: true }" [title]="playlist.description" (click)="sidebarOpen.set(desktop.matches)"
+            [routerLinkActiveOptions]="{ exact: true }" [title]="playlist.description"
             class="flex items-center justify-between px-3 py-3 md:py-1.5 text-base hover:bg-muted-hover">
             <span class="truncate">{{ playlist.name }}</span>
             <span class="px-1.5 text-sm md:text-xs text-subtle bg-muted-hover">{{ playlist.tracks.length }}</span>
@@ -20,39 +10,22 @@
         }
         <button type="button" (click)="addPlaylistModal.open()"
             class="block w-full px-3 py-3 md:py-1.5 text-left text-base text-subtle hover:bg-muted-hover cursor-pointer">+ New playlist</button>
-    </aside>
+    </div>
 
-    <section class="flex-1 min-w-0 px-4 md:px-6 py-4">
-        @if (!sidebarOpen()) {
-        <button type="button" (click)="sidebarOpen.set(true)" aria-label="Show sidebar"
-            class="-ml-4 md:-ml-6 -mt-4 mb-3 flex px-3 py-2 text-subtle bg-sidebar border-r border-b border-line hover:text-ink cursor-pointer">
-            <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
-                <rect x="3" y="4" width="18" height="16" />
-                <path d="M9 4v16" />
-            </svg>
-        </button>
+    @if (playlist()) {
+    <ng-container actions>
+        <button type="button" (click)="addPlaylistModal.open(playlist())" class="btn-neutral">Edit</button>
+        <button type="button" (click)="searchBookModal.open()" class="btn-primary">Add book</button>
+    </ng-container>
+    }
+
+    <div class="border border-line divide-y divide-line bg-surface">
+        @for (track of tracks(); track track.id) {
+        <app-track-row class="block" [track]="track" [book]="track.book" (edit)="addTrackModal.open($event)" (progressChange)="onProgress(track, $event)"/>
+        } @empty {
+        <div class="px-4 py-8 text-center text-base md:text-lg text-subtle">No books yet</div>
         }
-        <div class="flex items-start gap-2 mb-4">
-            <div class="min-w-0">
-                <h1 class="text-2xl md:text-3xl font-semibold truncate">{{ playlist()?.name }}</h1>
-                <p class="text-base md:text-lg text-subtle">{{ playlist()?.description }}</p>
-            </div>
-            @if (playlist()) {
-            <div class="ml-auto flex shrink-0 gap-2">
-                <button type="button" (click)="addPlaylistModal.open(playlist())" class="btn-neutral">Edit</button>
-                <button type="button" (click)="searchBookModal.open()" class="btn-primary">Add book</button>
-            </div>
-            }
-        </div>
-
-        <div class="border border-line divide-y divide-line bg-surface">
-            @for (track of tracks(); track track.id) {
-            <app-track-row class="block" [track]="track" [book]="track.book" (edit)="addTrackModal.open($event)" (progressChange)="onProgress(track, $event)"/>
-            } @empty {
-            <div class="px-4 py-8 text-center text-base md:text-lg text-subtle">No books yet</div>
-            }
-        </div>
-    </section>
+    </div>
 
     <app-add-playlist #addPlaylistModal (playlistAdded)="onPlaylistAdded($event)" (playlistDeleted)="confirmPlaylist.open()"></app-add-playlist>
     <app-confirm-dialog #confirmPlaylist resourceName="playlist" (confirmed)="deletePlaylist()" />
@@ -63,4 +36,4 @@
         (trackAdded)="loadDashboard()" (trackDeleted)="onDeleteTrack($event)">
     </app-add-track>
     <app-confirm-dialog #confirmTrack resourceName="track" (confirmed)="deleteTrack()" />
-</div>
+</app-page>

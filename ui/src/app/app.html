@@ -5,6 +5,16 @@
       <h1 class="font-semibold">bkyz</h1>
     </div>
 
+    @if (auth.isLoggedIn()) {
+    <div class="flex ml-4">
+      <li>
+        <a routerLink="/playlists" routerLinkActive="active">Dashboard</a>
+      </li>
+      <li>
+        <a routerLink="/history" routerLinkActive="active">History</a>
+      </li>
+    </div>
+    }
 
     <div id="account-section">
       @if (!auth.isLoggedIn()) {

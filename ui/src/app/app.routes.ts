@@ -5,6 +5,7 @@ import { LoginPage } from './components/login-page/login-page';
 import { RegisterPage } from './components/register-page/register-page';
 import { HomePage } from './components/home-page/home-page';
 import { Dashboard } from './components/dashboard/dashboard';
+import { HistoryPage } from './components/history-page/history-page';
 import { Auth } from './services/auth-service';
 
 const guestOnly: CanActivateFn = () => {
@@ -28,5 +29,7 @@ export const routes: Routes = [
     { path: 'login', component: LoginPage, canActivate: [guestOnly] },
     { path: 'register', component: RegisterPage, canActivate: [guestOnly] },
     { path: 'dashboard', component: Dashboard, canActivate: [authOnly] },
-    { path: 'playlists/:id', component: Dashboard, canActivate: [authOnly] }
+    { path: 'playlists', component: Dashboard, canActivate: [authOnly] },
+    { path: 'playlists/:id', component: Dashboard, canActivate: [authOnly] },
+    { path: 'history', component: HistoryPage, canActivate: [authOnly] }
 ];
