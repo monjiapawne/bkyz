@@ -1,10 +1,11 @@
+
 from flask import Blueprint
 from flask_login import current_user, login_required
 from pydantic import BaseModel, ConfigDict, Field
 
 from app import spec
 from app.api.books import BookOut
-from app.api.schemas import Out
+from app.api.schemas import Out, UTCDatetime
 from app.data import Book, Medium, Playlist, Track
 from app.errors import NotFoundError
 
@@ -38,6 +39,7 @@ class TrackOut(Out):
     playlist_position: int
     active: bool
     notes: str | None
+    updated_at: UTCDatetime
 
 
 class TrackFullOut(TrackOut):

@@ -52,7 +52,7 @@ def list_playlists(query: ViewQuery):
 @login_required
 def get_playlist(playlist_id: int):
     playlist = Playlist.get_by_id(playlist_id)
-    return PlaylistOut.json_(playlist), 2002
+    return PlaylistOut.json_(playlist), 202
 
 
 @playlist.post("")
