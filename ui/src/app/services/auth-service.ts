@@ -37,12 +37,16 @@ export class Auth {
     return this.httpClient.post<User>(this.apiURL + '/user/login', body, { withCredentials: true });
   }
 
+  getUsers() {
+    return this.httpClient.get<User[]>(this.apiURL + '/user', { withCredentials: true });
+  }
+
   getUser() {
-    return this.httpClient.get<User>(this.apiURL + '/user', { withCredentials: true });
+    return this.httpClient.get<User>(this.apiURL + '/user/me', { withCredentials: true });
   }
 
   checkSession() {
-    this.httpClient.get<User>(this.apiURL + '/user', { withCredentials: true })
+    this.httpClient.get<User>(this.apiURL + '/user/me', { withCredentials: true })
       .subscribe({
         next: (user) => {
           this.user.set(user);

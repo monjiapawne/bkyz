@@ -1,0 +1,31 @@
+<app-page [title]="title()" sidebarTitle="Admin">
+    <div sidebar>
+        @for (s of sections; track s.path) {
+        <a [routerLink]="['/admin', s.path]" routerLinkActive="bg-muted-hover font-semibold"
+            class="block px-3 py-3 md:py-1.5 text-base hover:bg-muted-hover">{{ s.label }}</a>
+        }
+    </div>
+
+    @if (users(); as users) {
+    <table class="w-full border border-line bg-surface text-left">
+        <thead class="border-b border-line text-sm text-subtle">
+            <tr>
+                <th class="px-4 py-2 font-semibold">ID</th>
+                <th class="px-4 py-2 font-semibold">Username</th>
+                <th class="px-4 py-2 font-semibold">Admin</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-line">
+            @for (user of users; track user.id) {
+            <tr>
+                <td class="px-4 py-2">{{ user.id }}</td>
+                <td class="px-4 py-2">{{ user.username }}</td>
+                <td class="px-4 py-2">{{ user.is_admin ? 'Yes' : '' }}</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+    } @else {
+    <div class="px-4 py-8 text-center text-base md:text-lg text-subtle border border-line bg-surface">Select a section</div>
+    }
+</app-page>
