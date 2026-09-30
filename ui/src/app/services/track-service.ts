@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
+import { tap } from 'rxjs';
 import { Track } from '../interfaces/track';
+import { NotificationService } from './notification-service';
 
 @Injectable({
   providedIn: 'root',
@@ -10,7 +12,7 @@ export class TrackService {
 
   private readonly API_URL = `${environment.apiUrl}/playlists`;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private notifications: NotificationService) { }
 
   postTrackToPlaylist(playlistId: number, bookId: number, currentPosition: number, totalPosition: number, unit: string, medium: string, active: boolean, notes: string | null) {
     const body = {
@@ -27,7 +29,8 @@ export class TrackService {
   }
 
   patchTrack(playlistId: number, trackId: number, body: Partial<Track> & { playlist_id?: number }) {
-    return this.http.patch<Track>(`${this.API_URL}/${playlistId}/tracks/${trackId}`, body, { withCredentials: true });
+    return this.http.patch<Track>(`${this.API_URL}/${playlistId}/tracks/${trackId}`, body, { withCredentials: true })
+      .pipe(tap(() => this.notifications.show('Track saved', 'info', 'short')));
   }
 
   progressTrack(playlistId: number, trackId: number, position: number) {
@@ -40,7 +43,8 @@ export class TrackService {
   }
 
   deleteTrackFromPlaylist(playlistId: number, trackId: number) {
-    return this.http.delete(`${this.API_URL}/${playlistId}/tracks/${trackId}`, { withCredentials: true });
+    return this.http.delete(`${this.API_URL}/${playlistId}/tracks/${trackId}`, { withCredentials: true })
+      .pipe(tap(() => this.notifications.show('Track removed', 'info', 'short')));
   }
 
 }
