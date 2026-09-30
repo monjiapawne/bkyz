@@ -26,6 +26,7 @@ export class LoginPage {
           next: responseData => {
             this.userId = responseData.id;
             this.invalidLoginErrorMessage.set("");
+            this.auth.user.set(responseData);
             this.auth.isLoggedIn.set(true);
 
             this.router.navigate(['/dashboard']);

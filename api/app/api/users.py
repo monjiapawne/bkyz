@@ -1,8 +1,10 @@
 from flask import Blueprint
 from flask_login import current_user, login_required, login_user, logout_user
 from pydantic import BaseModel, ConfigDict, Field
+from flask_login import login_required
 
 from app import spec
+from app.api.auth import admin_required
 from app.api.schemas import Out
 from app.data import User
 from app.errors import NotFoundError, UnauthorizedError
@@ -20,6 +22,7 @@ class UserOut(Out):
     model_config = ConfigDict(from_attributes=True)
     id: int
     username: str
+    is_admin: bool
 
 
 @users.post("/login")
@@ -59,6 +62,7 @@ def register(json: RegisterIn):
 
 
 @users.get("<int:user_id>")
+@login_required
 def user_info(user_id: int):
     """Get a user's info."""
     user = User.get_one(User.id == user_id)
@@ -68,7 +72,7 @@ def user_info(user_id: int):
     return UserOut.json_(user), 200
 
 
-@users.get("")
+@users.get("me")
 @login_required
 def current_user_info():
     """Get the current logged in user's info.
@@ -77,3 +81,10 @@ def current_user_info():
     """
     user = User.get_by_id(current_user.id)
     return UserOut.json_(user), 200
+
+
+@users.get("")
+@admin_required
+def list_users():
+    """List all users."""
+    return [UserOut.json_(user) for user in User.get_all()], 200

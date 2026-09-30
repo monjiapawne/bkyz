@@ -6,6 +6,8 @@ import { RegisterPage } from './components/register-page/register-page';
 import { HomePage } from './components/home-page/home-page';
 import { Dashboard } from './components/dashboard/dashboard';
 import { LibraryPage } from './components/library-page/library-page';
+import { AdminPage } from './components/admin-page/admin-page';
+import { restoreLast } from './components/shared/page/page';
 import { Auth } from './services/auth-service';
 
 const guestOnly: CanActivateFn = () => {
@@ -24,12 +26,22 @@ const authOnly: CanActivateFn = () => {
     );
 };
 
+const adminOnly: CanActivateFn = () => {
+    const router = inject(Router);
+    return inject(Auth).getUser().pipe(
+        map(user => user.is_admin || router.parseUrl('/dashboard')),
+        catchError(() => of(router.parseUrl('/login')))
+    );
+};
+
 export const routes: Routes = [
     { path: '', component: HomePage, canActivate: [guestOnly] },
     { path: 'login', component: LoginPage, canActivate: [guestOnly] },
     { path: 'register', component: RegisterPage, canActivate: [guestOnly] },
-    { path: 'dashboard', component: Dashboard, canActivate: [authOnly] },
-    { path: 'playlists', component: Dashboard, canActivate: [authOnly] },
+    { path: 'dashboard', component: Dashboard, canActivate: [authOnly, restoreLast('Playlists')] },
+    { path: 'playlists', component: Dashboard, canActivate: [authOnly, restoreLast('Playlists')] },
     { path: 'playlists/:id', component: Dashboard, canActivate: [authOnly] },
-    { path: 'library', component: LibraryPage, canActivate: [authOnly] }
+    { path: 'library', component: LibraryPage, canActivate: [authOnly] },
+    { path: 'admin', component: AdminPage, canActivate: [adminOnly, restoreLast('Admin')] },
+    { path: 'admin/:section', component: AdminPage, canActivate: [adminOnly] }
 ];
