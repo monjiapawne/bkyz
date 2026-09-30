@@ -1,6 +1,6 @@
 import pytest
 
-from app.data.models import FetchStatus
+from app.data import FetchStatus
 from app.services.book import fetch_book
 from tests.helpers import assert_dict_subset
 
