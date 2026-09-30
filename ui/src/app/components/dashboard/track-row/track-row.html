@@ -31,6 +31,7 @@
 
         @if (track().active) {
         <div class="mt-auto">
+            <div class="text-xs text-subtle/70">last read {{ lastRead() }}</div>
             <div class="flex items-baseline justify-between text-sm md:text-base pointer-coarse:text-base text-subtle mb-1">
                 <span>{{ progress() }}%</span>
 
