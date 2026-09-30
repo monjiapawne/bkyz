@@ -1,55 +1,60 @@
-@import url('https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;500;600;700&family=Source+Serif+4:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600;700&display=swap');
 @import "tailwindcss";
 
 @theme {
   --font-serif: "Source Serif 4", Georgia, serif;
-  --color-bkyz: #2563eb;
-  --color-bkyz-hover: #1d4ed8;
-  --color-bkyz-light: #60a5fa;
-  --color-bkyz-dark: #1e3a8a;
+  --color-bkyz: #1f1e24;
+  --color-bkyz-hover: #3a383f;
+  --color-bkyz-light: #535158;
+  --color-bkyz-dark: #000000;
   --color-surface: #ffffff;
-  --color-line: #8080808c;
-  --color-muted: #cfcece38;
-  --color-muted-hover: #a2a2a238;
+  --color-line: #dcdcde;
+  --color-line-strong: #bfbfc3;
+  --color-input: #89888d;
+  --color-subtle: #737278;
+  --color-sidebar: #fafafa;
+  --color-muted: #ffffff;
+  --color-muted-hover: #ececef;
   --color-danger: #e02424;
   --color-danger-hover: #c81e1e;
-  --color-ink: #1a1a1a;
+  --color-danger-subtle: #f3e7e6;
+  --color-ink: #1f1e24;
   --color-error: #ff2929;
 }
 
 /* buttons */ 
 @utility btn {
-    @apply px-3 py-1 text-base font-medium shadow rounded-lg transition-colors cursor-pointer
+    @apply h-8 px-3 text-sm font-normal border transition-colors cursor-pointer
     inline-flex items-center justify-center
     disabled:opacity-50 disabled:pointer-events-none
     focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bkyz;
 }
 
 @utility btn-primary {
-    @apply btn bg-bkyz hover:bg-bkyz-hover text-white;
+    @apply btn bg-bkyz border-bkyz hover:bg-bkyz-hover text-white;
 }
 
 @utility btn-neutral {
-    @apply btn bg-muted hover:bg-muted-hover;
+    @apply btn bg-muted border-line-strong hover:bg-muted-hover;
 }
 
 @utility btn-danger {
-    @apply btn bg-danger hover:bg-danger-hover text-white;
+    @apply btn bg-danger border-danger hover:bg-danger-hover text-white;
 }
 
 @utility btn-icon {
-    @apply size-6 cursor-pointer text-gray-500 hover:text-bkyz transition-colors
+    @apply size-6 cursor-pointer text-subtle hover:text-bkyz transition-colors
     [&>svg]:size-full;
 }
 
 /* input-box */ 
 @utility input-box {
-    @apply block bg-surface p-2 border border-line rounded-md
+    @apply block h-8 px-3 py-0 text-sm bg-surface border border-input
     transition-colors focus:outline-0 focus:border-bkyz;
 }
 
 @utility form-label {
-    @apply block mb-1 font-medium;
+    @apply block mb-1 text-sm font-semibold;
 }
 
 @utility spinner {
@@ -58,16 +63,17 @@
 
 /* modal */
 @utility modal {
-    @apply m-auto w-full max-w-md p-6 bg-surface shadow-xl border border-line rounded-xl
+    @apply m-auto w-full max-w-md p-4 bg-surface shadow-md border border-line
     open:flex open:flex-col gap-4 backdrop:bg-black/10;
 }
 
 body {
-  background-color: #f1f1f1;
-  font-family: 'Fira Sans', sans-serif;
+  background-color: var(--color-surface);
+  color: var(--color-ink);
+  font-family: var(--font-serif);
   font-weight: 400;
-  font-size: 1.125rem;
-  line-height: 1.6;
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 @media (pointer: coarse) {
@@ -78,11 +84,12 @@ body {
 
 nav {
   display: flex;
-  padding: 6px 20px;
-  font-size: 18px;
-  background-color: var(--color-bkyz);
-  color: #ffffff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  align-items: center;
+  height: 48px;
+  padding: 0 16px;
+  background-color: var(--color-surface);
+  color: var(--color-ink);
+  border-bottom: 1px solid var(--color-line);
 }
 
 #logo-text {
@@ -103,26 +110,16 @@ nav li {
 }
 
 nav a {
-  color: #ffffff;
+  color: var(--color-ink);
   text-decoration: none;
-  font-size: 18px;
-  padding: 8px 12px;
+  font-size: 14px;
+  padding: 6px 8px;
   transition: background-color 0.15s ease;
 }
 
-nav a:hover {
-  background-color: var(--color-bkyz-hover);
-  border-radius: 5px;
-}
-
+nav a:hover,
 nav a.active {
-  background-color: var(--color-bkyz-hover);
-  color: #ffffff;
-  border-radius: 8px;
-}
-
-nav a.active:hover {
-  background-color: var(--color-bkyz-hover);
+  background-color: var(--color-muted-hover);
 }
 
 .page {

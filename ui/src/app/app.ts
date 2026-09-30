@@ -1,6 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { Auth } from './services/auth-service';
+import { NotificationService } from './services/notification-service';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -10,7 +11,7 @@ import { CommonModule } from '@angular/common';
 })
 export class App {
 
-  constructor(public auth: Auth) { }
+  constructor(public auth: Auth, public notifications: NotificationService) { }
 
   accountMenuOpen = false;
 

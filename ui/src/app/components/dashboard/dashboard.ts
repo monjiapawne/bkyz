@@ -1,4 +1,4 @@
-import { afterRenderEffect, Component, computed, ElementRef, signal, ViewChild, WritableSignal } from '@angular/core';
+import { Component, computed, signal, ViewChild, WritableSignal } from '@angular/core';
 import { PlaylistService } from '../../services/playlist-service';
 import { PlaylistFull } from '../../interfaces/playlist-full';
 import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from '@angular/router';
@@ -6,8 +6,6 @@ import { TrackService } from '../../services/track-service';
 import { Track } from '../../interfaces/track';
 import { TrackFull } from '../../interfaces/track-full';
 import { Book } from '../../interfaces/book';
-import { TitleCasePipe } from '@angular/common';
-import { Auth } from '../../services/auth-service';
 import { AddPlaylistComponent } from './add-playlist/add-playlist';
 import { AddTrackComponent } from './add-track/add-track';
 import { SearchBookComponent } from './search-book/search-book';
@@ -19,7 +17,6 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
   imports: [
     RouterLink,
     RouterLinkActive,
-    TitleCasePipe,
     AddPlaylistComponent,
     AddTrackComponent,
     SearchBookComponent,
@@ -27,40 +24,20 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
     ConfirmDialog
   ],
   templateUrl: './dashboard.html',
-  styleUrl: './dashboard.css',
 })
 export class Dashboard {
 
   constructor(
     private playlistService: PlaylistService,
     private trackService: TrackService,
-    private auth: Auth,
     private route: ActivatedRoute,
     private router: Router
   ) { }
 
 
   @ViewChild('addTrackModal') addTrackModal!: AddTrackComponent;
-  @ViewChild('tabs', { static: true }) tabs!: ElementRef<HTMLElement>;
-
-  tabsFade = signal(false);
-
-  private tabsFadeEffect = afterRenderEffect(() => {
-    this.playlists();
-    this.fadeTabs();
-  });
-
-  fadeTabs() {
-    const el = this.tabs.nativeElement;
-    this.tabsFade.set(el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
-  }
-
-  scrollTabs(event: WheelEvent) {
-    const el = this.tabs.nativeElement;
-    if (el.scrollWidth <= el.clientWidth || Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
-    event.preventDefault();
-    el.scrollLeft += event.deltaY;
-  }
+  desktop = matchMedia('(min-width: 768px)');
+  sidebarOpen = signal(this.desktop.matches);
 
   playlistId: WritableSignal<number> = signal(0);
   selectedBookId!: number;
@@ -75,10 +52,7 @@ export class Dashboard {
     this.playlists().find(p => p.id === this.playlistId())?.tracks ?? []
   );
 
-  username: WritableSignal<string> = signal("");
-
   ngOnInit() {
-    this.getUsername();
     this.loadDashboard();
 
     this.route.paramMap.subscribe(params => {
@@ -138,18 +112,6 @@ export class Dashboard {
         ? { ...playlist, tracks: update(playlist.tracks) }
         : playlist
     ));
-  }
-
-  getUsername() {
-    this.auth.getUser()
-      .subscribe({
-        next: responseData => {
-          this.username.set(responseData.username);
-        },
-        error: err => {
-          console.log(err);
-        }
-      });
   }
 
   onBookSelected(book: Book): void {
