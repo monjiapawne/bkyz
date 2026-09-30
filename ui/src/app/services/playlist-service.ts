@@ -16,7 +16,7 @@ export class PlaylistService {
 
   getPlaylistsFull() {
     const params = new HttpParams().set('view', 'full');
-    return this.http.get<PlaylistFull[]>(this.API_URL, { params, withCredentials: true });
+    return this.http.get<PlaylistFull[]>(this.API_URL, { params });
   }
 
   postPlaylist(name: string, description?: string) {
@@ -25,16 +25,16 @@ export class PlaylistService {
       ...(description && {description})
     };
 
-    return this.http.post<Playlist>(this.API_URL, body, { withCredentials: true });
+    return this.http.post<Playlist>(this.API_URL, body);
   }
 
   patchPlaylist(id: number, name: string, description?: string) {
-    return this.http.patch<Playlist>(`${this.API_URL}/${id}`, { name, description }, { withCredentials: true })
+    return this.http.patch<Playlist>(`${this.API_URL}/${id}`, { name, description })
       .pipe(tap(() => this.notifications.show('Playlist saved', 'info', 'short')));
   }
 
   deletePlaylist(id: number) {
-    return this.http.delete(`${this.API_URL}/${id}`, { withCredentials: true })
+    return this.http.delete(`${this.API_URL}/${id}`)
       .pipe(tap(() => this.notifications.show('Playlist removed', 'info', 'short')));
   }
 }

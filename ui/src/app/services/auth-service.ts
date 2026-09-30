@@ -34,23 +34,23 @@ export class Auth {
       "remember_me": rememberMe
     };
 
-    return this.httpClient.post<User>(this.apiURL + '/user/login', body, { withCredentials: true });
+    return this.httpClient.post<User>(this.apiURL + '/user/login', body);
   }
 
   getUsers() {
-    return this.httpClient.get<User[]>(this.apiURL + '/user', { withCredentials: true });
+    return this.httpClient.get<User[]>(this.apiURL + '/user');
   }
 
   patchUser(id: number, body: Partial<User> & { password?: string }) {
-    return this.httpClient.patch<User>(`${this.apiURL}/user/${id}`, body, { withCredentials: true });
+    return this.httpClient.patch<User>(`${this.apiURL}/user/${id}`, body);
   }
 
   getUser() {
-    return this.httpClient.get<User>(this.apiURL + '/user/me', { withCredentials: true });
+    return this.httpClient.get<User>(this.apiURL + '/user/me');
   }
 
   checkSession() {
-    this.httpClient.get<User>(this.apiURL + '/user/me', { withCredentials: true })
+    this.httpClient.get<User>(this.apiURL + '/user/me')
       .subscribe({
         next: (user) => {
           this.user.set(user);
@@ -64,7 +64,7 @@ export class Auth {
   }
 
   logout() {
-    this.httpClient.get(this.apiURL + '/user/logout', { withCredentials: true })
+    this.httpClient.get(this.apiURL + '/user/logout')
       .subscribe({
         next: (user) => {
           this.user.set(null);
