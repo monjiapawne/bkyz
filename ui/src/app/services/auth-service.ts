@@ -41,6 +41,10 @@ export class Auth {
     return this.httpClient.get<User[]>(this.apiURL + '/user', { withCredentials: true });
   }
 
+  patchUser(id: number, body: Partial<User>) {
+    return this.httpClient.patch<User>(`${this.apiURL}/user/${id}`, body, { withCredentials: true });
+  }
+
   getUser() {
     return this.httpClient.get<User>(this.apiURL + '/user/me', { withCredentials: true });
   }

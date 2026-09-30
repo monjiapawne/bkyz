@@ -1,5 +1,8 @@
 <dialog #modal class="modal">
-    <button type="button" (click)="close()" class="btn-close" aria-label="Close">&times;</button>
+    <div class="dialog-header">
+        <button type="button" (click)="close()" class="btn-close" aria-label="Close">&times;</button>
+        <h2>Add book</h2>
+    </div>
 
     <div class="py-2 text-ink">
         <label for="bookSearch" class="form-label">Search for a book</label>

@@ -1,0 +1,12 @@
+<app-form-dialog #dialog title="Edit user" [form]="userForm" [submitting]="isSubmitting()" (submitted)="onSubmit()">
+    <div [formGroup]="userForm" class="space-y-2">
+        <app-field label="Username">
+            <input type="text" formControlName="username" class="input-box w-full p-1.5" />
+        </app-field>
+
+        <label class="flex items-center gap-2">
+            <input type="checkbox" formControlName="is_admin" />
+            <span class="font-medium">Admin</span>
+        </label>
+    </div>
+</app-form-dialog>

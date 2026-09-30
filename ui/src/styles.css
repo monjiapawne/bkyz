@@ -67,8 +67,12 @@
     open:flex open:flex-col gap-4 backdrop:bg-black/10;
 }
 
+@utility dialog-header {
+    @apply flex items-center gap-3 -mx-4 -mt-4 px-4 py-3 border-b border-line text-base font-semibold;
+}
+
 @utility btn-close {
-    @apply self-start md:absolute md:top-2 md:right-3 text-2xl leading-none text-subtle hover:text-ink cursor-pointer;
+    @apply text-2xl leading-none text-subtle hover:text-ink cursor-pointer md:order-last md:ml-auto;
 }
 
 @utility modal {

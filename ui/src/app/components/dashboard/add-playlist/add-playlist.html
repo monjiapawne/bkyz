@@ -1,41 +1,12 @@
-<dialog #modal class="modal">
-    <button type="button" (click)="modal.close()" class="btn-close" aria-label="Close">&times;</button>
+<app-form-dialog #dialog [title]="editing ? 'Edit playlist' : 'New playlist'" [form]="playlistForm" [submitting]="isSubmitting()" [deletable]="!!editing"
+    [submitLabel]="editing ? 'Save' : 'Add Playlist'" (submitted)="onSubmit()" (deleted)="playlistDeleted.emit()">
+    <div [formGroup]="playlistForm" class="space-y-2">
+        <app-field label="Name">
+            <input type="text" formControlName="name" class="input-box w-full p-1.5" />
+        </app-field>
 
-    <div class="text-sm text-ink">
-
-        <form [formGroup]="playlistForm" (ngSubmit)="onSubmit()" (keydown.control.enter)="$event.preventDefault(); onSubmit()" class="space-y-2">
-
-            <app-field label="Name">
-                <input type="text" formControlName="name" class="input-box w-full p-1.5" />
-            </app-field>
-
-            <app-field label="Description">
-                <textarea formControlName="description" rows="3" class="input-box h-auto w-full p-1.5"></textarea>
-            </app-field>
-
-            <div class="flex justify-end gap-2 pt-2">
-
-                @if (editing) {
-                <button type="button" (click)="modal.close(); playlistDeleted.emit()"
-                    class="btn-danger mr-auto">
-                    Delete
-                </button>
-                }
-
-                <button type="submit" [disabled]="playlistForm.invalid || isSubmitting()"
-                    class="btn-primary gap-2">
-
-                    @if (isSubmitting()) {
-                    <span class="spinner text-white"></span>
-                    }
-                    <span>{{ editing ? 'Save' : 'Add Playlist' }}</span>
-
-                </button>
-
-            </div>
-
-        </form>
-
+        <app-field label="Description">
+            <textarea formControlName="description" rows="3" class="input-box h-auto w-full p-1.5"></textarea>
+        </app-field>
     </div>
-
-</dialog>
+</app-form-dialog>

@@ -1,5 +1,5 @@
 from datetime import UTC, datetime
-from typing import Annotated, Literal
+from typing import Annotated, Any, Literal
 
 from pydantic import AfterValidator, BaseModel, ConfigDict
 
@@ -14,16 +14,21 @@ class Out(BaseModel):
         """Validate and dump the obj"""
         return cls.model_validate(obj).model_dump(mode="json")
 
+    @classmethod
+    def model_(cls, obj) -> Any:
+        """Validate the obj into a model, for routes with spectree resp= so it isn't validated twice"""
+        return cls.model_validate(obj)
+
 
 class ViewQuery(BaseModel):
     view: Literal["basic", "full"] = "basic"
     """Response shape, 'full' embeds related resources."""
 
 
-
 def utc_date_time_conv(v: datetime):
     if v.tzinfo:
         return v
     return v.replace(tzinfo=UTC)
+
 
 UTCDatetime = Annotated[datetime, AfterValidator(utc_date_time_conv)]

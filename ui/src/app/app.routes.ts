@@ -41,7 +41,8 @@ export const routes: Routes = [
     { path: 'dashboard', component: Dashboard, canActivate: [authOnly, restoreLast('Playlists')] },
     { path: 'playlists', component: Dashboard, canActivate: [authOnly, restoreLast('Playlists')] },
     { path: 'playlists/:id', component: Dashboard, canActivate: [authOnly] },
-    { path: 'library', component: LibraryPage, canActivate: [authOnly] },
+    { path: 'library', component: LibraryPage, canActivate: [authOnly, restoreLast('Library')] },
+    { path: 'library/:section', component: LibraryPage, canActivate: [authOnly] },
     { path: 'admin', component: AdminPage, canActivate: [adminOnly, restoreLast('Admin')] },
     { path: 'admin/:section', component: AdminPage, canActivate: [adminOnly] }
 ];

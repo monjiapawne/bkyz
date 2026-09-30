@@ -1,7 +1,8 @@
-import { Component, ElementRef, EventEmitter, Input, Output, signal, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output, signal, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
 import { Field } from '../../shared/field/field';
+import { FormDialog } from '../../shared/form-dialog/form-dialog';
 import { TrackService } from '../../../services/track-service';
 import { Track } from '../../../interfaces/track';
 import { Playlist } from '../../../interfaces/playlist';
@@ -9,7 +10,7 @@ import { Playlist } from '../../../interfaces/playlist';
 @Component({
   selector: 'app-add-track',
   standalone: true,
-  imports: [ReactiveFormsModule, Field],
+  imports: [ReactiveFormsModule, Field, FormDialog],
   templateUrl: './add-track.html'
 })
 export class AddTrackComponent {
@@ -19,7 +20,7 @@ export class AddTrackComponent {
   @Input() playlists: Playlist[] = [];
   @Output() trackAdded = new EventEmitter<void>();
   @Output() trackDeleted = new EventEmitter<Track>();
-  @ViewChild('modal') modal!: ElementRef<HTMLDialogElement>;
+  @ViewChild('dialog') dialog!: FormDialog;
 
   isSubmitting = signal(false);
   editing: Track | null = null;
@@ -63,7 +64,7 @@ export class AddTrackComponent {
     if (track) {
       this.trackForm.patchValue({ ...track, notes: track.notes ?? '' });
     }
-    this.modal.nativeElement.showModal();
+    this.dialog.open();
   }
 
   onSubmit(): void {
@@ -104,7 +105,7 @@ export class AddTrackComponent {
       )
       .subscribe({
         next: () => {
-          this.modal.nativeElement.close();
+          this.dialog.close();
           this.trackAdded.emit();
         },
         error: err => {
