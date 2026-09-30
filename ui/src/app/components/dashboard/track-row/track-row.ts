@@ -18,6 +18,11 @@ export class TrackRowComponent {
 
   position = linkedSignal(() => this.track().position);
   year = computed(() => this.book().publish_date?.match(/\d{4}/)?.[0]);
+  lastRead = computed(() => {
+    const mins = Math.floor((Date.now() - Date.parse(this.track().updated_at)) / 60000);
+    const parts = [[Math.floor(mins / 1440), 'day'], [Math.floor(mins / 60) % 24, 'hour'], [mins % 60, 'min']] as const;
+    return parts.filter(([n]) => n).map(([n, unit]) => `${n} ${unit}${n > 1 && unit !== 'min' ? 's' : ''}`).join(', ') || 'just now';
+  });
 
   progress(): number {
     const track = this.track();

@@ -7,4 +7,5 @@ export interface Track {
     book_id: number;
     active: boolean;
     notes: string | null;
+    updated_at: string;
 }
