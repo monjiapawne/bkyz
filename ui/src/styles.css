@@ -62,9 +62,18 @@
 }
 
 /* modal */
+@utility modal-sm {
+    @apply m-auto w-full max-w-xs p-4 bg-surface shadow-md border border-line
+    open:flex open:flex-col gap-4 backdrop:bg-black/10;
+}
+
+@utility btn-close {
+    @apply self-start md:absolute md:top-2 md:right-3 text-2xl leading-none text-subtle hover:text-ink cursor-pointer;
+}
+
 @utility modal {
     @apply m-0 w-full max-w-none h-dvh max-h-dvh overflow-y-auto p-4 bg-surface
-    md:m-auto md:max-w-md md:h-auto md:max-h-[90dvh] md:shadow-md md:border md:border-line
+    md:m-auto md:max-w-md md:h-fit md:max-h-[90dvh] md:shadow-md md:border md:border-line
     open:flex open:flex-col gap-4 backdrop:bg-black/10;
 }
 

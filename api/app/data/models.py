@@ -226,8 +226,9 @@ class Playlist(CRUDMixin, db.Model):
 
     @classmethod
     def get_owned(cls, playlist_id: int, user_id: int) -> Self:
-        playlist = db.session.scalar(select(cls).where(cls.id == playlist_id, cls.id == user_id))
+        playlist = db.session.scalar(select(cls).where(cls.id == playlist_id, cls.user_id == user_id))
         if playlist is None:
+            logger.info(f"invalid resource access: user: {user_id} tried to access {playlist_id}")
             raise NotFoundError("playlist")
 
         return playlist

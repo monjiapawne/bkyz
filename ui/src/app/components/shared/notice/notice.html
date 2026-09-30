@@ -1,0 +1,11 @@
+@if (notifications.notification(); as n) {
+<div class="fixed bottom-4 inset-x-4 md:left-auto md:max-w-md z-30 flex items-center gap-3 px-4 py-3 text-sm shadow-md border"
+    [class]="n.type === 'error' ? 'bg-danger-subtle border-line' : 'bg-bkyz border-bkyz text-white'" role="status">
+    <span class="flex-1">{{ n.message }}</span>
+    <button type="button" (click)="notifications.dismiss()" class="size-4 shrink-0 opacity-70 hover:opacity-100 cursor-pointer" aria-label="Dismiss">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+            <path d="M6 6l12 12M18 6L6 18" />
+        </svg>
+    </button>
+</div>
+}

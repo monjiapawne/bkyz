@@ -1,4 +1,5 @@
 <dialog #modal class="modal">
+    <button type="button" (click)="close()" class="btn-close" aria-label="Close">&times;</button>
 
     <div class="py-2 text-ink">
         <label for="bookSearch" class="form-label">Search for a book</label>
@@ -28,12 +29,7 @@
         </div>
         }
 
-        <div class="flex justify-between gap-2 mt-4">
-            <button type="button" (click)="close()"
-                class="btn-neutral">
-                Cancel
-            </button>
-
+        <div class="flex justify-end gap-2 mt-4">
             @if (!isSearching() && results().length === 0) {
             <button type="button" (click)="addBookModal.open()"
                 class="btn-primary">
