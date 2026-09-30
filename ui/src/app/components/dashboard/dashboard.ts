@@ -11,7 +11,6 @@ import { AddTrackComponent } from './add-track/add-track';
 import { SearchBookComponent } from './search-book/search-book';
 import { TrackRowComponent } from './track-row/track-row';
 import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
-import { NotificationService } from '../../services/notification-service';
 
 
 @Component({
@@ -33,8 +32,7 @@ export class Dashboard {
     private playlistService: PlaylistService,
     private trackService: TrackService,
     private route: ActivatedRoute,
-    private router: Router,
-    private notifications: NotificationService,
+    private router: Router
   ) { }
 
 
@@ -89,7 +87,6 @@ export class Dashboard {
     this.playlistService.deletePlaylist(deletedId)
       .subscribe({
         next: () => {
-          this.notifications.show('Playlist removed', 'info', 'short');
           const remaining = this.playlists().filter(p => p.id !== deletedId);
           this.playlists.set(remaining);
 
@@ -134,7 +131,6 @@ export class Dashboard {
   deleteTrack() {
     const track = this.pendingTrack!;
     this.trackService.deleteTrackFromPlaylist(this.playlistId(), track.id).subscribe(() => {
-      this.notifications.show('Track removed');
       this.updateTracks(tracks => tracks.filter(t => t.id !== track.id));
     });
   }

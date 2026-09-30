@@ -3,6 +3,8 @@ import { environment } from '../../environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Playlist } from '../interfaces/playlist';
 import { PlaylistFull } from '../interfaces/playlist-full';
+import { tap } from 'rxjs';
+import { NotificationService } from './notification-service';
 
 @Injectable({
   providedIn: 'root',
@@ -10,7 +12,7 @@ import { PlaylistFull } from '../interfaces/playlist-full';
 export class PlaylistService {
   private readonly API_URL = `${environment.apiUrl}/playlists`
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private notifications: NotificationService) { }
 
   getPlaylistsFull() {
     const params = new HttpParams().set('view', 'full');
@@ -27,10 +29,12 @@ export class PlaylistService {
   }
 
   patchPlaylist(id: number, name: string, description?: string) {
-    return this.http.patch<Playlist>(`${this.API_URL}/${id}`, { name, description }, { withCredentials: true });
+    return this.http.patch<Playlist>(`${this.API_URL}/${id}`, { name, description }, { withCredentials: true })
+      .pipe(tap(() => this.notifications.show('Playlist saved', 'info', 'short')));
   }
 
   deletePlaylist(id: number) {
-    return this.http.delete(`${this.API_URL}/${id}`, { withCredentials: true });
+    return this.http.delete(`${this.API_URL}/${id}`, { withCredentials: true })
+      .pipe(tap(() => this.notifications.show('Playlist removed', 'info', 'short')));
   }
 }
