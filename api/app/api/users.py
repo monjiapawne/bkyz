@@ -1,7 +1,6 @@
 from flask import Blueprint
 from flask_login import current_user, login_required, login_user, logout_user
 from pydantic import BaseModel, ConfigDict, Field
-from flask_login import login_required
 
 from app import spec
 from app.api.auth import admin_required

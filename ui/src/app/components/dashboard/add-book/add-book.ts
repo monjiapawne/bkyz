@@ -1,7 +1,8 @@
-import { Component, ElementRef, EventEmitter, Output, signal, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Output, signal, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
 import { Field } from '../../shared/field/field';
+import { FormDialog } from '../../shared/form-dialog/form-dialog';
 import { BookService } from '../../../services/book-service';
 import { Book } from '../../../interfaces/book';
 
@@ -15,13 +16,13 @@ const validateBookPost: ValidatorFn = (group: AbstractControl): ValidationErrors
 @Component({
   selector: 'app-add-book',
   standalone: true,
-  imports: [ReactiveFormsModule, Field],
+  imports: [ReactiveFormsModule, Field, FormDialog],
   templateUrl: './add-book.html'
 })
 export class AddBookComponent {
 
   @Output() bookAdded = new EventEmitter<Book>();
-  @ViewChild('modal') modal!: ElementRef<HTMLDialogElement>;
+  @ViewChild('dialog') dialog!: FormDialog;
 
   isSubmitting = signal(false);
 
@@ -43,7 +44,7 @@ export class AddBookComponent {
   }
 
   open(): void {
-    this.modal.nativeElement.showModal();
+    this.dialog.open();
   }
 
   onSubmit(): void {
@@ -67,7 +68,7 @@ export class AddBookComponent {
       .subscribe({
         next: book => {
           this.bookForm.reset();
-          this.modal.nativeElement.close();
+          this.dialog.close();
           this.bookAdded.emit(book);
         },
         error: err => {

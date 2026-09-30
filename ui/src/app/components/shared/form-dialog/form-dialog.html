@@ -1,0 +1,22 @@
+<dialog #modal class="modal">
+    <div class="dialog-header">
+        <button type="button" (click)="close()" class="btn-close" aria-label="Close">&times;</button>
+        <h2>{{ title() }}</h2>
+    </div>
+
+    <form (submit)="$event.preventDefault(); submit()" (keydown.control.enter)="$event.preventDefault(); submit()" class="text-sm text-ink">
+        <ng-content />
+
+        <div class="flex justify-end gap-2 pt-4">
+            @if (deletable()) {
+            <button type="button" (click)="close(); deleted.emit()" class="btn-danger mr-auto">Delete</button>
+            }
+            <button type="submit" [disabled]="form().invalid || submitting()" class="btn-primary gap-2">
+                @if (submitting()) {
+                <span class="spinner text-white"></span>
+                }
+                <span>{{ submitLabel() }}</span>
+            </button>
+        </div>
+    </form>
+</dialog>

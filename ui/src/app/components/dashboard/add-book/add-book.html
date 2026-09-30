@@ -1,45 +1,20 @@
-<dialog #modal class="modal">
-    <button type="button" (click)="modal.close()" class="btn-close" aria-label="Close">&times;</button>
+<app-form-dialog #dialog title="New book" [form]="bookForm" [submitting]="isSubmitting()"
+    submitLabel="Add Book" (submitted)="onSubmit()">
+    <div [formGroup]="bookForm" class="space-y-2">
+        <app-field label="Title">
+            <input type="text" formControlName="title" class="input-box w-full p-1.5" placeholder="Enter book title" />
+        </app-field>
 
-    <div class="text-sm text-ink">
+        <app-field label="Authors">
+            <input type="text" formControlName="authors" class="input-box w-full p-1.5" placeholder="J.K. Rowling, Stephen King" />
+        </app-field>
 
-        <form [formGroup]="bookForm" (ngSubmit)="onSubmit()" (keydown.control.enter)="$event.preventDefault(); onSubmit()" class="space-y-2">
+        <app-field label="ISBN">
+            <input type="text" formControlName="isbn" class="input-box w-full p-1.5" />
+        </app-field>
 
-            <app-field label="Title">
-                <input type="text" formControlName="title" class="input-box w-full p-1.5" placeholder="Enter book title" />
-            </app-field>
-
-            <app-field label="Authors">
-                <input type="text" formControlName="authors" class="input-box w-full p-1.5" placeholder="J.K. Rowling, Stephen King" />
-            </app-field>
-
-            <app-field label="ISBN">
-                <input type="text" formControlName="isbn" class="input-box w-full p-1.5" />
-            </app-field>
-
-            <app-field label="Number of Pages">
-                <input type="number" formControlName="number_of_pages" class="input-box w-full p-1.5" min="1" />
-            </app-field>
-
-            <div class="flex gap-2 pt-2">
-
-                <button type="submit" [disabled]="bookForm.invalid || isSubmitting()"
-                    class="btn-primary flex-1 gap-2">
-
-                    @if (isSubmitting()) {
-                    <span class="spinner text-white"></span>
-                    <span>Adding...</span>
-                    } @else {
-                    <span>Add Book</span>
-                    }
-
-                </button>
-
-
-            </div>
-
-        </form>
-
+        <app-field label="Number of Pages">
+            <input type="number" formControlName="number_of_pages" class="input-box w-full p-1.5" min="1" />
+        </app-field>
     </div>
-
-</dialog>
+</app-form-dialog>

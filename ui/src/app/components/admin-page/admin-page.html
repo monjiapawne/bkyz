@@ -7,24 +7,8 @@
     </div>
 
     @if (users(); as users) {
-    <table class="w-full border border-line bg-surface text-left">
-        <thead class="border-b border-line text-sm text-subtle">
-            <tr>
-                <th class="px-4 py-2 font-semibold">ID</th>
-                <th class="px-4 py-2 font-semibold">Username</th>
-                <th class="px-4 py-2 font-semibold">Admin</th>
-            </tr>
-        </thead>
-        <tbody class="divide-y divide-line">
-            @for (user of users; track user.id) {
-            <tr>
-                <td class="px-4 py-2">{{ user.id }}</td>
-                <td class="px-4 py-2">{{ user.username }}</td>
-                <td class="px-4 py-2">{{ user.is_admin ? 'Yes' : '' }}</td>
-            </tr>
-            }
-        </tbody>
-    </table>
+    <app-data-table [columns]="userColumns" [rows]="users" [editable]="true" (edit)="editUser.open($event)" />
+    <app-edit-user #editUser (saved)="loadUsers()" />
     } @else {
     <div class="px-4 py-8 text-center text-base md:text-lg text-subtle border border-line bg-surface">Select a section</div>
     }

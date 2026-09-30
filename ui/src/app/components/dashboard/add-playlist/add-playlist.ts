@@ -1,21 +1,22 @@
-import { Component, ElementRef, EventEmitter, Output, ViewChild, signal } from '@angular/core';
+import { Component, EventEmitter, Output, ViewChild, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
 import { Field } from '../../shared/field/field';
+import { FormDialog } from '../../shared/form-dialog/form-dialog';
 import { PlaylistService } from '../../../services/playlist-service';
 import { Playlist } from '../../../interfaces/playlist';
 
 @Component({
   selector: 'app-add-playlist',
   standalone: true,
-  imports: [ReactiveFormsModule, Field],
+  imports: [ReactiveFormsModule, Field, FormDialog],
   templateUrl: './add-playlist.html'
 })
 export class AddPlaylistComponent {
 
   @Output() playlistAdded = new EventEmitter<number>();
   @Output() playlistDeleted = new EventEmitter<void>();
-  @ViewChild('modal') modal!: ElementRef<HTMLDialogElement>;
+  @ViewChild('dialog') dialog!: FormDialog;
 
   isSubmitting = signal(false);
   editing: Playlist | null = null;
@@ -38,7 +39,7 @@ export class AddPlaylistComponent {
       name: playlist?.name ?? '',
       description: playlist?.description ?? ''
     });
-    this.modal.nativeElement.showModal();
+    this.dialog.open();
   }
 
   onSubmit(): void {
@@ -60,7 +61,7 @@ export class AddPlaylistComponent {
       )
       .subscribe({
         next: responseData => {
-          this.modal.nativeElement.close();
+          this.dialog.close();
           this.playlistAdded.emit(responseData.id);
         },
         error: err => {

@@ -2,6 +2,12 @@ from flask import Blueprint
 
 api = Blueprint("api", __name__)
 
+
+@api.get("version")
+def api_version():
+    return "0.1.0"
+
+
 from app.api.books import books as books_bp
 from app.api.playlists import playlist as playlists_bp
 from app.api.tracks import tracks as tracks_bp

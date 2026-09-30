@@ -1,4 +1,5 @@
 from enum import StrEnum, auto
+from typing import TYPE_CHECKING, Self
 
 from sqlalchemy import (
     Column,
@@ -14,6 +15,10 @@ from app import db
 from app.data.base import CRUDMixin
 
 
+if TYPE_CHECKING:
+    from app.data.user import User
+
+
 class FetchStatus(StrEnum):
     """An enum to store the results from external fetches to ensure we can
     properly proceed all subsiquent for the same query."""
@@ -27,6 +32,7 @@ class FetchStatus(StrEnum):
     unknown = auto()
     ok = auto()
 
+
 # Junction table of books and their authors (since there can be many to many)
 book_authors = Table(
     "book_authors",
@@ -34,6 +40,7 @@ book_authors = Table(
     Column("book_id", ForeignKey("books.id"), primary_key=True),
     Column("author_id", ForeignKey("authors.id"), primary_key=True),
 )
+
 
 class Book(CRUDMixin, db.Model):
     __tablename__ = "books"
@@ -48,6 +55,8 @@ class Book(CRUDMixin, db.Model):
         server_default=FetchStatus.not_attempted,
     )
 
+    added_by_id: Mapped[int | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"))
+    added_by: Mapped["User | None"] = relationship()
 
     _authors: Mapped[list["Author"]] = relationship(secondary=book_authors, back_populates="books")
 
@@ -116,5 +125,3 @@ class Author(CRUDMixin, db.Model):
             authors.append(author)
 
         return authors
-
-

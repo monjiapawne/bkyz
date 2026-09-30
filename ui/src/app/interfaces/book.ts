@@ -6,4 +6,5 @@ export interface Book {
     publish_date: string | null;
     title: string;
     cover_url: string;
+    added_by: string | null;
 }

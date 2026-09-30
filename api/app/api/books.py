@@ -2,6 +2,7 @@ import logging
 from typing import Self
 
 from flask import Blueprint, current_app, send_file, url_for
+from flask_login import current_user
 from pydantic import (
     BaseModel,
     ConfigDict,
@@ -66,6 +67,12 @@ class BookOut(Out):
     pages: int
     publish_date: str | None = None
     isbn: str | None = None
+    added_by: str | None = None
+
+    @field_validator("added_by", mode="before")
+    @classmethod
+    def _username(cls, user) -> str | None:
+        return user.username if user else None
 
     @field_validator("authors", mode="before")
     @classmethod
@@ -101,7 +108,7 @@ def create_book(json: BookIn):
 
     if json.lookup and isbn:
         if existing := Book.get_by_isbn(isbn):
-            return BookOut.json_(existing), 200
+            return BookOut.model_(existing), 200
 
         # Merge the two looked up, input fields taking priority
         result = fetch_book(isbn=isbn)
@@ -121,12 +128,13 @@ def create_book(json: BookIn):
         publish_date=book.get("publish_date"),
         isbn=isbn if isbn else None,
         fetch_status=fetch_status,
+        added_by_id=current_user.id,
     )
 
     if isbn:
         fetch_cover(current_app.config["COVERS_DIR"], book.id, isbn)
 
-    return BookOut.json_(book), 201
+    return BookOut.model_(book), 201
 
 
 @books.patch("/<int:book_id>")
