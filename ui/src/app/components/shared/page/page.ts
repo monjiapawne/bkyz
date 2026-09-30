@@ -11,7 +11,7 @@ export class Page {
 
   title = input<string>();
   description = input<string>();
-  sidebarTitle = input<string>();
+  sidebarTitle = input.required<string>();
 
   desktop = matchMedia('(min-width: 768px)');
   private storageKey = computed(() => `sidebar:${this.sidebarTitle()}`);
@@ -25,7 +25,7 @@ export class Page {
       });
 
     effect(() => {
-      if (this.sidebarTitle() && this.desktop.matches) {
+      if (this.desktop.matches) {
         localStorage.setItem(this.storageKey(), this.sidebarOpen() ? 'open' : 'closed');
       }
     });

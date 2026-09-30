@@ -10,12 +10,13 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app import db
 from app.data.base import CRUDMixin
 from app.data.user import User
-from app.errors import NotFoundError, ForbiddenAsNotFound
+from app.errors import ForbiddenAsNotFound, NotFoundError
 
 logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
     from app.data.track import Track
+
 
 class Playlist(CRUDMixin, db.Model):
     """A playlist is a group of tracks."""
@@ -39,7 +40,7 @@ class Playlist(CRUDMixin, db.Model):
         playlist = cls.get_by_id(playlist_id)
         if playlist is None:
             raise NotFoundError("playlist")
-        if playlist.user_id != user_id: 
+        if playlist.user_id != user_id:
             raise ForbiddenAsNotFound("playlist")
 
         return playlist

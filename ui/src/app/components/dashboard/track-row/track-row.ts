@@ -19,9 +19,10 @@ export class TrackRowComponent {
   position = linkedSignal(() => this.track().position);
   year = computed(() => this.book().publish_date?.match(/\d{4}/)?.[0]);
   lastRead = computed(() => {
-    const mins = Math.floor((Date.now() - Date.parse(this.track().updated_at)) / 60000);
-    const parts = [[Math.floor(mins / 1440), 'day'], [Math.floor(mins / 60) % 24, 'hour'], [mins % 60, 'min']] as const;
-    return parts.filter(([n]) => n).map(([n, unit]) => `${n} ${unit}${n > 1 && unit !== 'min' ? 's' : ''}`).join(', ') || 'just now';
+    const mins = (Date.now() - Date.parse(this.track().updated_at)) / 60000;
+    const units = [['year', 525600], ['month', 43200], ['week', 10080], ['day', 1440], ['hour', 60], ['minute', 1]] as const;
+    const [unit, size] = units.find(([, size]) => mins >= size) ?? ['minute', 1];
+    return new Intl.RelativeTimeFormat('en').format(-Math.floor(mins / size), unit);
   });
 
   progress(): number {

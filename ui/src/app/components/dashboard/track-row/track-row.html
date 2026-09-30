@@ -2,19 +2,24 @@
     <img [src]="book().cover_url" [alt]="book().title" class="hidden min-[300px]:block shrink-0 h-full aspect-2/3 object-cover border border-line">
 
     <div class="flex flex-col flex-1 min-w-0">
-        <div class="flex items-start gap-3">
-            <div class="min-w-0">
-                <div class="text-bkyz font-bold text-xs md:text-sm leading-none mb-1.5">
-                    {{ track().medium | uppercase }}
-                </div>
-                <div class="text-base md:text-lg font-semibold leading-snug line-clamp-2" [title]="book().title">
+        <div class="flex items-start gap-3 flex-1 min-h-0">
+            <div class="flex flex-col flex-wrap content-start flex-1 min-w-0 h-full overflow-hidden">
+                <div class="w-full text-base md:text-lg font-semibold leading-snug line-clamp-2" [title]="book().title">
                     {{ book().title }}
                 </div>
-                <div class="text-sm md:text-base text-subtle truncate">
-                    {{ book().authors }}
-                    @if (year()) {
-                    <span>({{ year() }})</span>
+                <div class="w-full">
+                    <div class="text-sm md:text-base text-subtle truncate">
+                        {{ book().authors }}
+                        @if (year()) {
+                        <span>({{ year() }})</span>
+                        }
+                    </div>
+                    @if (track().active) {
+                    <div class="text-xs text-subtle/70">last read {{ lastRead() }}</div>
                     }
+                </div>
+                <div class="w-full text-bkyz font-bold text-xs md:text-sm leading-none mt-1.5">
+                    {{ track().medium | uppercase }}
                 </div>
             </div>
 
@@ -30,8 +35,7 @@
         </div>
 
         @if (track().active) {
-        <div class="mt-auto">
-            <div class="text-xs text-subtle/70">last read {{ lastRead() }}</div>
+        <div class="shrink-0">
             <div class="flex items-baseline justify-between text-sm md:text-base pointer-coarse:text-base text-subtle mb-1">
                 <span>{{ progress() }}%</span>
 
@@ -41,8 +45,8 @@
                     <button type="button" class="mr-2 text-bkyz hover:underline cursor-pointer" (click)="progressChange.emit(position())">Save</button>
                     }
                     <label class="flex items-baseline gap-1 cursor-text">
-                        <input type="text" inputmode="numeric" class="p-0 bg-transparent text-right border-b border-subtle focus:outline-0 focus:border-bkyz"
-                            [value]="position()" [style.width.ch]="(position() + '').length + 0.5" (input)="position.set(+pos.value)" (click)="pos.setSelectionRange(pos.value.length, pos.value.length)" (keydown.enter)="progressChange.emit(position())" (keydown.escape)="position.set(track().position); pos.blur()" #pos />
+                        <input type="text" inputmode="numeric" class="box-content px-1 leading-none bg-surface border border-line text-center focus:outline-1 focus:outline-bkyz"
+                            [value]="position()" [style.width.ch]="(position() + '').length" (input)="position.set(+pos.value)" (click)="pos.setSelectionRange(pos.value.length, pos.value.length)" (keydown.enter)="progressChange.emit(position())" (keydown.escape)="position.set(track().position); pos.blur()" #pos />
                         <span>/ {{ track().total }} {{ track().unit }}</span>
                     </label>
                 </div>
