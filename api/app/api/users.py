@@ -4,7 +4,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from app import spec
 from app.api.schemas import Out
-from app.data.models import User
+from app.data import User
 from app.errors import NotFoundError, UnauthorizedError
 
 users = Blueprint("users", __name__)

@@ -5,7 +5,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from app import spec
 from app.api.books import BookOut
 from app.api.schemas import Out
-from app.data.models import Book, Medium, Playlist, Track
+from app.data import Book, Medium, Playlist, Track
 from app.errors import NotFoundError
 
 tracks = Blueprint("tracks", __name__)

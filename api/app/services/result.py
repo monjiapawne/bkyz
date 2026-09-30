@@ -4,7 +4,7 @@ from functools import wraps
 
 import requests
 
-from app.data.models import FetchStatus
+from app.data import FetchStatus
 
 logger = logging.getLogger("svc")
 
