@@ -5,7 +5,8 @@ api = Blueprint("api", __name__)
 
 @api.get("version")
 def api_version():
-    return "0.1.0"
+    # todo: dynamic
+    return {"version": "0.0.1"}
 
 
 from app.api.books import books as books_bp
