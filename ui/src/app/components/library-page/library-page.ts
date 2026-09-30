@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 import { Page } from '../shared/page/page';
 
 @Component({
-  selector: 'app-history-page',
+  selector: 'app-library-page',
   imports: [Page],
-  templateUrl: './history-page.html',
+  templateUrl: './library-page.html',
 })
-export class HistoryPage { }
+export class LibraryPage { }
