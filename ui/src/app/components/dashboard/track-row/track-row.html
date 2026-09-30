@@ -21,6 +21,9 @@
                 <div class="w-full text-bkyz font-bold text-xs md:text-sm leading-none mt-1.5">
                     {{ track().medium | uppercase }}
                 </div>
+                @if (track().notes) {
+                <p class="w-full mt-1 text-sm text-subtle italic line-clamp-1" [title]="track().notes">{{ track().notes }}</p>
+                }
             </div>
 
             <div class="ml-auto flex items-center shrink-0 gap-3">
