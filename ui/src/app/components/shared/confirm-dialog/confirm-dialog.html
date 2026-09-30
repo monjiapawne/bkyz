@@ -1,4 +1,4 @@
-<dialog #modal class="modal">
+<dialog #modal class="modal-sm">
     <p>Delete {{ resourceName() ?? 'this'}}?</p>
     <button class="btn-danger" (click)="modal.close(); confirmed.emit()">Delete</button>
     <button class="btn-neutral" (click)="modal.close()">Cancel</button>

@@ -1,4 +1,5 @@
 <dialog #modal class="modal">
+    <button type="button" (click)="modal.close()" class="btn-close" aria-label="Close">&times;</button>
 
     <div class="text-sm text-ink">
 
@@ -20,11 +21,6 @@
                     Delete
                 </button>
                 }
-
-                <button type="button" (click)="modal.close()"
-                    class="btn-neutral">
-                    Cancel
-                </button>
 
                 <button type="submit" [disabled]="playlistForm.invalid || isSubmitting()"
                     class="btn-primary gap-2">

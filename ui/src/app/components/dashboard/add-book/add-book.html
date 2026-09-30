@@ -1,4 +1,5 @@
 <dialog #modal class="modal">
+    <button type="button" (click)="modal.close()" class="btn-close" aria-label="Close">&times;</button>
 
     <div class="text-sm text-ink">
 
@@ -34,10 +35,6 @@
 
                 </button>
 
-                <button type="button" (click)="modal.close()"
-                    class="btn-neutral flex-1">
-                    Cancel
-                </button>
 
             </div>
 

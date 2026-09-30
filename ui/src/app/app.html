@@ -19,20 +19,10 @@
     </div>
   </nav>
 
-  @if (notifications.notification(); as n) {
-  <div class="flex items-center gap-3 px-4 py-2 text-sm border-b border-line"
-    [class]="n.type === 'error' ? 'bg-danger-subtle' : 'bg-sidebar'" role="status">
-    <span class="flex-1">{{ n.message }}</span>
-    <button type="button" (click)="notifications.dismiss()" class="btn-icon size-4" aria-label="Dismiss">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
-        <path d="M6 6l12 12M18 6L6 18" />
-      </svg>
-    </button>
-  </div>
-  }
-
   <main>
     <router-outlet />
   </main>
+
+  <app-notice-banner />
 
 </div>

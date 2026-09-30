@@ -1,16 +1,16 @@
-<div class="flex h-32 md:h-36 gap-3 px-4 py-3 hover:bg-muted-hover/50">
+<div class="flex h-36 md:h-40 gap-3 px-4 py-3 hover:bg-muted-hover/50">
     <img [src]="book().cover_url" [alt]="book().title" class="hidden min-[300px]:block shrink-0 h-full aspect-2/3 object-cover border border-line">
 
     <div class="flex flex-col flex-1 min-w-0">
         <div class="flex items-start gap-3">
             <div class="min-w-0">
-                <div class="text-bkyz font-bold text-xs leading-none mb-1.5">
+                <div class="text-bkyz font-bold text-xs md:text-sm leading-none mb-1.5">
                     {{ track().medium | uppercase }}
                 </div>
-                <div class="text-sm md:text-base font-semibold leading-snug line-clamp-2" [title]="book().title">
+                <div class="text-base md:text-lg font-semibold leading-snug line-clamp-2" [title]="book().title">
                     {{ book().title }}
                 </div>
-                <div class="text-xs md:text-sm text-subtle truncate">
+                <div class="text-sm md:text-base text-subtle truncate">
                     {{ book().authors }}
                     @if (year()) {
                     <span>({{ year() }})</span>
@@ -19,7 +19,7 @@
             </div>
 
             <div class="ml-auto flex shrink-0 gap-3">
-                <button type="button" class="btn-icon size-4 md:size-5" (click)="edit.emit(track())" aria-label="Edit a track">
+                <button type="button" class="btn-icon size-5" (click)="edit.emit(track())" aria-label="Edit a track">
                     <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 16 16">
                         <path d="M0 0h16v16H0z" fill="none" />
                         <path fill="currentColor"
@@ -31,7 +31,7 @@
 
         @if (track().active) {
         <div class="mt-auto">
-            <div class="flex items-baseline justify-between text-xs md:text-sm pointer-coarse:text-base text-subtle mb-1">
+            <div class="flex items-baseline justify-between text-sm md:text-base pointer-coarse:text-base text-subtle mb-1">
                 <span>{{ progress() }}%</span>
 
                 @if (track().total) {

@@ -34,8 +34,8 @@
         }
         <div class="flex items-start gap-2 mb-4">
             <div class="min-w-0">
-                <h1 class="text-xl md:text-2xl font-semibold truncate">{{ playlist()?.name }}</h1>
-                <p class="text-sm md:text-base text-subtle">{{ playlist()?.description }}</p>
+                <h1 class="text-2xl md:text-3xl font-semibold truncate">{{ playlist()?.name }}</h1>
+                <p class="text-base md:text-lg text-subtle">{{ playlist()?.description }}</p>
             </div>
             @if (playlist()) {
             <div class="ml-auto flex shrink-0 gap-2">
@@ -49,7 +49,7 @@
             @for (track of tracks(); track track.id) {
             <app-track-row class="block" [track]="track" [book]="track.book" (edit)="addTrackModal.open($event)" (progressChange)="onProgress(track, $event)"/>
             } @empty {
-            <div class="px-4 py-8 text-center text-sm md:text-base text-subtle">No books yet</div>
+            <div class="px-4 py-8 text-center text-base md:text-lg text-subtle">No books yet</div>
             }
         </div>
     </section>
