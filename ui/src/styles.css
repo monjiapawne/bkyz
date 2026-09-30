@@ -49,7 +49,7 @@
 
 /* input-box */ 
 @utility input-box {
-    @apply block h-8 px-3 py-0 text-sm bg-surface border border-input
+    @apply block h-8 px-2 pt-0 pb-px text-sm bg-surface border border-input
     transition-colors focus:outline-0 focus:border-bkyz;
 }
 

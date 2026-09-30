@@ -1,6 +1,5 @@
-import { Component, EventEmitter, Output, signal, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { finalize } from 'rxjs';
 import { Field } from '../../shared/field/field';
 import { FormDialog } from '../../shared/form-dialog/form-dialog';
 import { BookService } from '../../../services/book-service';
@@ -24,8 +23,6 @@ export class AddBookComponent {
   @Output() bookAdded = new EventEmitter<Book>();
   @ViewChild('dialog') dialog!: FormDialog;
 
-  isSubmitting = signal(false);
-
   bookForm: FormGroup;
 
   constructor(
@@ -47,33 +44,18 @@ export class AddBookComponent {
     this.dialog.open();
   }
 
-  onSubmit(): void {
-    if (this.bookForm.invalid || this.isSubmitting()) {
-      return;
-    }
-
-    this.isSubmitting.set(true);
-
+  save = () => {
     const form = this.bookForm.getRawValue();
-
-    this.bookService.postBooks(
+    return this.bookService.postBooks(
       form.authors || undefined,
       form.isbn! || undefined,
       form.number_of_pages! || undefined,
       form.title! || undefined
-    )
-      .pipe(
-        finalize(() => this.isSubmitting.set(false))
-      )
-      .subscribe({
-        next: book => {
-          this.bookForm.reset();
-          this.dialog.close();
-          this.bookAdded.emit(book);
-        },
-        error: err => {
-          console.error(err);
-        }
-      });
+    );
+  };
+
+  onSaved(book: Book): void {
+    this.bookForm.reset();
+    this.bookAdded.emit(book);
   }
 }

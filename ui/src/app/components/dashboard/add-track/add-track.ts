@@ -1,6 +1,5 @@
-import { Component, EventEmitter, Input, Output, signal, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { finalize } from 'rxjs';
 import { Field } from '../../shared/field/field';
 import { FormDialog } from '../../shared/form-dialog/form-dialog';
 import { TrackService } from '../../../services/track-service';
@@ -22,8 +21,23 @@ export class AddTrackComponent {
   @Output() trackDeleted = new EventEmitter<Track>();
   @ViewChild('dialog') dialog!: FormDialog;
 
-  isSubmitting = signal(false);
   editing: Track | null = null;
+
+  units = [
+    { value: 'pages', label: 'Pages' },
+    { value: 'chapters', label: 'Chapters' },
+    { value: '%', label: 'Percent' },
+    { value: 'other', label: 'Other' },
+  ];
+  mediums = [
+    { value: 'physical', label: 'Physical' },
+    { value: 'ebook', label: 'E-book' },
+    { value: 'audiobook', label: 'Audiobook' },
+  ];
+
+  get playlistOptions() {
+    return this.playlists.map(p => ({ value: p.id, label: p.name }));
+  }
 
   trackForm: FormGroup;
 
@@ -46,7 +60,7 @@ export class AddTrackComponent {
       customUnit: [''],
       medium: ['physical', Validators.required],
       active: [false],
-      notes: ['']
+      notes: ['', Validators.maxLength(255)]
     });
   }
 
@@ -67,18 +81,12 @@ export class AddTrackComponent {
     this.dialog.open();
   }
 
-  onSubmit(): void {
-    if (this.trackForm.invalid || this.isSubmitting()) {
-      return;
-    }
-
-    this.isSubmitting.set(true);
-
+  save = () => {
     const form = this.trackForm.getRawValue();
 
     const unit = form.unit === 'other' ? form.customUnit.trim() : form.unit;
 
-    const request = this.editing
+    return this.editing
       ? this.trackService.patchTrack(this.playlistId, this.editing.id, {
         position: form.position!,
         total: form.total!,
@@ -98,19 +106,5 @@ export class AddTrackComponent {
         form.active,
         form.notes.trim() || null
       );
-
-    request
-      .pipe(
-        finalize(() => this.isSubmitting.set(false))
-      )
-      .subscribe({
-        next: () => {
-          this.dialog.close();
-          this.trackAdded.emit();
-        },
-        error: err => {
-          console.error(err);
-        }
-      });
-  }
+  };
 }

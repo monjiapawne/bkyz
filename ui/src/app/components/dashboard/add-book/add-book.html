@@ -1,20 +1,6 @@
-<app-form-dialog #dialog title="New book" [form]="bookForm" [submitting]="isSubmitting()"
-    submitLabel="Add Book" (submitted)="onSubmit()">
-    <div [formGroup]="bookForm" class="space-y-2">
-        <app-field label="Title">
-            <input type="text" formControlName="title" class="input-box w-full p-1.5" placeholder="Enter book title" />
-        </app-field>
-
-        <app-field label="Authors">
-            <input type="text" formControlName="authors" class="input-box w-full p-1.5" placeholder="J.K. Rowling, Stephen King" />
-        </app-field>
-
-        <app-field label="ISBN">
-            <input type="text" formControlName="isbn" class="input-box w-full p-1.5" />
-        </app-field>
-
-        <app-field label="Number of Pages">
-            <input type="number" formControlName="number_of_pages" class="input-box w-full p-1.5" min="1" />
-        </app-field>
-    </div>
+<app-form-dialog #dialog title="New book" [formGroup]="bookForm" [save]="save" submitLabel="Add Book" (saved)="onSaved($event)">
+    <app-field label="Title" name="title" placeholder="Enter book title" />
+    <app-field label="Authors" name="authors" placeholder="J.K. Rowling, Stephen King" />
+    <app-field label="ISBN" name="isbn" />
+    <app-field label="Number of Pages" name="number_of_pages" type="number" [min]="1" />
 </app-form-dialog>
