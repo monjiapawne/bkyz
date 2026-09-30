@@ -8,6 +8,7 @@ logger = logging.getLogger("api")
 
 class BkyzError(Exception):
     """Base class for every exception bkyz raises."""
+
     status = 500
     log_level = logging.INFO
 
@@ -38,9 +39,12 @@ class NotFoundError(BkyzError):
 
         super().__init__(" ".join(msg))
 
+
 class ForbiddenAsNotFound(NotFoundError):
-    """Resource exists but isn't the caller's, served as a 404."""       
+    """Resource exists but isn't the caller's, served as a 404."""
+
     log_level = logging.WARNING
+
 
 class ResourceExistsError(BkyzError):
     status = 409
