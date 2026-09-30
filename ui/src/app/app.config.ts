@@ -13,7 +13,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptors([
       (req, next) => {
         const notifications = inject(NotificationService);
-        return next(req).pipe(catchError(err => {
+        return next(req.clone({ withCredentials: true })).pipe(catchError(err => {
           if (err.status !== 401) notifications.show(err.error?.error ?? err.message, 'error');
           return throwError(() => err);
         }));

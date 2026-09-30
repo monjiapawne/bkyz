@@ -15,7 +15,7 @@ export class BookService {
 
   getBooks(title?: string) {
     const params = title ? new HttpParams().set('title', title) : new HttpParams();
-    return this.http.get<BookResponse>(this.API_URL, { params, withCredentials: true });
+    return this.http.get<BookResponse>(this.API_URL, { params });
   }
 
   postBooks(authors?: string, isbn?: number, numberOfPages?: number, title?: string) {
@@ -26,7 +26,7 @@ export class BookService {
       "title": title
     }
 
-    return this.http.post<Book>(this.API_URL, body, { withCredentials: true });
+    return this.http.post<Book>(this.API_URL, body);
   }
 
 }

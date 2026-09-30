@@ -25,25 +25,20 @@ export class TrackService {
       "notes": notes
     };
 
-    return this.http.post<Track>(`${this.API_URL}/${playlistId}/tracks`, body, { withCredentials: true });
+    return this.http.post<Track>(`${this.API_URL}/${playlistId}/tracks`, body);
   }
 
   patchTrack(playlistId: number, trackId: number, body: Partial<Track> & { playlist_id?: number }) {
-    return this.http.patch<Track>(`${this.API_URL}/${playlistId}/tracks/${trackId}`, body, { withCredentials: true })
+    return this.http.patch<Track>(`${this.API_URL}/${playlistId}/tracks/${trackId}`, body)
       .pipe(tap(() => this.notifications.show('Track saved', 'info', 'short')));
   }
 
   progressTrack(playlistId: number, trackId: number, position: number) {
-    return this.http.post<Track>(`${this.API_URL}/${playlistId}/tracks/${trackId}/progress`,
-      {
-        position: position },
-        {
-            withCredentials: true
-        });
+    return this.http.post<Track>(`${this.API_URL}/${playlistId}/tracks/${trackId}/progress`, { position });
   }
 
   deleteTrackFromPlaylist(playlistId: number, trackId: number) {
-    return this.http.delete(`${this.API_URL}/${playlistId}/tracks/${trackId}`, { withCredentials: true })
+    return this.http.delete(`${this.API_URL}/${playlistId}/tracks/${trackId}`)
       .pipe(tap(() => this.notifications.show('Track removed', 'info', 'short')));
   }
 
