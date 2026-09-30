@@ -1,5 +1,6 @@
 <app-form-dialog #dialog [title]="editing ? 'Edit playlist' : 'New playlist'" [formGroup]="playlistForm" [save]="save"
     [deletable]="!!editing" [submitLabel]="editing ? 'Save' : 'Add Playlist'"
+    [savedMessage]="playlistForm.value.name + (editing ? ' updated' : ' created')"
     (saved)="playlistAdded.emit($event.id)" (deleted)="playlistDeleted.emit()">
     <app-field label="Name" name="name" />
     <app-field label="Description" name="description" type="textarea" />

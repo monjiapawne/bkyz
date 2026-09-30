@@ -29,8 +29,7 @@ export class PlaylistService {
   }
 
   patchPlaylist(id: number, name: string, description?: string) {
-    return this.http.patch<Playlist>(`${this.API_URL}/${id}`, { name, description })
-      .pipe(tap(() => this.notifications.show('Playlist saved', 'info', 'short')));
+    return this.http.patch<Playlist>(`${this.API_URL}/${id}`, { name, description });
   }
 
   deletePlaylist(id: number) {
