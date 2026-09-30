@@ -1,5 +1,5 @@
 from enum import StrEnum, auto
-from typing import TYPE_CHECKING, Self
+from typing import TYPE_CHECKING
 
 from sqlalchemy import (
     Column,
@@ -13,7 +13,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app import db
 from app.data.base import CRUDMixin
-
 
 if TYPE_CHECKING:
     from app.data.user import User

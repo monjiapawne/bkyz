@@ -14,7 +14,7 @@ export class TrackService {
 
   constructor(private http: HttpClient, private notifications: NotificationService) { }
 
-  postTrackToPlaylist(playlistId: number, bookId: number, currentPosition: number, totalPosition: number, unit: string, medium: string, active: boolean, notes: string | null) {
+  postTrackToPlaylist(playlistId: number, bookId: number, currentPosition: number, totalPosition: number, unit: string, medium: string, active: boolean, notes: string | null, rating: number | null) {
     const body = {
       "book_id": bookId,
       "position": currentPosition,
@@ -22,7 +22,8 @@ export class TrackService {
       "unit": unit,
       "medium": medium,
       "active": active,
-      "notes": notes
+      "notes": notes,
+      "rating": rating
     };
 
     return this.http.post<Track>(`${this.API_URL}/${playlistId}/tracks`, body);

@@ -1,0 +1,16 @@
+<div class="flex items-center gap-3">
+    <div class="relative text-2xl leading-none" (mouseleave)="hover.set(null)">
+        <span class="text-line">★★★★★</span>
+        <span class="absolute inset-y-0 left-0 overflow-hidden whitespace-nowrap text-subtle pointer-events-none"
+            [style.width.%]="(hover() ?? value() ?? 0) * 10">★★★★★</span>
+        <div class="absolute inset-0 flex">
+            @for (step of steps; track step) {
+            <button type="button" class="flex-1 cursor-pointer" (mouseenter)="hover.set(step)" (click)="set(step)"
+                [attr.aria-label]="step / 2 + ' stars'"></button>
+            }
+        </div>
+    </div>
+    @if (value()) {
+    <button type="button" (click)="set(null)" class="text-sm text-subtle hover:text-ink cursor-pointer">Clear</button>
+    }
+</div>

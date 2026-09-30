@@ -1,4 +1,3 @@
-
 from flask import Blueprint
 from flask_login import current_user, login_required
 from pydantic import BaseModel, ConfigDict, Field
@@ -25,6 +24,7 @@ class TrackIn(BaseModel):
     medium: Medium = Medium.physical
     active: bool = Field(False, examples=[True])
     notes: str | None = Field(None, max_length=255)
+    rating: int | None = Field(None, ge=1, le=10, examples=[5])
 
 
 class TrackOut(Out):
@@ -40,6 +40,7 @@ class TrackOut(Out):
     active: bool
     notes: str | None
     updated_at: UTCDatetime
+    rating: int | None
 
 
 class TrackFullOut(TrackOut):
@@ -80,8 +81,9 @@ def create_track(playlist_id: int, json: TrackIn):
         medium=json.medium,
         book_id=json.book_id,
         active=json.active,
-        notes=json.notes
-    )  # fmt: skip
+        notes=json.notes,
+        rating=json.rating,
+    )
 
     return TrackOut.json_(track), 201
 
@@ -105,6 +107,7 @@ class TrackPatch(BaseModel):
     medium: Medium | None = None
     active: bool | None = None
     notes: str | None = None
+    rating: int | None = Field(None, ge=1, le=10)
 
 
 @tracks.patch("/<int:track_id>")
@@ -112,7 +115,7 @@ class TrackPatch(BaseModel):
 @spec.validate(json=TrackPatch)
 def update_track(playlist_id: int, track_id: int, json: TrackPatch):
     track = Track.get_by_id(track_id)
-    changes = json.model_dump(exclude_unset=True, exclude_none=True)
+    changes = json.model_dump(exclude_unset=True)
     if "notes" in json.model_fields_set:
         changes["notes"] = json.notes
     track.update(**changes)

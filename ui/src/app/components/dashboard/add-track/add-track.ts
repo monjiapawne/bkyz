@@ -60,7 +60,8 @@ export class AddTrackComponent {
       customUnit: [''],
       medium: ['physical', Validators.required],
       active: [false],
-      notes: ['', Validators.maxLength(255)]
+      notes: ['', Validators.maxLength(255)],
+      rating: [null, [Validators.min(1), Validators.max(10)]]
     });
   }
 
@@ -73,7 +74,8 @@ export class AddTrackComponent {
       unit: 'pages',
       medium: 'physical',
       active: false,
-      notes: ''
+      notes: '',
+      rating: null
     });
     if (track) {
       this.trackForm.patchValue({ ...track, notes: track.notes ?? '' });
@@ -94,6 +96,7 @@ export class AddTrackComponent {
         medium: form.medium!,
         active: form.active,
         notes: form.notes.trim() || null,
+        rating: form.rating,
         playlist_id: form.playlistId
       })
       : this.trackService.postTrackToPlaylist(
@@ -104,7 +107,8 @@ export class AddTrackComponent {
         unit,
         form.medium!,
         form.active,
-        form.notes.trim() || null
+        form.notes.trim() || null,
+        form.rating
       );
   };
 }

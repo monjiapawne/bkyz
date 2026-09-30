@@ -12,6 +12,9 @@
     <app-field label="Custom unit" name="customUnit" placeholder="e.g. sections" />
     }
     <app-field label="Medium" name="medium" type="select" [options]="mediums" />
+    @if (!trackForm.value.active) {
+    <app-field label="Rating" name="rating" type="rating" />
+    }
     <app-field label="Notes" name="notes" type="textarea" [rows]="2" [maxlength]="255" />
     <app-field label="Playlist" name="playlistId" type="select" [options]="playlistOptions" />
 </app-form-dialog>
