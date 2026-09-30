@@ -1,7 +1,7 @@
 <div class="flex min-h-[calc(100vh-3rem)]">
     <aside [class.hidden]="!sidebarOpen()"
         class="fixed top-12 bottom-0 left-0 z-20 w-full md:w-60 shrink-0 border-r border-line bg-sidebar md:static">
-        <div class="flex items-center justify-between px-3 py-2 text-xs font-semibold text-subtle">
+        <div class="flex items-center justify-between px-3 py-2 text-sm md:text-xs font-semibold text-subtle">
             Playlists
             <button type="button" (click)="sidebarOpen.set(false)" class="btn-icon size-4" aria-label="Hide sidebar">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
@@ -13,13 +13,13 @@
         @for (playlist of playlists(); track playlist.id) {
         <a [routerLink]="['/playlists', playlist.id]" routerLinkActive="bg-muted-hover font-semibold"
             [routerLinkActiveOptions]="{ exact: true }" [title]="playlist.description" (click)="sidebarOpen.set(desktop.matches)"
-            class="flex items-center justify-between px-3 py-1.5 text-sm md:text-base hover:bg-muted-hover">
+            class="flex items-center justify-between px-3 py-3 md:py-1.5 text-base hover:bg-muted-hover">
             <span class="truncate">{{ playlist.name }}</span>
-            <span class="px-1.5 text-xs text-subtle bg-muted-hover">{{ playlist.tracks.length }}</span>
+            <span class="px-1.5 text-sm md:text-xs text-subtle bg-muted-hover">{{ playlist.tracks.length }}</span>
         </a>
         }
         <button type="button" (click)="addPlaylistModal.open()"
-            class="block w-full px-3 py-1.5 text-left text-sm md:text-base text-subtle hover:bg-muted-hover cursor-pointer">+ New playlist</button>
+            class="block w-full px-3 py-3 md:py-1.5 text-left text-base text-subtle hover:bg-muted-hover cursor-pointer">+ New playlist</button>
     </aside>
 
     <section class="flex-1 min-w-0 px-4 md:px-6 py-4">
