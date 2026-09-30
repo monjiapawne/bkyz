@@ -4,14 +4,13 @@ from typing import TYPE_CHECKING, Self
 from sqlalchemy import (
     ForeignKey,
     String,
-    select,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app import db
 from app.data.base import CRUDMixin
 from app.data.user import User
-from app.errors import NotFoundError
+from app.errors import NotFoundError, ForbiddenAsNotFound
 
 logger = logging.getLogger(__name__)
 
@@ -37,11 +36,10 @@ class Playlist(CRUDMixin, db.Model):
 
     @classmethod
     def get_owned(cls, playlist_id: int, user_id: int) -> Self:
-        playlist = db.session.scalar(
-            select(cls).where(cls.id == playlist_id, cls.user_id == user_id)
-        )
+        playlist = cls.get_by_id(playlist_id)
         if playlist is None:
-            logger.info(f"invalid resource access: user: {user_id} tried to access {playlist_id}")
             raise NotFoundError("playlist")
+        if playlist.user_id != user_id: 
+            raise ForbiddenAsNotFound("playlist")
 
         return playlist
