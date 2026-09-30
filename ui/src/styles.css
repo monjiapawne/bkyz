@@ -63,7 +63,8 @@
 
 /* modal */
 @utility modal {
-    @apply m-auto w-full max-w-md p-4 bg-surface shadow-md border border-line
+    @apply m-0 w-full max-w-none h-dvh max-h-dvh overflow-y-auto p-4 bg-surface
+    md:m-auto md:max-w-md md:h-auto md:max-h-[90dvh] md:shadow-md md:border md:border-line
     open:flex open:flex-col gap-4 backdrop:bg-black/10;
 }
 
@@ -71,6 +72,7 @@ body {
   background-color: var(--color-surface);
   color: var(--color-ink);
   font-family: var(--font-serif);
+  font-variant-numeric: lining-nums tabular-nums;
   font-weight: 400;
   font-size: 14px;
   line-height: 1.5;
