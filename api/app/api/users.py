@@ -1,3 +1,5 @@
+import logging
+
 from flask import Blueprint
 from flask_login import current_user, login_required, login_user, logout_user
 from pydantic import BaseModel, ConfigDict, Field
@@ -6,7 +8,9 @@ from app import spec
 from app.api.auth import admin_required
 from app.api.schemas import Out
 from app.data import User
-from app.errors import NotFoundError, UnauthorizedError
+from app.errors import NotFoundError, UnauthorizedError, ForbiddenAsNotFound, ForbiddenError
+
+logger = logging.getLogger(__name__)
 
 users = Blueprint("users", __name__)
 
@@ -80,6 +84,39 @@ def current_user_info():
     """
     user = User.get_by_id(current_user.id)
     return UserOut.json_(user), 200
+
+
+class UserPatch(BaseModel):
+    username: str | None = None
+    is_admin: bool | None = None
+    password: str | None = None
+
+
+@users.patch("<int:user_id>")
+@spec.validate(json=UserPatch)
+@login_required
+def update_user(json: UserPatch, user_id):
+    """Update a user.
+
+    Users can edit their own accounts, admins can edit all accounts.
+    """
+    if current_user.id != user_id and not current_user.is_admin:
+        raise ForbiddenAsNotFound
+
+    changes = json.model_dump(exclude_unset=True)
+
+    if "is_admin" in changes and not current_user.is_admin:
+        raise ForbiddenError("is_admin")
+
+    user = User.get_by_id(user_id)
+
+    if "is_admin" in changes and changes["is_admin"] != user.is_admin:
+        promo = changes["is_admin"]
+        action = "promoted" if promo else "demoted"
+        logger.info("user %s %s to admin by %s", user, action, current_user)
+
+    user.update(**changes)
+    return UserOut.json_(user)
 
 
 @users.get("")

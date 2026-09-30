@@ -38,3 +38,6 @@ class User(CRUDMixin, UserMixin, db.Model):
 
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+    def __str__(self) -> str:
+        return f"{self.username}({self.id})"
