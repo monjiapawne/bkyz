@@ -3,6 +3,11 @@
     <input type="checkbox" [formControlName]="name()!" />
     <span class="font-medium">{{ label() }}</span>
 </label>
+} @else if (type() === 'rating') {
+<div>
+    <span class="form-label">{{ label() }}</span>
+    <app-star-rating [formControlName]="name()!" />
+</div>
 } @else {
 <label class="block">
     <span class="form-label">{{ label() }}</span>

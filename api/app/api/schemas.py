@@ -16,7 +16,8 @@ class Out(BaseModel):
 
     @classmethod
     def model_(cls, obj) -> Any:
-        """Validate the obj into a model, for routes with spectree resp= so it isn't validated twice"""
+        """Validate the obj into a model.
+        for routes with spectree resp= so it isn't validated twice"""
         return cls.model_validate(obj)
 
 

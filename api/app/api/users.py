@@ -8,7 +8,7 @@ from app import spec
 from app.api.auth import admin_required
 from app.api.schemas import Out
 from app.data import User
-from app.errors import NotFoundError, UnauthorizedError, ForbiddenAsNotFound, ForbiddenError
+from app.errors import ForbiddenAsNotFound, ForbiddenError, NotFoundError, UnauthorizedError
 
 logger = logging.getLogger(__name__)
 

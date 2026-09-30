@@ -3,14 +3,7 @@ import logging
 from enum import StrEnum, auto
 from typing import Self
 
-from sqlalchemy import (
-    DateTime,
-    Enum,
-    ForeignKey,
-    String,
-    func,
-    select,
-)
+from sqlalchemy import CheckConstraint, DateTime, Enum, ForeignKey, String, func, select
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app import db
@@ -21,11 +14,13 @@ from app.errors import NotFoundError
 
 logger = logging.getLogger(__name__)
 
+
 class Medium(StrEnum):
     pdf = auto()
     physical = auto()
     audio = auto()
     ebook = auto()
+
 
 class Track(CRUDMixin, db.Model):
     """A user book's copy of a book storing all their data, referencing a parent book."""
@@ -40,21 +35,23 @@ class Track(CRUDMixin, db.Model):
     playlist_position: Mapped[int]
     active: Mapped[bool] = mapped_column(default=True)
     notes: Mapped[str | None] = mapped_column(default=None)
-
-    playlist_id: Mapped[int] = mapped_column(ForeignKey("playlists.id", ondelete="CASCADE"))
-    book_id: Mapped[int | None] = mapped_column(ForeignKey("books.id"))
-
-    playlist: Mapped["Playlist"] = relationship(back_populates="tracks")
-    book: Mapped["Book"] = relationship()
-    progress_log: Mapped[list["TrackProgress"]] = relationship(
-        back_populates="track", cascade="all, delete-orphan"
+    rating: Mapped[int | None] = mapped_column(
+        CheckConstraint("rating BETWEEN 1 AND 10", name="rating_range"), default=None
     )
 
     updated_at: Mapped[datetime.datetime] = mapped_column(
-        DateTime(timezone=True),
-        server_default=func.now(),
-        onupdate=func.now()
-    ) 
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+    playlist_id: Mapped[int] = mapped_column(ForeignKey("playlists.id", ondelete="CASCADE"))
+    playlist: Mapped["Playlist"] = relationship(back_populates="tracks")
+
+    book_id: Mapped[int | None] = mapped_column(ForeignKey("books.id"))
+    book: Mapped["Book"] = relationship()
+
+    progress_log: Mapped[list["TrackProgress"]] = relationship(
+        back_populates="track", cascade="all, delete-orphan"
+    )
 
     def progress_track(self, new_position: int):
         new_position = max(1, new_position)
@@ -116,10 +113,10 @@ class TrackProgress(CRUDMixin, db.Model):
     from_position: Mapped[int]
     to_position: Mapped[int]
     delta: Mapped[int]
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    created_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
 
     track: Mapped["Track"] = relationship(back_populates="progress_log")
 
     # TODO: add indexing for user_id and track_id for speed
-
-

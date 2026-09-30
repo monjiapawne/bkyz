@@ -8,4 +8,5 @@ export interface Track {
     active: boolean;
     notes: string | null;
     updated_at: string;
+    rating: number | null;
 }

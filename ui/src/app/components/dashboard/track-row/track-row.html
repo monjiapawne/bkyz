@@ -23,7 +23,11 @@
                 </div>
             </div>
 
-            <div class="ml-auto flex shrink-0 gap-3">
+            <div class="ml-auto flex items-center shrink-0 gap-3">
+                @if (!track().active && track().rating) {
+                <span class="relative whitespace-nowrap text-sm leading-none text-line" [title]="track().rating + '/10'">★★★★★<span
+                        class="absolute inset-0 overflow-hidden text-subtle" [style.width.%]="track().rating! * 10">★★★★★</span></span>
+                }
                 <button type="button" class="btn-icon size-5" (click)="edit.emit(track())" aria-label="Edit a track">
                     <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 16 16">
                         <path d="M0 0h16v16H0z" fill="none" />
