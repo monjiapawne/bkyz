@@ -29,8 +29,7 @@ export class TrackService {
   }
 
   patchTrack(playlistId: number, trackId: number, body: Partial<Track> & { playlist_id?: number }) {
-    return this.http.patch<Track>(`${this.API_URL}/${playlistId}/tracks/${trackId}`, body)
-      .pipe(tap(() => this.notifications.show('Track saved', 'info', 'short')));
+    return this.http.patch<Track>(`${this.API_URL}/${playlistId}/tracks/${trackId}`, body);
   }
 
   progressTrack(playlistId: number, trackId: number, position: number) {

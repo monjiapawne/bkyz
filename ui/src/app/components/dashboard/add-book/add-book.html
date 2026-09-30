@@ -1,4 +1,5 @@
-<app-form-dialog #dialog title="New book" [formGroup]="bookForm" [save]="save" submitLabel="Add Book" (saved)="onSaved($event)">
+<app-form-dialog #dialog title="New book" [formGroup]="bookForm" [save]="save" submitLabel="Add Book"
+    [savedMessage]="(bookForm.value.title || 'Book') + ' created'" (saved)="onSaved($event)">
     <app-field label="Title" name="title" placeholder="Enter book title" />
     <app-field label="Authors" name="authors" placeholder="J.K. Rowling, Stephen King" />
     <app-field label="ISBN" name="isbn" />

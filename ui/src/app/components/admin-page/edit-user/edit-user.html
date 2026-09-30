@@ -1,4 +1,5 @@
-<app-form-dialog #dialog title="Edit user" [formGroup]="userForm" [save]="save" (saved)="saved.emit()">
+<app-form-dialog #dialog title="Edit user" [formGroup]="userForm" [save]="save"
+    [savedMessage]="userForm.value.username + ' updated'" (saved)="saved.emit()">
     <app-field label="Username" name="username" />
     <app-field label="Admin" name="is_admin" type="checkbox" />
     <app-field label="Password" name="password" type="password" placeholder="Leave blank to keep" />

@@ -1,5 +1,6 @@
 <app-form-dialog #dialog [title]="editing ? 'Edit track' : 'Add track'" [formGroup]="trackForm" [save]="save"
     [deletable]="!!editing" [submitLabel]="editing ? 'Save' : 'Add Track'"
+    [savedMessage]="editing ? 'Track updated' : 'Book added to playlist'"
     (saved)="trackAdded.emit()" (deleted)="trackDeleted.emit(editing!)">
     <app-field label="Active" name="active" type="checkbox" />
     @if (trackForm.value.active) {
