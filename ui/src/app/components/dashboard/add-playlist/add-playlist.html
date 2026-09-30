@@ -1,6 +1,6 @@
 <dialog #modal class="modal">
 
-    <div class="text-sm text-gray-700">
+    <div class="text-sm text-ink">
 
         <form [formGroup]="playlistForm" (ngSubmit)="onSubmit()" (keydown.control.enter)="$event.preventDefault(); onSubmit()" class="space-y-2">
 
@@ -9,7 +9,7 @@
             </app-field>
 
             <app-field label="Description">
-                <textarea formControlName="description" rows="3" class="input-box w-full p-1.5"></textarea>
+                <textarea formControlName="description" rows="3" class="input-box h-auto w-full p-1.5"></textarea>
             </app-field>
 
             <div class="flex justify-end gap-2 pt-2">
