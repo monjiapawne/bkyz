@@ -1,0 +1,35 @@
+@if (type() === 'checkbox') {
+<label class="flex items-center gap-2">
+    <input type="checkbox" [formControlName]="name()!" />
+    <span class="font-medium">{{ label() }}</span>
+</label>
+} @else {
+<label class="block">
+    <span class="form-label">{{ label() }}</span>
+    @switch (type()) {
+    @case ('number') {
+    <input type="number" [formControlName]="name()!" [placeholder]="placeholder()" [attr.min]="min()" class="input-box w-full" />
+    }
+    @case ('password') {
+    <input type="password" [formControlName]="name()!" [placeholder]="placeholder()" class="input-box w-full" />
+    }
+    @case ('textarea') {
+    <textarea [formControlName]="name()!" [rows]="rows()" [placeholder]="placeholder()" [attr.maxlength]="maxlength()" class="input-box h-auto w-full py-1"></textarea>
+    }
+    @case ('select') {
+    <select [formControlName]="name()!" class="input-box w-full">
+        @for (option of options(); track option.label) {
+        <option [ngValue]="option.value">{{ option.label }}</option>
+        }
+    </select>
+    }
+    @default {
+    @if (name()) {
+    <input type="text" [formControlName]="name()!" [placeholder]="placeholder()" [attr.maxlength]="maxlength()" class="input-box w-full" />
+    } @else {
+    <ng-content />
+    }
+    }
+    }
+</label>
+}

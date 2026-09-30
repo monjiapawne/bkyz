@@ -1,12 +1,6 @@
-<app-form-dialog #dialog [title]="editing ? 'Edit playlist' : 'New playlist'" [form]="playlistForm" [submitting]="isSubmitting()" [deletable]="!!editing"
-    [submitLabel]="editing ? 'Save' : 'Add Playlist'" (submitted)="onSubmit()" (deleted)="playlistDeleted.emit()">
-    <div [formGroup]="playlistForm" class="space-y-2">
-        <app-field label="Name">
-            <input type="text" formControlName="name" class="input-box w-full p-1.5" />
-        </app-field>
-
-        <app-field label="Description">
-            <textarea formControlName="description" rows="3" class="input-box h-auto w-full p-1.5"></textarea>
-        </app-field>
-    </div>
+<app-form-dialog #dialog [title]="editing ? 'Edit playlist' : 'New playlist'" [formGroup]="playlistForm" [save]="save"
+    [deletable]="!!editing" [submitLabel]="editing ? 'Save' : 'Add Playlist'"
+    (saved)="playlistAdded.emit($event.id)" (deleted)="playlistDeleted.emit()">
+    <app-field label="Name" name="name" />
+    <app-field label="Description" name="description" type="textarea" />
 </app-form-dialog>

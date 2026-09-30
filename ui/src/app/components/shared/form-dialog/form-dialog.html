@@ -5,13 +5,15 @@
     </div>
 
     <form (submit)="$event.preventDefault(); submit()" (keydown.control.enter)="$event.preventDefault(); submit()" class="text-sm text-ink">
-        <ng-content />
+        <div class="space-y-2">
+            <ng-content />
+        </div>
 
         <div class="flex justify-end gap-2 pt-4">
             @if (deletable()) {
             <button type="button" (click)="close(); deleted.emit()" class="btn-danger mr-auto">Delete</button>
             }
-            <button type="submit" [disabled]="form().invalid || submitting()" class="btn-primary gap-2">
+            <button type="submit" [disabled]="form.invalid || submitting()" class="btn-primary gap-2">
                 @if (submitting()) {
                 <span class="spinner text-white"></span>
                 }

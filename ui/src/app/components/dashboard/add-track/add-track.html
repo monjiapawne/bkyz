@@ -1,55 +1,16 @@
-<app-form-dialog #dialog [title]="editing ? 'Edit track' : 'Add track'" [form]="trackForm" [submitting]="isSubmitting()" [deletable]="!!editing"
-    [submitLabel]="editing ? 'Save' : 'Add Track'" (submitted)="onSubmit()" (deleted)="trackDeleted.emit(editing!)">
-    <div [formGroup]="trackForm" class="space-y-2">
-        <div class="flex items-center gap-2">
-            <input id="active" type="checkbox" formControlName="active" />
-            <label for="active" class="font-medium">
-                Active
-            </label>
-        </div>
-
-        @if (trackForm.value.active) {
-        <app-field label="Position">
-            <input type="number" formControlName="position" class="input-box w-full p-1.5" min="0" />
-        </app-field>
-        }
-
-        <app-field label="Total">
-            <input type="number" formControlName="total" class="input-box w-full p-1.5" min="1" />
-        </app-field>
-
-        <app-field label="Unit">
-            <select formControlName="unit" class="input-box w-full p-1.5">
-                <option value="pages">Pages</option>
-                <option value="chapters">Chapters</option>
-                <option value="%">Percent</option>
-                <option value="other">Other</option>
-            </select>
-
-            @if (trackForm.value.unit === 'other'){
-                <input type="text" formControlName="customUnit" placeholder="e.g. sections"
-                class="input-box w-full p-1.5 mt-1"/>
-            }
-        </app-field>
-
-        <app-field label="Medium">
-            <select formControlName="medium" class="input-box w-full p-1.5">
-                <option value="physical">Physical</option>
-                <option value="ebook">E-book</option>
-                <option value="audiobook">Audiobook</option>
-            </select>
-        </app-field>
-
-        <app-field label="Notes">
-            <textarea formControlName="notes" rows="2" maxlength="255" class="input-box h-auto w-full p-1.5"></textarea>
-        </app-field>
-
-        <app-field label="Playlist">
-            <select formControlName="playlistId" class="input-box w-full p-1.5">
-                @for (playlist of playlists; track playlist.id) {
-                <option [ngValue]="playlist.id">{{ playlist.name }}</option>
-                }
-            </select>
-        </app-field>
-    </div>
+<app-form-dialog #dialog [title]="editing ? 'Edit track' : 'Add track'" [formGroup]="trackForm" [save]="save"
+    [deletable]="!!editing" [submitLabel]="editing ? 'Save' : 'Add Track'"
+    (saved)="trackAdded.emit()" (deleted)="trackDeleted.emit(editing!)">
+    <app-field label="Active" name="active" type="checkbox" />
+    @if (trackForm.value.active) {
+    <app-field label="Position" name="position" type="number" [min]="0" />
+    }
+    <app-field label="Total" name="total" type="number" [min]="1" />
+    <app-field label="Unit" name="unit" type="select" [options]="units" />
+    @if (trackForm.value.unit === 'other') {
+    <app-field label="Custom unit" name="customUnit" placeholder="e.g. sections" />
+    }
+    <app-field label="Medium" name="medium" type="select" [options]="mediums" />
+    <app-field label="Notes" name="notes" type="textarea" [rows]="2" [maxlength]="255" />
+    <app-field label="Playlist" name="playlistId" type="select" [options]="playlistOptions" />
 </app-form-dialog>

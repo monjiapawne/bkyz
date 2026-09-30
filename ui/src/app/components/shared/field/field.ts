@@ -1,10 +1,25 @@
-import { Component, input } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
+import { ControlContainer, ReactiveFormsModule } from '@angular/forms';
+
+export interface Option {
+  value: unknown;
+  label: string;
+}
 
 @Component({
   selector: 'app-field',
+  imports: [ReactiveFormsModule],
   host: { class: 'block' },
-  template: `<label class="block"><span class="form-label">{{ label() }}</span><ng-content /></label>`,
+  viewProviders: [{ provide: ControlContainer, useFactory: () => inject(ControlContainer, { skipSelf: true, optional: true }) }],
+  templateUrl: './field.html',
 })
 export class Field {
-    label = input.required<string>();
+  label = input.required<string>();
+  name = input<string>();
+  type = input<'text' | 'number' | 'password' | 'textarea' | 'checkbox' | 'select'>('text');
+  options = input<Option[]>([]);
+  placeholder = input('');
+  rows = input(3);
+  min = input<number>();
+  maxlength = input<number>();
 }
