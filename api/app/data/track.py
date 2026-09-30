@@ -1,5 +1,5 @@
+import datetime
 import logging
-from datetime import datetime
 from enum import StrEnum, auto
 from typing import Self
 
@@ -49,6 +49,12 @@ class Track(CRUDMixin, db.Model):
     progress_log: Mapped[list["TrackProgress"]] = relationship(
         back_populates="track", cascade="all, delete-orphan"
     )
+
+    updated_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now()
+    ) 
 
     def progress_track(self, new_position: int):
         new_position = max(1, new_position)

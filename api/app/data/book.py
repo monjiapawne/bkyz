@@ -48,6 +48,7 @@ class Book(CRUDMixin, db.Model):
         server_default=FetchStatus.not_attempted,
     )
 
+
     _authors: Mapped[list["Author"]] = relationship(secondary=book_authors, back_populates="books")
 
     @property
