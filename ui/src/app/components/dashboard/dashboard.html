@@ -5,7 +5,15 @@
             [routerLinkActiveOptions]="{ exact: true }" [title]="playlist.description"
             class="flex items-center justify-between px-3 py-3 md:py-1.5 text-base hover:bg-muted-hover">
             <span class="truncate">{{ playlist.name }}</span>
-            <span class="px-1.5 text-sm md:text-xs text-subtle bg-muted-hover">{{ playlist.tracks.length }}</span>
+            <span class="flex items-end gap-px h-3.5" [attr.aria-label]="playlist.tracks.length + ' books'">
+                @for (book of playlist.tracks.slice(0, 12); track $index) {
+                @let spine = spines[$index % spines.length];
+                <span class="relative w-[5px] origin-bottom" [style.height.%]="spine.height"
+                    [style.rotate.deg]="spine.tilt" [style.background-color]="spine.color">
+                    <span class="absolute inset-x-0 top-1/4 h-px bg-white/70"></span>
+                </span>
+                }
+            </span>
         </a>
         }
         <button type="button" (click)="addPlaylistModal.open()"

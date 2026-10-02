@@ -29,6 +29,17 @@ import { Page } from '../shared/page/page';
   templateUrl: './dashboard.html',
 })
 export class Dashboard {
+  spines = [
+    { color: '#9b6b6b', height: 100, tilt: 0 },
+    { color: '#6b7f6a', height: 80, tilt: 0 },
+    { color: '#5f7480', height: 90, tilt: 0 },
+    { color: '#a0826d', height: 70, tilt: -8 },
+    { color: '#7a6f8f', height: 95, tilt: 0 },
+    { color: '#8c8a6a', height: 85, tilt: 0 },
+    { color: '#6e7a8c', height: 100, tilt: 0 },
+    { color: '#9b6b6b', height: 80, tilt: 0 },
+    { color: '#6b7f6a', height: 90, tilt: 6 },
+  ];
 
   constructor(
     private playlistService: PlaylistService,
