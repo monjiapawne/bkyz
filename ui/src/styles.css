@@ -76,7 +76,7 @@
 }
 
 @utility modal {
-    @apply m-0 w-full max-w-none h-dvh max-h-dvh overflow-y-auto p-4 bg-surface
+    @apply m-0 w-full max-w-none h-dvh max-h-dvh overflow-y-auto overscroll-contain p-4 bg-surface
     md:m-auto md:max-w-md md:h-fit md:max-h-[90dvh] md:shadow-md md:border md:border-line
     open:flex open:flex-col gap-4 backdrop:bg-black/10;
 }
@@ -145,6 +145,16 @@ nav a.active {
 
 main {
   flex: 1;
+}
+
+html:has(dialog[open]) {
+  overflow: hidden;
+}
+
+@media (max-width: 767px) {
+  html:has(aside[data-sidebar]:not(.hidden)) {
+    overflow: hidden;
+  }
 }
 
 @media (min-width: 768px) {
