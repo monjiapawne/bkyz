@@ -7,7 +7,7 @@
             <span class="truncate">{{ playlist.name }}</span>
             <span class="flex items-end gap-px h-3.5" [attr.aria-label]="playlist.tracks.length + ' books'">
                 @for (book of playlist.tracks.slice(0, 12); track $index) {
-                @let spine = spines[$index % spines.length];
+                @let spine = spines[(playlist.id * 4 + $index) % spines.length];
                 <span class="relative w-[5px] origin-bottom" [style.height.%]="spine.height"
                     [style.rotate.deg]="spine.tilt" [style.background-color]="spine.color">
                     <span class="absolute inset-x-0 top-1/4 h-px bg-white/70"></span>
