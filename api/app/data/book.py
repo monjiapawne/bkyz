@@ -49,6 +49,8 @@ class Book(CRUDMixin, db.Model):
     pages: Mapped[int] = mapped_column(default=1, server_default="1")
     publish_date: Mapped[str | None]
     isbn: Mapped[str | None] = mapped_column(String(13), unique=True)
+    # We store fetch_status so next someone requests the same ISBN we know why we don't have it yet
+    # so we can take smarter next actions.
     fetch_status: Mapped[FetchStatus] = mapped_column(
         Enum(FetchStatus, native_enum=False, create_constraint=False, length=20),
         server_default=FetchStatus.not_attempted,

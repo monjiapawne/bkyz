@@ -3,7 +3,17 @@ import logging
 from enum import StrEnum, auto
 from typing import Self
 
-from sqlalchemy import CheckConstraint, DateTime, Enum, ForeignKey, String, func, select
+from sqlalchemy import (
+    CheckConstraint,
+    DateTime,
+    Enum,
+    ForeignKey,
+    String,
+    func,
+    select,
+    event,
+    inspect,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app import db
@@ -39,8 +49,8 @@ class Track(CRUDMixin, db.Model):
         CheckConstraint("rating BETWEEN 1 AND 10", name="rating_range"), default=None
     )
 
-    updated_at: Mapped[datetime.datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    position_updated_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
     )
 
     playlist_id: Mapped[int] = mapped_column(ForeignKey("playlists.id", ondelete="CASCADE"))
@@ -65,6 +75,7 @@ class Track(CRUDMixin, db.Model):
             return self
 
         self.position = new_position
+        self.position_updated_at = func.now()
         db.session.add(
             TrackProgress(
                 track_id=self.id,

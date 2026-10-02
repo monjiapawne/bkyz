@@ -39,7 +39,7 @@ class TrackOut(Out):
     playlist_position: int
     active: bool
     notes: str | None
-    updated_at: UTCDatetime
+    position_updated_at: UTCDatetime
     rating: int | None
 
 
