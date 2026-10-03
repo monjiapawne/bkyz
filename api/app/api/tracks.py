@@ -5,7 +5,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from app import spec
 from app.api.books import BookOut
 from app.api.schemas import Out, UTCDatetime
-from app.data import Book, Medium, Playlist, Track
+from app.data import Book, Medium, Playlist, Track, TrackProgress
 from app.errors import NotFoundError
 
 tracks = Blueprint("tracks", __name__)
@@ -124,6 +124,13 @@ def update_track(playlist_id: int, track_id: int, json: TrackPatch):
     return TrackOut.json_(track)
 
 
+class TrackProgressOut(Out):
+    from_position: int
+    to_position: int
+    delta: int
+    created_at: UTCDatetime
+
+
 class TrackProgressIn(BaseModel):
     position: int = Field(examples=[50])
 
@@ -136,3 +143,11 @@ def add_progress(playlist_id: int, track_id: int, json: TrackProgressIn):
     track = Track.get_owned(track_id, current_user.id)
     track.progress_track(json.position)
     return TrackOut.json_(track), 200
+
+
+@tracks.get("/<int:track_id>/history")
+@login_required
+def list_track_history(playlist_id, track_id: int):
+    _ = Track.get_owned(track_id, current_user.id)  # Verify ownership
+    history = TrackProgress.get_by_track_id(track_id)
+    return [TrackProgressOut.json_(record) for record in history], 200

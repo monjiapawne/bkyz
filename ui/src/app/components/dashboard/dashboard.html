@@ -29,7 +29,7 @@
 
     <div class="border border-line divide-y divide-line bg-surface">
         @for (track of tracks(); track track.id) {
-        <app-track-row class="block" [track]="track" [book]="track.book" (edit)="addTrackModal.open($event)" (progressChange)="onProgress(track, $event)"/>
+        <app-track-row class="block" [track]="track" [book]="track.book" (edit)="addTrackModal.open($event)" (history)="trackHistory.open($event)"(progressChange)="onProgress(track, $event)"/>
         } @empty {
         <div class="px-4 py-8 text-center text-base md:text-lg text-subtle">No books yet</div>
         }
@@ -43,5 +43,6 @@
     <app-add-track #addTrackModal [playlistId]="playlistId()" [bookId]="selectedBookId" [playlists]="playlists()"
         (trackAdded)="loadDashboard()" (trackDeleted)="onDeleteTrack($event)">
     </app-add-track>
+    <app-track-history #trackHistory [playlistId]="playlistId()" />
     <app-confirm-dialog #confirmTrack resourceName="track" (confirmed)="deleteTrack()" />
 </app-page>

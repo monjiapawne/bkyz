@@ -10,6 +10,7 @@ import { AddPlaylistComponent } from './add-playlist/add-playlist';
 import { AddTrackComponent } from './add-track/add-track';
 import { SearchBookComponent } from './search-book/search-book';
 import { TrackRowComponent } from './track-row/track-row';
+import { TrackHistory } from './track-history/track-history';
 import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
 import { Page } from '../shared/page/page';
 
@@ -23,6 +24,7 @@ import { Page } from '../shared/page/page';
     AddTrackComponent,
     SearchBookComponent,
     TrackRowComponent,
+    TrackHistory,
     ConfirmDialog,
     Page
   ],

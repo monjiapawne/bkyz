@@ -37,6 +37,10 @@ export class TrackService {
     return this.http.post<Track>(`${this.API_URL}/${playlistId}/tracks/${trackId}/progress`, { position });
   }
 
+  getTrackHistory(playlistId: number, trackId: number) {
+    return this.http.get<any[]>(`${this.API_URL}/${playlistId}/tracks/${trackId}/history`);
+  }
+
   deleteTrackFromPlaylist(playlistId: number, trackId: number) {
     return this.http.delete(`${this.API_URL}/${playlistId}/tracks/${trackId}`)
       .pipe(tap(() => this.notifications.show('Track removed', 'info', 'short')));
