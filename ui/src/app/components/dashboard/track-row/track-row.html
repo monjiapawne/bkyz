@@ -14,7 +14,7 @@
                         <span>({{ year() }})</span>
                         }
                     </div>
-                    @if (track().active && track().position_updated_at) {
+                    @if (track().active && track().last_read_at) {
                     <div class="text-xs text-subtle/70">last read {{ lastRead() }}</div>
                     }
                 </div>
