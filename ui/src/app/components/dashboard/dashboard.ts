@@ -62,9 +62,7 @@ export class Dashboard {
     this.playlists().find(p => p.id === this.playlistId())
   );
 
-  tracks = computed(() =>
-    this.playlists().find(p => p.id === this.playlistId())?.tracks ?? []
-  );
+  tracks = computed(() => this.playlist()?.tracks ?? []);
 
   ngOnInit() {
     this.loadDashboard();
@@ -79,40 +77,21 @@ export class Dashboard {
   }
 
   loadDashboard() {
-    this.playlistService.getPlaylistsFull()
-      .subscribe({
-        next: responseData => {
-          this.playlists.set(responseData);
-
-          if (responseData.length > 0 && !this.playlistId()) {
-            this.router.navigate(['/playlists', responseData[0].id]);
-          }
-        },
-        error: err => {
-          console.log(err);
-        }
-      });
+    this.playlistService.getPlaylistsFull().subscribe(playlists => {
+      this.playlists.set(playlists);
+      if (playlists.length > 0 && !this.playlistId()) {
+        this.router.navigate(['/playlists', playlists[0].id]);
+      }
+    });
   }
 
   deletePlaylist() {
     const deletedId = this.playlistId();
-
-    this.playlistService.deletePlaylist(deletedId)
-      .subscribe({
-        next: () => {
-          const remaining = this.playlists().filter(p => p.id !== deletedId);
-          this.playlists.set(remaining);
-
-          if (remaining.length > 0) {
-            this.router.navigate(['/playlists', remaining[0].id]);
-          } else {
-            this.router.navigate(['/playlists']);
-          }
-        },
-        error: err => {
-          console.log(err);
-        }
-      });
+    this.playlistService.deletePlaylist(deletedId).subscribe(() => {
+      const remaining = this.playlists().filter(p => p.id !== deletedId);
+      this.playlists.set(remaining);
+      this.router.navigate(remaining.length > 0 ? ['/playlists', remaining[0].id] : ['/playlists']);
+    });
   }
 
   onPlaylistAdded(newPlaylistId: number): void {

@@ -1,20 +1,21 @@
-import { Component, ElementRef, EventEmitter, Output, ViewChild, signal } from '@angular/core';
+import { Component, EventEmitter, Output, ViewChild, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, filter, switchMap } from 'rxjs';
 import { BookService } from '../../../services/book-service';
 import { AddBookComponent } from '../add-book/add-book';
 import { Book } from '../../../interfaces/book';
+import { Dialog } from '../../shared/dialog/dialog';
 
 @Component({
   selector: 'app-search-book',
   standalone: true,
-  imports: [ReactiveFormsModule, AddBookComponent],
+  imports: [ReactiveFormsModule, AddBookComponent, Dialog],
   templateUrl: './search-book.html'
 })
 export class SearchBookComponent {
 
   @Output() bookSelected = new EventEmitter<Book>();
-  @ViewChild('modal') modal!: ElementRef<HTMLDialogElement>;
+  @ViewChild('dialog') dialog!: Dialog;
 
   searchControl = new FormControl('');
   results = signal<Book[]>([]);
@@ -46,20 +47,11 @@ export class SearchBookComponent {
   open(): void {
     this.searchControl.reset('');
     this.results.set([]);
-    this.modal.nativeElement.showModal();
+    this.dialog.open();
   }
 
   selectBook(book: Book): void {
     this.bookSelected.emit(book);
-    this.modal.nativeElement.close();
-  }
-
-  onBookAdded(book: Book): void {
-    this.bookSelected.emit(book);
-    this.modal.nativeElement.close();
-  }
-
-  close(): void {
-    this.modal.nativeElement.close();
+    this.dialog.close();
   }
 }

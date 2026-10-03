@@ -1,34 +1,9 @@
-import { Component, signal, WritableSignal } from '@angular/core';
-import { Book } from '../../interfaces/book';
-import { BookService } from '../../services/book-service';
-import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-home-page',
-  imports: [FormsModule, CommonModule, RouterLink],
+  imports: [RouterLink],
   templateUrl: './home-page.html',
 })
-export class HomePage {
-
-  constructor(private bookService: BookService) { }
-
-  books: WritableSignal<Book[]> = signal([]);
-
-  ngOnInit(): void {
-    this.loadBooks();
-  }
-
-  loadBooks() {
-    this.bookService.getBooks()
-      .subscribe({
-        next: responseData => {
-          this.books.set(responseData.books);
-        },
-        error: err => {
-          console.log(err);
-        }
-      })
-  }
-}
+export class HomePage { }

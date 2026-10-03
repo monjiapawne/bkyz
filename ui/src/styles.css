@@ -44,7 +44,7 @@
 
 @utility btn-icon {
     @apply size-6 cursor-pointer text-subtle hover:text-bkyz transition-colors
-    [&>svg]:size-full;
+    [&>*]:size-full;
 }
 
 /* input-box */ 

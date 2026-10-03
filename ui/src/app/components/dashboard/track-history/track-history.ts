@@ -1,12 +1,13 @@
-import { Component, ElementRef, inject, input, signal, viewChild } from '@angular/core';
+import { Component, inject, input, signal, viewChild } from '@angular/core';
 import { formatDate } from '@angular/common';
 import { DataTable } from '../../shared/data-table/data-table';
+import { Dialog } from '../../shared/dialog/dialog';
 import { TrackService } from '../../../services/track-service';
 import { Track } from '../../../interfaces/track';
 
 @Component({
   selector: 'app-track-history',
-  imports: [DataTable],
+  imports: [DataTable, Dialog],
   templateUrl: './track-history.html',
 })
 export class TrackHistory {
@@ -22,15 +23,13 @@ export class TrackHistory {
   ];
 
   private trackService = inject(TrackService);
-  private modal = viewChild.required<ElementRef<HTMLDialogElement>>('modal');
+  private dialog = viewChild.required(Dialog);
 
   open(track: Track) {
     this.rows.set([]);
-    this.modal().nativeElement.showModal();
+    this.dialog().open();
     this.trackService.getTrackHistory(this.playlistId(), track.id).subscribe(history => {
       this.rows.set(history.map(h => ({ ...h, created_at: formatDate(h.created_at, 'MMM d, y', 'en') })));
     });
   }
-
-  close() { this.modal().nativeElement.close(); }
 }

@@ -2,6 +2,7 @@ import { Component, computed, DestroyRef, effect, inject, input, linkedSignal } 
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, CanActivateFn, NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
+import { Icon } from '../icon/icon';
 
 export const restoreLast = (sidebarTitle: string): CanActivateFn => (_, state) => {
   const last = localStorage.getItem(`last:${sidebarTitle}`);
@@ -10,6 +11,7 @@ export const restoreLast = (sidebarTitle: string): CanActivateFn => (_, state) =
 
 @Component({
   selector: 'app-page',
+  imports: [Icon],
   templateUrl: './page.html',
 })
 export class Page {
