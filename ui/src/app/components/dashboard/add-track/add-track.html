@@ -17,6 +17,7 @@
     }
     @if (editing) {
     <app-field label="Last read" name="last_read_at" type="date" />
+    <app-move-buttons class="block" (move)="move($event)" />
     }
     <app-field label="Notes" name="notes" type="textarea" [rows]="2" [maxlength]="255" />
     <app-field label="Playlist" name="playlistId" type="select" [options]="playlistOptions" />

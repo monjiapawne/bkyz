@@ -5,7 +5,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from app import spec
 from app.api.schemas import Out, ViewQuery
 from app.api.tracks import TrackFullOut
-from app.data import Playlist
+from app.data import Playlist, Direction
 
 playlist = Blueprint("playlists", __name__)
 
@@ -83,3 +83,17 @@ def update_playlist(playlist_id: int, json: PlaylistIn):
     changes = json.model_dump(exclude_unset=True, exclude_none=True)
     playlist.update(**changes)
     return PlaylistOut.json_(playlist), 200
+
+
+class PlaylistMoveIn(BaseModel):
+    direction: Direction
+
+
+@playlist.post("/<int:playlist_id>/move")
+@login_required
+@spec.validate(json=PlaylistMoveIn)
+def move_track(playlist_id, json: PlaylistMoveIn):
+    """Move the static sort position of a playlist"""
+    playlist = Playlist.get_owned(playlist_id, current_user.id)
+    playlist.move(json.direction)
+    return "", 204

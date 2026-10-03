@@ -2,13 +2,14 @@ import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Field } from '../../shared/field/field';
 import { FormDialog } from '../../shared/form-dialog/form-dialog';
+import { MoveButtons } from '../../shared/move-buttons/move-buttons';
 import { PlaylistService } from '../../../services/playlist-service';
 import { Playlist } from '../../../interfaces/playlist';
 
 @Component({
   selector: 'app-add-playlist',
   standalone: true,
-  imports: [ReactiveFormsModule, Field, FormDialog],
+  imports: [ReactiveFormsModule, Field, FormDialog, MoveButtons],
   templateUrl: './add-playlist.html'
 })
 export class AddPlaylistComponent {
@@ -38,6 +39,10 @@ export class AddPlaylistComponent {
       description: playlist?.description ?? ''
     });
     this.dialog.open();
+  }
+
+  move(direction: 'up' | 'down') {
+    this.playlistService.movePlaylist(this.editing!.id, direction).subscribe(() => this.playlistAdded.emit(this.editing!.id));
   }
 
   save = () => {

@@ -32,6 +32,10 @@ export class PlaylistService {
     return this.http.patch<Playlist>(`${this.API_URL}/${id}`, { name, description });
   }
 
+  movePlaylist(id: number, direction: 'up' | 'down') {
+    return this.http.post(`${this.API_URL}/${id}/move`, { direction });
+  }
+
   deletePlaylist(id: number) {
     return this.http.delete(`${this.API_URL}/${id}`)
       .pipe(tap(() => this.notifications.show('Playlist removed', 'info', 'short')));
