@@ -1,10 +1,11 @@
 import logging
+from enum import StrEnum, auto
 from typing import TYPE_CHECKING, Any, Self
 
 from sqlalchemy import (
     ColumnExpressionArgument,
-    select,
     func,
+    select,
 )
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Mapped
@@ -93,6 +94,11 @@ class CRUDMixin:
         return self
 
 
+class Direction(StrEnum):
+    up = auto()
+    down = auto()
+
+
 class SortOrderMixin:
     """Gives a mode a sort_order that auto increments with in a scope (e.g., playlist)"""
 
@@ -110,3 +116,22 @@ class SortOrderMixin:
     def create(cls, **kwargs) -> Self:
         kwargs["sort_order"] = cls.next_sort_order(kwargs[cls.__sort_scope__])
         return super().create(**kwargs)
+
+    def move(self, direction: Direction):
+        scope = getattr(type(self), self.__sort_scope__)
+        scope_id = getattr(self, self.__sort_scope__)
+        col = type(self).sort_order
+
+        if direction is Direction.up:
+            where, order = col < self.sort_order, col.desc()
+        else:
+            where, order = col > self.sort_order, col.desc()
+
+        neighbour = db.session.scalar(
+            select(type(self)).where(scope == scope_id, where).order_by(order).limit(1)
+        )
+        if neighbour is None:  # already at top
+            return
+
+        self.sort_order, neighbour.sort_order = neighbour.sort_order, self.sort_order
+        db.session.commit()

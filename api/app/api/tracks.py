@@ -1,11 +1,12 @@
 from flask import Blueprint
+
 from flask_login import current_user, login_required
 from pydantic import BaseModel, ConfigDict, Field
 
 from app import spec
 from app.api.books import BookOut
 from app.api.schemas import Out, UTCDatetime
-from app.data import Book, Medium, Playlist, Track, TrackProgress
+from app.data import Book, Medium, Playlist, Track, TrackProgress, Direction
 from app.errors import NotFoundError
 
 tracks = Blueprint("tracks", __name__)
@@ -150,3 +151,17 @@ def add_progress(playlist_id: int, track_id: int, json: TrackProgressIn):
 def list_track_history(playlist_id, track_id: int):
     track = Track.get_owned(track_id, current_user.id)  # Verify ownership
     return [TrackProgressOut.json_(record) for record in track.progress_log], 200
+
+
+class TrackMoveIn(BaseModel):
+    direction: Direction
+
+
+@tracks.post("/<int:track_id>/move")
+@login_required
+@spec.validate(json=TrackMoveIn)
+def move_track(playlist_id, track_id: int, json: TrackMoveIn):
+    """Move the static sort position of a track"""
+    track = Track.get_owned(track_id, current_user.id)
+    track.move(json.direction)
+    return "", 204

@@ -33,6 +33,10 @@ export class TrackService {
     return this.http.patch<Track>(`${this.API_URL}/${playlistId}/tracks/${trackId}`, body);
   }
 
+  moveTrack(playlistId: number, trackId: number, direction: 'up' | 'down') {
+    return this.http.post(`${this.API_URL}/${playlistId}/tracks/${trackId}/move`, { direction });
+  }
+
   progressTrack(playlistId: number, trackId: number, position: number) {
     return this.http.post<Track>(`${this.API_URL}/${playlistId}/tracks/${trackId}/progress`, { position });
   }

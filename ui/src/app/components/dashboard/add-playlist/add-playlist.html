@@ -4,4 +4,7 @@
     (saved)="playlistAdded.emit($event.id)" (deleted)="playlistDeleted.emit()">
     <app-field label="Name" name="name" />
     <app-field label="Description" name="description" type="textarea" />
+    @if (editing) {
+    <app-move-buttons class="block" (move)="move($event)" />
+    }
 </app-form-dialog>
