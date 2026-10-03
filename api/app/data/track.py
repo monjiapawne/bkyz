@@ -64,25 +64,24 @@ class Track(SortOrderMixin, CRUDMixin, db.Model):
         # Easier to work with most recent to oldest
         # Also remove duplcate dates with the set
         days = sorted({d.created_at.date() for d in self.progress_log}, reverse=True)
+        if not days:
+            return 0
 
         today = datetime.now(tz=UTC).date()
         yesterday = today - timedelta(days=1)
         # Early exit first sight of a non streak
-        if not days:
-            return 0
         if not days[0] in {today, yesterday}:
-            print(days[0], today, yesterday)
             return 0
 
         streak = 0
-        cmp_date = today
+        cmp_date = days[0]  # start from the top, since we know it's either yday or today
+
         for day in days:
             if day != cmp_date:
                 break
             streak += 1
             cmp_date -= timedelta(days=1)
 
-        logger.info(f"streak of: {streak} for {self.book.title}")
         return streak
 
     def progress_track(self, new_position: int):
