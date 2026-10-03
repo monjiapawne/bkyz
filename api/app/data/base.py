@@ -12,6 +12,7 @@ from app.errors import NotFoundError, ResourceExistsError
 
 logger = logging.getLogger(__name__)
 
+
 class CRUDMixin:
     """Generic CRUD methods mix-in.
 
