@@ -5,7 +5,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from app import spec
 from app.api.schemas import Out, ViewQuery
 from app.api.tracks import TrackFullOut
-from app.data import Playlist, Direction
+from app.data import Direction, Playlist
 
 playlist = Blueprint("playlists", __name__)
 
