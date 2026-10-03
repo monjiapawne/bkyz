@@ -13,6 +13,7 @@ from sqlalchemy import (
     select,
     event,
     inspect,
+    text,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -50,7 +51,8 @@ class Track(CRUDMixin, db.Model):
     )
 
     position_updated_at: Mapped[datetime.datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now()
+        DateTime(timezone=True),
+        server_default=text("'1970-01-01 00:00:00+00'"),
     )
 
     playlist_id: Mapped[int] = mapped_column(ForeignKey("playlists.id", ondelete="CASCADE"))
