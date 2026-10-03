@@ -42,6 +42,7 @@ class TrackOut(Out):
     notes: str | None
     last_read_at: UTCDatetime | None
     rating: int | None
+    streak: int | None
 
 
 class TrackFullOut(TrackOut):

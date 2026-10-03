@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime, timedelta
 import logging
 from enum import StrEnum, auto
 from typing import Self
@@ -47,9 +47,7 @@ class Track(SortOrderMixin, CRUDMixin, db.Model):
         CheckConstraint("rating BETWEEN 1 AND 10", name="rating_range"), default=None
     )
 
-    last_read_at: Mapped[datetime.datetime | None] = mapped_column(
-        DateTime(timezone=True), default=None
-    )
+    last_read_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), default=None)
 
     playlist_id: Mapped[int] = mapped_column(ForeignKey("playlists.id", ondelete="CASCADE"))
     playlist: Mapped["Playlist"] = relationship(back_populates="tracks")
@@ -60,6 +58,32 @@ class Track(SortOrderMixin, CRUDMixin, db.Model):
     progress_log: Mapped[list["TrackProgress"]] = relationship(
         back_populates="track", cascade="all, delete-orphan"
     )
+
+    @property
+    def streak(self):
+        # Easier to work with most recent to oldest
+        # Also remove duplcate dates with the set
+        days = sorted({d.created_at.date() for d in self.progress_log}, reverse=True)
+
+        today = datetime.today().date()
+        yesterday = today - timedelta(days=1)
+        # Early exit first sight of a non streak
+        if not days:
+            return 0
+        if not days[0] in {today, yesterday}:
+            print(days[0], today, yesterday)
+            return 0
+
+        streak = 0
+        cmp_date = today
+        for day in days:
+            if day != cmp_date:
+                break
+            streak += 1
+            cmp_date -= timedelta(days=1)
+
+        print(f"streak of: {streak} for {self.book.title}")
+        return streak
 
     def progress_track(self, new_position: int):
         new_position = max(1, new_position)
@@ -111,8 +135,6 @@ class TrackProgress(CRUDMixin, db.Model):
     from_position: Mapped[int]
     to_position: Mapped[int]
     delta: Mapped[int]
-    created_at: Mapped[datetime.datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now()
-    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     track: Mapped["Track"] = relationship(back_populates="progress_log")
