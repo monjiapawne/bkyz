@@ -36,7 +36,7 @@ class TrackOut(Out):
     total: int
     medium: Medium
     book_id: int
-    playlist_position: int
+    sort_order: int
     active: bool
     notes: str | None
     position_updated_at: UTCDatetime | None

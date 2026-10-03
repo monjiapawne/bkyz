@@ -26,7 +26,9 @@ class User(CRUDMixin, UserMixin, db.Model):
     password_hash: Mapped[str] = mapped_column(String(256), nullable=False)
     is_admin: Mapped[bool] = mapped_column(default=False, server_default=false())
 
-    playlists: Mapped[list["Playlist"]] = relationship(back_populates="user")
+    playlists: Mapped[list["Playlist"]] = relationship(
+        back_populates="user", order_by="Playlist.sort_order"
+    )
 
     @property
     def password(self):

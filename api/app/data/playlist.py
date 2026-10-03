@@ -8,7 +8,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app import db
-from app.data.base import CRUDMixin
+from app.data.base import CRUDMixin, SortOrderMixin
 from app.data.user import User
 from app.errors import ForbiddenAsNotFound, NotFoundError
 
@@ -18,10 +18,11 @@ if TYPE_CHECKING:
     from app.data.track import Track
 
 
-class Playlist(CRUDMixin, db.Model):
+class Playlist(SortOrderMixin, CRUDMixin, db.Model):
     """A playlist is a group of tracks."""
 
     __tablename__ = "playlists"
+    __sort_scope__ = "user_id"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(30))
@@ -32,7 +33,7 @@ class Playlist(CRUDMixin, db.Model):
 
     # Delete all tracks when a playlist is deleted
     tracks: Mapped[list["Track"]] = relationship(
-        back_populates="playlist", cascade="all, delete-orphan", order_by="Track.playlist_position"
+        back_populates="playlist", cascade="all, delete-orphan", order_by="Track.sort_order"
     )
 
     @classmethod

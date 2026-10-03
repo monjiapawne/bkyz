@@ -31,6 +31,7 @@ class PlaylistOut(Out):
     name: str
     description: str
     user_id: int
+    sort_order: int
 
 
 class PlaylistFullOut(PlaylistOut):
@@ -42,7 +43,7 @@ class PlaylistFullOut(PlaylistOut):
 @spec.validate(query=ViewQuery)
 def list_playlists(query: ViewQuery):
     """Get all playlists of the logged in user."""
-    playlists = Playlist.get_all(Playlist.user_id == current_user.id)
+    playlists = current_user.playlists
     if query.view == "full":
         return [PlaylistFullOut.json_(p) for p in playlists]
     return [PlaylistOut.json_(p) for p in playlists]

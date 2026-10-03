@@ -9,4 +9,5 @@ export interface Track {
     notes: string | null;
     position_updated_at: string | null;
     rating: number | null;
+    sort_order: number;
 }
