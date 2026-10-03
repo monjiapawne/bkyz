@@ -1,5 +1,5 @@
-from datetime import datetime, timedelta
 import logging
+from datetime import datetime, timedelta, UTC
 from enum import StrEnum, auto
 from typing import Self
 
@@ -65,7 +65,7 @@ class Track(SortOrderMixin, CRUDMixin, db.Model):
         # Also remove duplcate dates with the set
         days = sorted({d.created_at.date() for d in self.progress_log}, reverse=True)
 
-        today = datetime.today().date()
+        today = datetime.now(tz=UTC).date()
         yesterday = today - timedelta(days=1)
         # Early exit first sight of a non streak
         if not days:
@@ -82,7 +82,7 @@ class Track(SortOrderMixin, CRUDMixin, db.Model):
             streak += 1
             cmp_date -= timedelta(days=1)
 
-        print(f"streak of: {streak} for {self.book.title}")
+        logger.info(f"streak of: {streak} for {self.book.title}")
         return streak
 
     def progress_track(self, new_position: int):
