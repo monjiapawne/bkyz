@@ -39,7 +39,7 @@ class TrackOut(Out):
     sort_order: int
     active: bool
     notes: str | None
-    position_updated_at: UTCDatetime | None
+    last_read_at: UTCDatetime | None
     rating: int | None
 
 
@@ -148,6 +148,5 @@ def add_progress(playlist_id: int, track_id: int, json: TrackProgressIn):
 @tracks.get("/<int:track_id>/history")
 @login_required
 def list_track_history(playlist_id, track_id: int):
-    _ = Track.get_owned(track_id, current_user.id)  # Verify ownership
-    history = TrackProgress.get_by_track_id(track_id)
-    return [TrackProgressOut.json_(record) for record in history], 200
+    track = Track.get_owned(track_id, current_user.id)  # Verify ownership
+    return [TrackProgressOut.json_(record) for record in track.progress_log], 200

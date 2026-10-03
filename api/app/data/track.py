@@ -47,7 +47,7 @@ class Track(SortOrderMixin, CRUDMixin, db.Model):
         CheckConstraint("rating BETWEEN 1 AND 10", name="rating_range"), default=None
     )
 
-    position_updated_at: Mapped[datetime.datetime | None] = mapped_column(
+    last_read_at: Mapped[datetime.datetime | None] = mapped_column(
         DateTime(timezone=True), default=None
     )
 
@@ -73,7 +73,7 @@ class Track(SortOrderMixin, CRUDMixin, db.Model):
             return self
 
         self.position = new_position
-        self.position_updated_at = func.now()
+        self.last_read_at = func.now()
         db.session.add(
             TrackProgress(
                 track_id=self.id,
@@ -116,11 +116,3 @@ class TrackProgress(CRUDMixin, db.Model):
     )
 
     track: Mapped["Track"] = relationship(back_populates="progress_log")
-
-    @classmethod
-    def get_by_track_id(cls, track_id):
-        track_history = list(db.session.scalars(select(cls).where(cls.track_id == track_id)))
-        print(f"Track history data layer:\n{track_history}")
-        return track_history
-
-    # TODO: add indexing for user_id and track_id for speed
