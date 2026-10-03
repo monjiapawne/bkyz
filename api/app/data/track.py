@@ -128,4 +128,10 @@ class TrackProgress(CRUDMixin, db.Model):
 
     track: Mapped["Track"] = relationship(back_populates="progress_log")
 
+    @classmethod
+    def get_by_track_id(cls, track_id):
+        track_history = list(db.session.scalars(select(cls).where(cls.track_id == track_id)))
+        print(f"Track history data layer:\n{track_history}")
+        return track_history
+
     # TODO: add indexing for user_id and track_id for speed

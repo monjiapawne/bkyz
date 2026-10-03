@@ -14,6 +14,7 @@ export class TrackRowComponent {
   book = input.required<Book>();
 
   edit = output<Track>();
+  history = output<Track>();
   progressChange = output<number>();
 
   position = linkedSignal(() => this.track().position);
