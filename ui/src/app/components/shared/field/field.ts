@@ -17,10 +17,18 @@ export interface Option {
 export class Field {
   label = input.required<string>();
   name = input<string>();
-  type = input<'text' | 'number' | 'password' | 'textarea' | 'checkbox' | 'select' | 'rating'>('text');
+  type = input<'text' | 'number' | 'password' | 'textarea' | 'checkbox' | 'select' | 'rating' | 'date'>('text');
   options = input<Option[]>([]);
   placeholder = input('');
   rows = input(3);
   min = input<number>();
   maxlength = input<number>();
+
+  private container = inject(ControlContainer);
+
+  clear() {
+    const control = this.container.control?.get(this.name()!);
+    control?.setValue(null);
+    control?.markAsDirty();
+  }
 }

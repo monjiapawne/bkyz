@@ -14,7 +14,7 @@
                         <span>({{ year() }})</span>
                         }
                     </div>
-                    @if (track().active) {
+                    @if (track().active && track().position_updated_at) {
                     <div class="text-xs text-subtle/70">last read {{ lastRead() }}</div>
                     }
                 </div>
@@ -43,7 +43,7 @@
 
         @if (track().active) {
         <div class="shrink-0">
-            <div class="flex items-baseline justify-between text-sm md:text-base pointer-coarse:text-base text-subtle mb-1">
+            <div class="flex items-baseline justify-between text-xs md:text-sm pointer-coarse:text-base tabular-nums leading-none text-subtle mb-1">
                 <span>{{ progress() }}%</span>
 
                 @if (track().total) {
@@ -51,8 +51,8 @@
                     @if (position() !== track().position) {
                     <button type="button" class="mr-2 text-bkyz hover:underline cursor-pointer" (click)="progressChange.emit(position())">Save</button>
                     }
-                    <label class="flex items-baseline gap-1 cursor-text">
-                        <input type="text" inputmode="numeric" class="box-content px-1 leading-none bg-surface border border-line text-center focus:outline-1 focus:outline-bkyz"
+                    <label class="flex items-baseline gap-0.5 cursor-text">
+                        <input type="text" inputmode="numeric" class="box-content px-0.5 py-px leading-none bg-surface border border-line text-center focus:outline-1 focus:outline-bkyz"
                             [value]="position()" [style.width.ch]="(position() + '').length" (input)="position.set(+pos.value)" (click)="pos.setSelectionRange(pos.value.length, pos.value.length)" (keydown.enter)="progressChange.emit(position())" (keydown.escape)="position.set(track().position); pos.blur()" #pos />
                         <span>/ {{ track().total }} {{ track().unit }}</span>
                     </label>
