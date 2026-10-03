@@ -1,0 +1,7 @@
+<dialog #modal class="modal">
+    <div class="dialog-header">
+        <button type="button" (click)="close()" class="btn-close" aria-label="Close">&times;</button>
+        <h2>{{ heading() }}</h2>
+    </div>
+    <ng-content />
+</dialog>

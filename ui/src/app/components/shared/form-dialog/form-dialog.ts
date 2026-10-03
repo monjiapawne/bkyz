@@ -1,10 +1,12 @@
-import { Component, ElementRef, inject, input, output, signal, viewChild } from '@angular/core';
+import { Component, inject, input, output, signal, viewChild } from '@angular/core';
 import { FormGroupDirective } from '@angular/forms';
 import { finalize, Observable } from 'rxjs';
 import { NotificationService } from '../../../services/notification-service';
+import { Dialog } from '../dialog/dialog';
 
 @Component({
   selector: 'app-form-dialog',
+  imports: [Dialog],
   templateUrl: './form-dialog.html',
 })
 export class FormDialog {
@@ -21,12 +23,12 @@ export class FormDialog {
   submitting = signal(false);
   private formGroup = inject(FormGroupDirective, { self: true });
   private notifications = inject(NotificationService);
-  private modal = viewChild.required<ElementRef<HTMLDialogElement>>('modal');
+  private dialog = viewChild.required(Dialog);
 
   get form() { return this.formGroup.form; }
 
-  open() { this.modal().nativeElement.showModal(); }
-  close() { this.modal().nativeElement.close(); }
+  open() { this.dialog().open(); }
+  close() { this.dialog().close(); }
 
   submit() {
     if (this.form.invalid || this.submitting()) return;

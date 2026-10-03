@@ -2,10 +2,11 @@ import { Component, computed, input, linkedSignal, output } from '@angular/core'
 import { UpperCasePipe } from '@angular/common';
 import { Track } from '../../../interfaces/track';
 import { Book } from '../../../interfaces/book';
+import { Icon } from '../../shared/icon/icon';
 
 @Component({
   selector: 'app-track-row',
-  imports: [UpperCasePipe],
+  imports: [UpperCasePipe, Icon],
   templateUrl: './track-row.html'
 })
 export class TrackRowComponent {

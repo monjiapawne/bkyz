@@ -1,8 +1,4 @@
-<dialog #modal class="modal">
-    <div class="dialog-header">
-        <button type="button" (click)="close()" class="btn-close" aria-label="Close">&times;</button>
-        <h2>Add book</h2>
-    </div>
+<app-dialog #dialog heading="Add book">
 
     <div class="py-2 text-ink">
         <label for="bookSearch" class="form-label">Search for a book</label>
@@ -41,6 +37,6 @@
             }
         </div>
     </div>
-</dialog>
+</app-dialog>
 
-<app-add-book #addBookModal (bookAdded)="onBookAdded($event)"></app-add-book>
+<app-add-book #addBookModal (bookAdded)="selectBook($event)"></app-add-book>

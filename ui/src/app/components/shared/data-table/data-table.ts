@@ -1,4 +1,5 @@
 import { Component, input, output } from '@angular/core';
+import { Icon } from '../icon/icon';
 
 export interface Column {
   key: string;
@@ -7,6 +8,7 @@ export interface Column {
 
 @Component({
   selector: 'app-data-table',
+  imports: [Icon],
   templateUrl: './data-table.html',
 })
 export class DataTable {

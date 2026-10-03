@@ -17,22 +17,16 @@ export class LoginPage {
   username: string = '';
   password: string = '';
   rememberMe: boolean = false;
-  userId: number = -1;
-
   attemptLogin() {
     this.auth.login(this.username, this.password, this.rememberMe)
       .subscribe(
         {
           next: responseData => {
-            this.userId = responseData.id;
-            this.invalidLoginErrorMessage.set("");
             this.auth.user.set(responseData);
             this.auth.isLoggedIn.set(true);
-
             this.router.navigate(['/dashboard']);
           },
           error: (err) => {
-            console.log(err);
             this.invalidLoginErrorMessage.set(err['error']['error']);
           }
         }

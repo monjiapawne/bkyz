@@ -13,30 +13,18 @@ export class RegisterPage {
   constructor(private auth: Auth, private router: Router) { }
 
   invalidRegisterErrorMessage: WritableSignal<String> = signal("");
-  accountCreatedSuccessMessage: WritableSignal<String> = signal("");
-
 
   username: string = '';
   password: string = '';
   confirmPassword: string = '';
-  userId: number = -1;
 
   attemptRegistration() {
     if (this.verifyPasswordMatch()) {
       this.auth.register(this.username, this.password)
         .subscribe(
           {
-            next: responseData => {
-              this.userId = responseData.id;
-              console.log(this.userId);
-              this.invalidRegisterErrorMessage.set("");
-              this.accountCreatedSuccessMessage.set("Account Created Sucessfully")
-
-
-              this.router.navigate(['/']);
-            },
+            next: () => this.router.navigate(['/']),
             error: (err) => {
-              console.log(err);
               this.invalidRegisterErrorMessage.set(err['error']['error'])
             }
           })
