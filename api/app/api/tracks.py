@@ -108,7 +108,7 @@ class TrackPatch(BaseModel):
     active: bool | None = None
     notes: str | None = None
     rating: int | None = Field(None, ge=1, le=10)
-    position_updated_at: UTCDatetime | None = None
+    last_read_at: UTCDatetime | None = None
 
 
 @tracks.patch("/<int:track_id>")

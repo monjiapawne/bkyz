@@ -7,7 +7,7 @@ export interface Track {
     book_id: number;
     active: boolean;
     notes: string | null;
-    position_updated_at: string | null;
+    last_read_at: string | null;
     rating: number | null;
     sort_order: number;
 }

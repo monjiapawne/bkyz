@@ -63,7 +63,7 @@ export class AddTrackComponent {
       active: [false],
       notes: ['', Validators.maxLength(255)],
       rating: [null, [Validators.min(1), Validators.max(10)]],
-      position_updated_at: [null]
+      last_read_at: [null]
     });
   }
 
@@ -78,13 +78,13 @@ export class AddTrackComponent {
       active: false,
       notes: '',
       rating: null,
-      position_updated_at: null
+      last_read_at: null
     });
     if (track) {
       this.trackForm.patchValue({
         ...track,
         notes: track.notes ?? '',
-        position_updated_at: track.position_updated_at && formatDate(track.position_updated_at, 'yyyy-MM-dd', 'en')
+        last_read_at: track.last_read_at && formatDate(track.last_read_at, 'yyyy-MM-dd', 'en')
       });
     }
     this.dialog.open();
@@ -104,8 +104,8 @@ export class AddTrackComponent {
         active: form.active,
         notes: form.notes.trim() || null,
         rating: form.rating,
-        ...(this.trackForm.get('position_updated_at')!.dirty && {
-          position_updated_at: form.position_updated_at ? new Date(form.position_updated_at + 'T00:00').toISOString() : null
+        ...(this.trackForm.get('last_read_at')!.dirty && {
+          last_read_at: form.last_read_at ? new Date(form.last_read_at + 'T00:00').toISOString() : null
         }),
         playlist_id: form.playlistId
       })
