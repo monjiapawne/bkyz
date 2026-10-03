@@ -3,4 +3,5 @@ export interface Playlist {
     id: number;
     name: string;
     user_id: number;
+    sort_order: number;
 }

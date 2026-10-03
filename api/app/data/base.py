@@ -4,8 +4,10 @@ from typing import TYPE_CHECKING, Any, Self
 from sqlalchemy import (
     ColumnExpressionArgument,
     select,
+    func,
 )
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Mapped
 
 from app import db
 from app.errors import NotFoundError, ResourceExistsError
@@ -89,3 +91,22 @@ class CRUDMixin:
         db.session.add(self)
         db.session.commit()
         return self
+
+
+class SortOrderMixin:
+    """Gives a mode a sort_order that auto increments with in a scope (e.g., playlist)"""
+
+    __sort_scope__: str
+    sort_order: Mapped[int]
+
+    @classmethod
+    def next_sort_order(cls, scope_id: int) -> int:
+        scope = getattr(cls, cls.__sort_scope__)
+        return db.session.execute(
+            select(func.coalesce(func.max(cls.sort_order), 0) + 1).where(scope == scope_id)
+        ).scalar_one()
+
+    @classmethod
+    def create(cls, **kwargs) -> Self:
+        kwargs["sort_order"] = cls.next_sort_order(kwargs[cls.__sort_scope__])
+        return super().create(**kwargs)

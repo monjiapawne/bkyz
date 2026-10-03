@@ -15,7 +15,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app import db
-from app.data.base import CRUDMixin
+from app.data.base import CRUDMixin, SortOrderMixin
 from app.data.book import Book
 from app.data.playlist import Playlist
 from app.errors import NotFoundError
@@ -30,17 +30,17 @@ class Medium(StrEnum):
     ebook = auto()
 
 
-class Track(CRUDMixin, db.Model):
+class Track(SortOrderMixin, CRUDMixin, db.Model):
     """A user book's copy of a book storing all their data, referencing a parent book."""
 
     __tablename__ = "tracks"
+    __sort_scope__ = "playlist_id"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     position: Mapped[int] = mapped_column(server_default="1")
     unit: Mapped[str | None] = mapped_column(String(30), default=None)
     total: Mapped[int | None] = mapped_column(default=None)
     medium: Mapped[Medium] = mapped_column(Enum(Medium), server_default=Medium.physical.name)
-    playlist_position: Mapped[int]
     active: Mapped[bool] = mapped_column(default=True)
     notes: Mapped[str | None] = mapped_column(default=None)
     rating: Mapped[int | None] = mapped_column(
@@ -97,18 +97,7 @@ class Track(CRUDMixin, db.Model):
 
     @classmethod
     def create(cls, playlist_id: int, **kwargs) -> Self:
-        kwargs["playlist_id"] = playlist_id
-        kwargs["playlist_position"] = cls._next_position(playlist_id)
-        return super().create(**kwargs)
-
-    @classmethod
-    def _next_position(cls, playlist_id: int) -> int:
-        """Calculates the next position for a track in a playlist"""
-        return db.session.execute(
-            select(func.coalesce(func.max(cls.playlist_position), 0) + 1).where(
-                cls.playlist_id == playlist_id
-            )
-        ).scalar_one()
+        return super().create(playlist_id=playlist_id, **kwargs)
 
 
 class TrackProgress(CRUDMixin, db.Model):
