@@ -2,7 +2,6 @@ import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Field } from '../../shared/field/field';
 import { FormDialog } from '../../shared/form-dialog/form-dialog';
-import { MoveButtons } from '../../shared/move-buttons/move-buttons';
 import { TrackService } from '../../../services/track-service';
 import { Track } from '../../../interfaces/track';
 import { Playlist } from '../../../interfaces/playlist';
@@ -11,7 +10,7 @@ import { formatDate } from '@angular/common';
 @Component({
   selector: 'app-add-track',
   standalone: true,
-  imports: [ReactiveFormsModule, Field, FormDialog, MoveButtons],
+  imports: [ReactiveFormsModule, Field, FormDialog],
   templateUrl: './add-track.html'
 })
 export class AddTrackComponent {
@@ -89,10 +88,6 @@ export class AddTrackComponent {
       });
     }
     this.dialog.open();
-  }
-
-  move(direction: 'up' | 'down') {
-    this.trackService.moveTrack(this.playlistId, this.editing!.id, direction).subscribe(() => this.trackAdded.emit());
   }
 
   save = () => {

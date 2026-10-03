@@ -54,6 +54,7 @@ export class Dashboard {
   @ViewChild('addTrackModal') addTrackModal!: AddTrackComponent;
 
   playlistId: WritableSignal<number> = signal(0);
+  reordering = signal(false);
   selectedBookId!: number;
 
   playlists: WritableSignal<PlaylistFull[]> = signal([]);
@@ -125,6 +126,10 @@ export class Dashboard {
     this.trackService.deleteTrackFromPlaylist(this.playlistId(), track.id).subscribe(() => {
       this.updateTracks(tracks => tracks.filter(t => t.id !== track.id));
     });
+  }
+
+  onMove(track: Track, direction: 'up' | 'down') {
+    this.trackService.moveTrack(this.playlistId(), track.id, direction).subscribe(() => this.loadDashboard());
   }
 
   onProgress(track: Track, position: number) {

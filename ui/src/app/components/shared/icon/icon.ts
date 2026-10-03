@@ -6,5 +6,5 @@ import { Component, input } from '@angular/core';
   templateUrl: './icon.html',
 })
 export class Icon {
-  name = input.required<'sidebar' | 'edit' | 'history' | 'check' | 'close'>();
+  name = input.required<'sidebar' | 'edit' | 'history' | 'check' | 'close' | 'up' | 'down'>();
 }
