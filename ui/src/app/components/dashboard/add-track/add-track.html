@@ -15,6 +15,9 @@
     @if (!trackForm.value.active) {
     <app-field label="Rating" name="rating" type="rating" />
     }
+    @if (editing) {
+    <app-field label="Last read" name="position_updated_at" type="date" />
+    }
     <app-field label="Notes" name="notes" type="textarea" [rows]="2" [maxlength]="255" />
     <app-field label="Playlist" name="playlistId" type="select" [options]="playlistOptions" />
 </app-form-dialog>

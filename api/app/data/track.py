@@ -50,9 +50,8 @@ class Track(CRUDMixin, db.Model):
         CheckConstraint("rating BETWEEN 1 AND 10", name="rating_range"), default=None
     )
 
-    position_updated_at: Mapped[datetime.datetime] = mapped_column(
-        DateTime(timezone=True),
-        server_default=text("'1970-01-01 00:00:00+00'"),
+    position_updated_at: Mapped[datetime.datetime | None] = mapped_column(
+        DateTime(timezone=True), default=None
     )
 
     playlist_id: Mapped[int] = mapped_column(ForeignKey("playlists.id", ondelete="CASCADE"))

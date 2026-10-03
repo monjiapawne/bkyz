@@ -1,8 +1,9 @@
-<table class="w-full border border-line bg-surface text-left">
+<div class="overflow-x-auto border border-line bg-surface">
+<table class="w-full text-left">
     <thead class="border-b border-line text-sm text-subtle">
         <tr>
             @for (col of columns(); track col.key) {
-            <th class="px-4 py-2 font-semibold">{{ col.label }}</th>
+            <th class="px-4 py-2 font-semibold whitespace-nowrap">{{ col.label }}</th>
             }
             @if (editable()) {
             <th></th>
@@ -37,3 +38,4 @@
         }
     </tbody>
 </table>
+</div>

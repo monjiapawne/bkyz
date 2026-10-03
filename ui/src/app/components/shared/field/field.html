@@ -21,6 +21,12 @@
     @case ('textarea') {
     <textarea [formControlName]="name()!" [rows]="rows()" [placeholder]="placeholder()" [attr.maxlength]="maxlength()" class="input-box h-auto w-full py-1"></textarea>
     }
+    @case ('date') {
+    <div class="flex gap-2">
+        <input type="date" [formControlName]="name()!" class="input-box flex-1 min-w-0" />
+        <button type="button" (click)="clear()" class="btn-neutral">Reset</button>
+    </div>
+    }
     @case ('select') {
     <select [formControlName]="name()!" class="input-box w-full">
         @for (option of options(); track option.label) {

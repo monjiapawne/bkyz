@@ -39,7 +39,7 @@ class TrackOut(Out):
     playlist_position: int
     active: bool
     notes: str | None
-    position_updated_at: UTCDatetime
+    position_updated_at: UTCDatetime | None
     rating: int | None
 
 
@@ -108,6 +108,7 @@ class TrackPatch(BaseModel):
     active: bool | None = None
     notes: str | None = None
     rating: int | None = Field(None, ge=1, le=10)
+    position_updated_at: UTCDatetime | None = None
 
 
 @tracks.patch("/<int:track_id>")
