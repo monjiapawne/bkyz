@@ -125,7 +125,7 @@ class SortOrderMixin:
         if direction is Direction.up:
             where, order = col < self.sort_order, col.desc()
         else:
-            where, order = col > self.sort_order, col.desc()
+            where, order = col > self.sort_order, col.asc()
 
         neighbour = db.session.scalar(
             select(type(self)).where(scope == scope_id, where).order_by(order).limit(1)

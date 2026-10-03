@@ -22,6 +22,7 @@
 
     @if (playlist()) {
     <ng-container actions>
+        <button type="button" (click)="reordering.set(!reordering())" class="btn-neutral">{{ reordering() ? 'Done' : 'Reorder' }}</button>
         <button type="button" (click)="addPlaylistModal.open(playlist())" class="btn-neutral">Edit</button>
         <button type="button" (click)="searchBookModal.open()" class="btn-primary">Add book</button>
     </ng-container>
@@ -29,7 +30,7 @@
 
     <div class="border border-line divide-y divide-line bg-surface">
         @for (track of tracks(); track track.id) {
-        <app-track-row class="block" [track]="track" [book]="track.book" (edit)="addTrackModal.open($event)" (history)="trackHistory.open($event)"(progressChange)="onProgress(track, $event)"/>
+        <app-track-row class="block" [track]="track" [book]="track.book" [reordering]="reordering()" (edit)="addTrackModal.open($event)" (history)="trackHistory.open($event)" (move)="onMove(track, $event)" (progressChange)="onProgress(track, $event)"/>
         } @empty {
         <div class="px-4 py-8 text-center text-base md:text-lg text-subtle">No books yet</div>
         }

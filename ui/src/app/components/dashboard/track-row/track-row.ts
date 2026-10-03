@@ -13,9 +13,11 @@ export class TrackRowComponent {
 
   track = input.required<Track>();
   book = input.required<Book>();
+  reordering = input(false);
 
   edit = output<Track>();
   history = output<Track>();
+  move = output<'up' | 'down'>();
   progressChange = output<number>();
 
   position = linkedSignal(() => this.track().position);
