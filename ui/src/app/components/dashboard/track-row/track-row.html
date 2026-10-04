@@ -1,8 +1,8 @@
 <div class="relative flex h-36 md:h-40 gap-3 px-4 py-3 hover:bg-muted-hover/50">
     @if (reordering()) {
-    <div class="absolute right-full top-1/2 -translate-y-1/2 mr-1 flex flex-col gap-1">
-        <button type="button" class="btn-icon size-4" (click)="move.emit('up')" aria-label="Move up"><app-icon name="up" /></button>
-        <button type="button" class="btn-icon size-4" (click)="move.emit('down')" aria-label="Move down"><app-icon name="down" /></button>
+    <div class="shrink-0 flex flex-col gap-2 h-full">
+        <button type="button" class="flex-1 w-12 flex items-center justify-center border border-line-strong bg-muted hover:bg-muted-hover text-subtle hover:text-bkyz cursor-pointer" (click)="move.emit('up')" aria-label="Move up"><app-icon name="up" class="size-6" /></button>
+        <button type="button" class="flex-1 w-12 flex items-center justify-center border border-line-strong bg-muted hover:bg-muted-hover text-subtle hover:text-bkyz cursor-pointer" (click)="move.emit('down')" aria-label="Move down"><app-icon name="down" class="size-6" /></button>
     </div>
     }
     <img [src]="book().cover_url" [alt]="book().title" class="hidden min-[300px]:block shrink-0 h-full aspect-2/3 object-cover border border-line">
