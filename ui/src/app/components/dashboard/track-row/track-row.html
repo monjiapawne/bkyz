@@ -32,7 +32,7 @@
                 }
             </div>
 
-            <div class="ml-auto flex items-center shrink-0 gap-3">
+            <div class="ml-auto flex items-center shrink-0 gap-1">
                 @if (!track().active && track().rating) {
                 <span class="relative whitespace-nowrap text-sm leading-none text-line" [title]="track().rating + '/10'">★★★★★<span
                         class="absolute inset-0 overflow-hidden text-subtle" [style.width.%]="track().rating! * 10">★★★★★</span></span>
@@ -49,7 +49,15 @@
         @if (track().active) {
         <div class="shrink-0">
             <div class="flex items-baseline justify-between text-xs md:text-sm pointer-coarse:text-base tabular-nums leading-none text-subtle mb-1">
-                <span>{{ progress() }}%</span>
+                <span class="flex items-center gap-2">
+                    {{ progress() }}%
+                    @if (track().streak) {
+                    <span class="relative mr-1" [title]="track().streak + ' day streak'">
+                        <app-icon name="flame" class="size-[1em]" />
+                        <span class="absolute -right-1 bottom-0 text-[9px] leading-none font-semibold">{{ track().streak }}</span>
+                    </span>
+                    }
+                </span>
 
                 @if (track().total) {
                 <div class="flex items-baseline gap-1 whitespace-nowrap">

@@ -1,5 +1,7 @@
 import logging
-from datetime import datetime, timedelta, UTC
+from datetime import UTC, datetime, timedelta
+from zoneinfo import ZoneInfo
+from flask import current_app
 from enum import StrEnum, auto
 from typing import Self
 
@@ -61,13 +63,18 @@ class Track(SortOrderMixin, CRUDMixin, db.Model):
 
     @property
     def streak(self):
+        tz = ZoneInfo(current_app.config["TIMEZONE"])
+
         # Easier to work with most recent to oldest
         # Also remove duplcate dates with the set
-        days = sorted({d.created_at.date() for d in self.progress_log}, reverse=True)
+        days = sorted(
+            {d.created_at.replace(tzinfo=UTC).astimezone(tz).date() for d in self.progress_log},
+            reverse=True,
+        )
         if not days:
             return 0
 
-        today = datetime.now(tz=UTC).date()
+        today = datetime.now(tz).date()
         yesterday = today - timedelta(days=1)
         # Early exit first sight of a non streak
         if not days[0] in {today, yesterday}:
