@@ -10,4 +10,5 @@ export interface Track {
     last_read_at: string | null;
     rating: number | null;
     sort_order: number;
+    streak: number | null;
 }
