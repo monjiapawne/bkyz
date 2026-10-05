@@ -3,6 +3,7 @@ import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs';
 import { Track } from '../interfaces/track';
+import { Label } from '../interfaces/label';
 import { NotificationService } from './notification-service';
 
 @Injectable({
@@ -29,8 +30,16 @@ export class TrackService {
     return this.http.post<Track>(`${this.API_URL}/${playlistId}/tracks`, body);
   }
 
-  patchTrack(playlistId: number, trackId: number, body: Partial<Track> & { playlist_id?: number }) {
+  patchTrack(playlistId: number, trackId: number, body: Partial<Track> & { playlist_id?: number, label_ids?: number[] }) {
     return this.http.patch<Track>(`${this.API_URL}/${playlistId}/tracks/${trackId}`, body);
+  }
+
+  getLabels() {
+    return this.http.get<Label[]>(`${environment.apiUrl}/labels`);
+  }
+
+  postLabel(name: string) {
+    return this.http.post<Label>(`${environment.apiUrl}/labels`, { name });
   }
 
   moveTrack(playlistId: number, trackId: number, direction: 'up' | 'down') {

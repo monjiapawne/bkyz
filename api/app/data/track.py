@@ -1,10 +1,10 @@
 import logging
 from datetime import UTC, datetime, timedelta
-from zoneinfo import ZoneInfo
-from flask import current_app
 from enum import StrEnum, auto
-from typing import Self
+from typing import TYPE_CHECKING, Self
+from zoneinfo import ZoneInfo
 
+from flask import current_app
 from sqlalchemy import (
     CheckConstraint,
     DateTime,
@@ -21,6 +21,9 @@ from app.data.base import CRUDMixin, SortOrderMixin
 from app.data.book import Book
 from app.data.playlist import Playlist
 from app.errors import NotFoundError
+
+if TYPE_CHECKING:
+    from app.data.label import Label
 
 logger = logging.getLogger(__name__)
 
@@ -60,6 +63,8 @@ class Track(SortOrderMixin, CRUDMixin, db.Model):
     progress_log: Mapped[list["TrackProgress"]] = relationship(
         back_populates="track", cascade="all, delete-orphan"
     )
+
+    labels: Mapped[list["Label"]] = relationship(secondary="track_labels", back_populates="tracks")
 
     @property
     def streak(self):

@@ -2,13 +2,13 @@
     <div sidebar>
         @for (s of sections; track s.path) {
         <a [routerLink]="['/library', s.path]" routerLinkActive="bg-muted-hover font-semibold"
-            class="block px-3 py-3 md:py-1.5 text-base hover:bg-muted-hover">{{ s.label }}</a>
+            class="block sidebar-link">{{ s.label }}</a>
         }
     </div>
 
     @if (books(); as books) {
     <app-data-table [columns]="bookColumns" [rows]="books" />
     } @else {
-    <div class="px-4 py-8 text-center text-base md:text-lg text-subtle border border-line bg-surface">Select a section</div>
+    <div class="empty-state border border-line bg-surface">Select a section</div>
     }
 </app-page>

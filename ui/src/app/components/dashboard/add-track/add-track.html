@@ -17,6 +17,28 @@
     }
     @if (editing) {
     <app-field label="Last read" name="last_read_at" type="date" />
+    <div>
+        <span class="form-label">Labels</span>
+        <div class="flex flex-wrap gap-1.5 mb-2">
+            @for (label of labels(); track label.id) {
+            @if (labelIds.includes(label.id)) {
+            <button type="button" class="tag cursor-pointer hover:text-ink" (click)="setLabelIds(labelIds.filter(id => id !== label.id))">{{ label.name }} ×</button>
+            }
+            }
+        </div>
+        <select class="input-box w-full" (change)="setLabelIds([...labelIds, +sel.value]); sel.value = ''" #sel>
+            <option value="">Add label</option>
+            @for (label of labels(); track label.id) {
+            @if (!labelIds.includes(label.id)) {
+            <option [value]="label.id">{{ label.name }}</option>
+            }
+            }
+        </select>
+        <div class="flex gap-2 mt-2">
+            <input type="text" placeholder="New label" maxlength="50" class="input-box flex-1 min-w-0" (keydown.enter)="$event.preventDefault(); createLabel(newLabel)" #newLabel />
+            <button type="button" class="btn-neutral" (click)="createLabel(newLabel)">Create</button>
+        </div>
+    </div>
     }
     <app-field label="Notes" name="notes" type="textarea" [rows]="2" [maxlength]="255" />
     <app-field label="Playlist" name="playlistId" type="select" [options]="playlistOptions" />

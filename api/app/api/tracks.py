@@ -4,8 +4,9 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from app import spec
 from app.api.books import BookOut
+from app.api.labels import LabelOut
 from app.api.schemas import Out, UTCDatetime
-from app.data import Book, Direction, Medium, Playlist, Track
+from app.data import Book, Direction, Medium, Playlist, Track, Label
 from app.errors import NotFoundError
 
 tracks = Blueprint("tracks", __name__)
@@ -25,6 +26,7 @@ class TrackIn(BaseModel):
     active: bool = Field(False, examples=[True])
     notes: str | None = Field(None, max_length=255)
     rating: int | None = Field(None, ge=1, le=10, examples=[5])
+    label_ids: list[int] | None = None
 
 
 class TrackOut(Out):
@@ -42,6 +44,7 @@ class TrackOut(Out):
     last_read_at: UTCDatetime | None
     rating: int | None
     streak: int | None
+    labels: list[LabelOut] | None = None
 
 
 class TrackFullOut(TrackOut):
@@ -84,6 +87,7 @@ def create_track(playlist_id: int, json: TrackIn):
         active=json.active,
         notes=json.notes,
         rating=json.rating,
+        labels=json.label_ids,
     )
 
     return TrackOut.json_(track), 201
@@ -110,6 +114,7 @@ class TrackPatch(BaseModel):
     notes: str | None = None
     rating: int | None = Field(None, ge=1, le=10)
     last_read_at: UTCDatetime | None = None
+    label_ids: list[int] | None = None
 
 
 @tracks.patch("/<int:track_id>")
@@ -120,6 +125,10 @@ def update_track(playlist_id: int, track_id: int, json: TrackPatch):
     changes = json.model_dump(exclude_unset=True)
     if "notes" in json.model_fields_set:
         changes["notes"] = json.notes
+    if "label_ids" in changes:
+        changes["labels"] = Label.get_all(
+            Label.id.in_(changes.pop("label_ids")), Label.user_id == current_user.id
+        )
     track.update(**changes)
 
     return TrackOut.json_(track)

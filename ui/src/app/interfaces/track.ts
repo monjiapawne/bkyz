@@ -1,3 +1,5 @@
+import { Label } from './label';
+
 export interface Track {
     id: number;
     position: number;
@@ -11,4 +13,5 @@ export interface Track {
     rating: number | null;
     sort_order: number;
     streak: number | null;
+    labels: Label[];
 }

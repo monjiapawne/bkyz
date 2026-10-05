@@ -2,7 +2,7 @@
     <div sidebar>
         @for (s of sections; track s.path) {
         <a [routerLink]="['/admin', s.path]" routerLinkActive="bg-muted-hover font-semibold"
-            class="block px-3 py-3 md:py-1.5 text-base hover:bg-muted-hover">{{ s.label }}</a>
+            class="block sidebar-link">{{ s.label }}</a>
         }
     </div>
 
@@ -10,6 +10,6 @@
     <app-data-table [columns]="userColumns" [rows]="users" [editable]="true" (edit)="editUser.open($event)" />
     <app-edit-user #editUser (saved)="loadUsers()" />
     } @else {
-    <div class="px-4 py-8 text-center text-base md:text-lg text-subtle border border-line bg-surface">Select a section</div>
+    <div class="empty-state border border-line bg-surface">Select a section</div>
     }
 </app-page>

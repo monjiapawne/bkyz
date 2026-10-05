@@ -57,6 +57,47 @@
     @apply block mb-1 text-sm font-semibold;
 }
 
+@utility tag {
+    @apply px-1.5 py-0.5 border border-line-strong text-xs leading-none text-subtle whitespace-nowrap;
+}
+
+@utility btn-move {
+    @apply flex-1 w-12 flex items-center justify-center border border-line-strong bg-muted hover:bg-muted-hover
+    text-subtle hover:text-bkyz cursor-pointer;
+}
+
+@utility empty-state {
+    @apply px-4 py-8 text-center text-base md:text-lg text-subtle;
+}
+
+@utility sidebar-link {
+    @apply px-3 py-3 md:py-1.5 text-base hover:bg-muted-hover;
+}
+
+@utility auth-page {
+    @apply flex justify-center items-center min-h-[calc(100dvh-120px)];
+}
+
+@utility auth-card {
+    @apply w-full max-w-xs bg-surface border border-line p-6;
+}
+
+@utility auth-logo {
+    @apply mx-auto block mb-2 size-16;
+}
+
+@utility auth-title {
+    @apply font-bold text-3xl text-center mb-6;
+}
+
+@utility auth-error {
+    @apply text-xs text-center text-error mb-6;
+}
+
+@utility auth-link {
+    @apply block text-base font-bold text-center underline text-bkyz;
+}
+
 @utility spinner {
     @apply size-5 animate-spin rounded-full border-2 border-current border-t-transparent;
 }

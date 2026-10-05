@@ -1,9 +1,10 @@
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Field } from '../../shared/field/field';
 import { FormDialog } from '../../shared/form-dialog/form-dialog';
 import { TrackService } from '../../../services/track-service';
 import { Track } from '../../../interfaces/track';
+import { Label } from '../../../interfaces/label';
 import { Playlist } from '../../../interfaces/playlist';
 import { formatDate } from '@angular/common';
 
@@ -36,6 +37,27 @@ export class AddTrackComponent {
     { value: 'audiobook', label: 'Audiobook' },
   ];
 
+  labels = signal<Label[]>([]);
+
+  get labelIds(): number[] {
+    return this.trackForm.value.labelIds;
+  }
+
+  setLabelIds(ids: number[]) {
+    this.trackForm.patchValue({ labelIds: ids });
+    this.trackForm.markAsDirty();
+  }
+
+  createLabel(input: HTMLInputElement) {
+    const name = input.value.trim();
+    if (!name) return;
+    this.trackService.postLabel(name).subscribe(label => {
+      this.labels.update(labels => [...labels, label]);
+      this.setLabelIds([...this.labelIds, label.id]);
+      input.value = '';
+    });
+  }
+
   get playlistOptions() {
     return this.playlists.map(p => ({ value: p.id, label: p.name }));
   }
@@ -63,7 +85,8 @@ export class AddTrackComponent {
       active: [false],
       notes: ['', Validators.maxLength(255)],
       rating: [null, [Validators.min(1), Validators.max(10)]],
-      last_read_at: [null]
+      last_read_at: [null],
+      labelIds: [[]]
     });
   }
 
@@ -78,14 +101,17 @@ export class AddTrackComponent {
       active: false,
       notes: '',
       rating: null,
-      last_read_at: null
+      last_read_at: null,
+      labelIds: []
     });
     if (track) {
       this.trackForm.patchValue({
         ...track,
         notes: track.notes ?? '',
-        last_read_at: track.last_read_at && formatDate(track.last_read_at, 'yyyy-MM-dd', 'en')
+        last_read_at: track.last_read_at && formatDate(track.last_read_at, 'yyyy-MM-dd', 'en'),
+        labelIds: track.labels.map(l => l.id)
       });
+      this.trackService.getLabels().subscribe(labels => this.labels.set(labels));
     }
     this.dialog.open();
   }
@@ -107,7 +133,8 @@ export class AddTrackComponent {
         ...(this.trackForm.get('last_read_at')!.dirty && {
           last_read_at: form.last_read_at ? new Date(form.last_read_at + 'T00:00').toISOString() : null
         }),
-        playlist_id: form.playlistId
+        playlist_id: form.playlistId,
+        label_ids: form.labelIds
       })
       : this.trackService.postTrackToPlaylist(
         form.playlistId,
