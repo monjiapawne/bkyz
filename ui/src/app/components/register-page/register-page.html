@@ -1,12 +1,12 @@
-<div class="flex justify-center items-center min-h-[calc(100dvh-120px)]">
-    <form class="w-full max-w-xs bg-surface border border-line p-6">
+<div class="auth-page">
+    <form class="auth-card">
 
-        <img src="logo.svg" alt="bkyz" class="mx-auto block mb-2 w-16 h-16" draggable="false">
+        <img src="logo.svg" alt="bkyz" class="auth-logo" draggable="false">
 
-        <h1 class="font-bold text-3xl text-center mb-6 text-ink">Register</h1>
+        <h1 class="auth-title">Register</h1>
         @if(invalidRegisterErrorMessage())
         {
-        <div class="text-xs max-w-xs text-center text-error mb-6">{{
+        <div class="auth-error">{{
             invalidRegisterErrorMessage() }}</div>
         }
 
@@ -22,9 +22,9 @@
             placeholder="Confirm Password" type="password" [(ngModel)]="confirmPassword">
 
         <button class="btn-primary block mx-auto mt-6" (click)="attemptRegistration()">Register</button>
-        <h2 class="block text-base text-center justify-center mt-4 text-ink">Already have an account?</h2>
+        <h2 class="block text-base text-center mt-4">Already have an account?</h2>
         <a routerLink="/login" routerLinkActive="active"
-            class="block text-base font-bold text-center justify-center underline text-bkyz">Login</a>
+            class="auth-link">Login</a>
         <h3 class="text-xs text-center pt-8 text-subtle">By clicking 'Register' you agree to the Terms of
             Service and our
             Privacy

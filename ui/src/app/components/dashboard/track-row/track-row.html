@@ -1,8 +1,8 @@
 <div class="relative flex h-36 md:h-40 gap-3 px-4 py-3 hover:bg-muted-hover/50">
     @if (reordering()) {
     <div class="shrink-0 flex flex-col gap-2 h-full">
-        <button type="button" class="flex-1 w-12 flex items-center justify-center border border-line-strong bg-muted hover:bg-muted-hover text-subtle hover:text-bkyz cursor-pointer" (click)="move.emit('up')" aria-label="Move up"><app-icon name="up" class="size-6" /></button>
-        <button type="button" class="flex-1 w-12 flex items-center justify-center border border-line-strong bg-muted hover:bg-muted-hover text-subtle hover:text-bkyz cursor-pointer" (click)="move.emit('down')" aria-label="Move down"><app-icon name="down" class="size-6" /></button>
+        <button type="button" class="btn-move" (click)="move.emit('up')" aria-label="Move up"><app-icon name="up" class="size-6" /></button>
+        <button type="button" class="btn-move" (click)="move.emit('down')" aria-label="Move down"><app-icon name="down" class="size-6" /></button>
     </div>
     }
     <img [src]="book().cover_url" [alt]="book().title" class="hidden min-[300px]:block shrink-0 h-full aspect-2/3 object-cover border border-line">
@@ -24,8 +24,11 @@
                     <div class="text-xs text-subtle/70">last read {{ lastRead() }}</div>
                     }
                 </div>
-                <div class="w-full text-bkyz font-bold text-xs md:text-sm leading-none mt-1.5">
-                    {{ track().medium | uppercase }}
+                <div class="w-full flex items-center gap-1.5 mt-1.5">
+                    <span class="text-bkyz font-bold text-xs md:text-sm leading-none">{{ track().medium | uppercase }}</span>
+                    @for (label of track().labels; track label.id) {
+                    <span class="tag">{{ label.name }}</span>
+                    }
                 </div>
                 @if (track().notes) {
                 <p class="w-full mt-1 text-sm text-subtle italic line-clamp-1" [title]="track().notes">{{ track().notes }}</p>

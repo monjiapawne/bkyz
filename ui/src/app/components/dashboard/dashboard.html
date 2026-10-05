@@ -3,7 +3,7 @@
         @for (playlist of playlists(); track playlist.id) {
         <a [routerLink]="['/playlists', playlist.id]" routerLinkActive="bg-muted-hover font-semibold"
             [routerLinkActiveOptions]="{ exact: true }" [title]="playlist.description"
-            class="flex items-center justify-between px-3 py-3 md:py-1.5 text-base hover:bg-muted-hover">
+            class="flex items-center justify-between sidebar-link">
             <span class="truncate">{{ playlist.name }}</span>
             <span class="flex items-end gap-px h-3.5" [attr.aria-label]="playlist.tracks.length + ' books'">
                 @for (book of playlist.tracks.slice(0, 12); track $index) {
@@ -17,7 +17,7 @@
         </a>
         }
         <button type="button" (click)="addPlaylistModal.open()"
-            class="block w-full px-3 py-3 md:py-1.5 text-left text-base text-subtle hover:bg-muted-hover cursor-pointer">+ New playlist</button>
+            class="block w-full sidebar-link text-left text-subtle cursor-pointer">+ New playlist</button>
     </div>
 
     @if (playlist()) {
@@ -32,7 +32,7 @@
         @for (track of tracks(); track track.id) {
         <app-track-row class="block" [track]="track" [book]="track.book" [reordering]="reordering()" (edit)="addTrackModal.open($event)" (history)="trackHistory.open($event)" (move)="onMove(track, $event)" (progressChange)="onProgress(track, $event)"/>
         } @empty {
-        <div class="px-4 py-8 text-center text-base md:text-lg text-subtle">No books yet</div>
+        <div class="empty-state">No books yet</div>
         }
     </div>
 
