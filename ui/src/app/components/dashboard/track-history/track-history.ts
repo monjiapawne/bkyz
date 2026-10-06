@@ -32,12 +32,13 @@ export class TrackHistory {
     this.dialog().open();
     this.trackService.getTrackHistory(this.playlistId(), track.id).subscribe(history => {
       this.rows.set(history.map(h => ({ ...h, created_at: formatDate(h.created_at, 'MMM d, y', 'en') })));
+      const daily = Object.fromEntries(this.rows().map(r => [r.created_at, r.to_position]));
       Chart.getChart(this.canvas().nativeElement)?.destroy();
       new Chart(this.canvas().nativeElement, {
         type: 'line',
         data: {
-          labels: this.rows().map(r => r.created_at),
-          datasets: [{ data: history.map(h => h.to_position), borderColor: 'green' }],
+          labels: Object.keys(daily),
+          datasets: [{ data: Object.values(daily), borderColor: 'green' }],
         },
         options: { plugins: { legend: { display: false } } },
       });
