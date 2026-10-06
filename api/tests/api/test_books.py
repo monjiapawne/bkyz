@@ -33,7 +33,8 @@ URL = "/books"
         ("no values", {}, {}, 400),
     ],
 )
-def test_create_book(client, name: str, req_json: dict, exp_json: dict, exp_status: int):
+def test_create_book(client_user, name: str, req_json: dict, exp_json: dict, exp_status: int):
+    client = client_user
     r = client.post("/books", json=req_json)
     assert_status_code(exp_status, r)
     resp_json = r.get_json()
@@ -47,14 +48,16 @@ def test_get_book(client_book, name: str, id: int, exp_status: int):
     assert_status_code(exp_status, r)
 
 
-def test_patch_book(client):
+def test_patch_book(client_user):
+    client = client_user
     r = client.post("/books", json={"title": "Dune"})
     book_id = str(r.get_json()["id"])
     r = client.patch(f"/books/{book_id}", json={"title": "NotDune"})
     assert r.get_json()["title"] == "NotDune"
 
 
-def test_patch_book_invalid_fields(client):
+def test_patch_book_invalid_fields(client_user):
+    client = client_user
     r = client.post("/books", json={"title": "Dune"})
     book_id = str(r.get_json()["id"])
     r = client.patch(f"/books/{book_id}", json={"title": "NotDune", "fake_field": "value"})
@@ -68,7 +71,8 @@ def test_patch_book_invalid_fields(client):
         ("isbn missing", "isbn=978-1111111111", 0, 200),
     ],
 )
-def test_get_book_queries(client, name: str, query_string: str, exp_len: int, exp_code: int):
+def test_get_book_queries(client_user, name: str, query_string: str, exp_len: int, exp_code: int):
+    client = client_user
     # Add a book
     isbn = "978-9999999999"
     client.post("/books", json={"title": "test", "isbn": isbn, "lookup": False})
@@ -80,7 +84,8 @@ def test_get_book_queries(client, name: str, query_string: str, exp_len: int, ex
     assert book_count == exp_len, f"expected len: {exp_len}, got {book_count}"
 
 
-def test_create_book_integration(client):
+def test_create_book_integration(client_user):
+    client = client_user
     r = client.post("/books", json={"isbn": "978-1718503540"})
     if r.status_code == 503:
         pytest.skip("ISBN lookup timed out")

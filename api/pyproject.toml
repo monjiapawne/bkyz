@@ -3,18 +3,19 @@ name = "bkyz"
 version = "0.1.0"
 requires-python = ">=3.13"
 dependencies = [
-    "flask",
-    "flask_sqlalchemy",
-    "flask_migrate",
-    "flask-login",
-    "flask-cors",
-    "requests",
-    "spectree",
+    "flask>=3.1.3",
+    "requests>=2.34.2",
+    "spectree>=3.0.0",
+    "flask-cors>=6.0.5",
+    "flask-login>=0.6.3",
+    "flask-migrate>=4.1.0",
+    "flask-sqlalchemy>=3.1.1",
+    "pydantic>=2.13.5",
 ]
 
 [dependency-groups]
 dev = [
-    "ruff>=0.16.6",
+    "ruff>=0.16.10",
 ]
 test = ["pytest"]
 deploy = ["gunicorn", "psycopg[binary]"]
@@ -32,3 +33,7 @@ extend-select = ["E501"]
 [tool.pytest.ini_options]
 log_cli = true
 log_cli_level = "WARNING"
+
+[tool.uv]
+add-bounds = "major"
+default-groups = ["dev", "test"]
