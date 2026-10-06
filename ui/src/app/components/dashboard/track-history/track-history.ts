@@ -31,8 +31,8 @@ export class TrackHistory {
     this.rows.set([]);
     this.dialog().open();
     this.trackService.getTrackHistory(this.playlistId(), track.id).subscribe(history => {
-      this.rows.set(history.map(h => ({ ...h, created_at: formatDate(h.created_at, 'MMM d, y', 'en') })));
-      const daily = Object.fromEntries(this.rows().map(r => [r.created_at, r.to_position]));
+      this.rows.set(history.map(h => ({ ...h, created_at: formatDate(h.created_at, 'MMM d', 'en') })));
+      const daily = Object.fromEntries(history.map(h => [formatDate(h.created_at, 'MMM d', 'en'), h.to_position]));
       Chart.getChart(this.canvas().nativeElement)?.destroy();
       new Chart(this.canvas().nativeElement, {
         type: 'line',
