@@ -17,8 +17,8 @@ dependencies = [
 dev = [
     "ruff>=0.16.10",
 ]
-test = ["pytest"]
-deploy = ["gunicorn", "psycopg[binary]"]
+test = ["pytest>=9.1.1"]
+deploy = ["gunicorn>=26.2.0", "psycopg[binary]>=3.3.5"]
 
 
 [tool.ruff]
