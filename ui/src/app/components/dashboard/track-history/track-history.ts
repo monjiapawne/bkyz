@@ -1,5 +1,6 @@
-import { Component, inject, input, signal, viewChild } from '@angular/core';
+import { Component, ElementRef, inject, input, signal, viewChild } from '@angular/core';
 import { formatDate } from '@angular/common';
+import Chart from 'chart.js/auto';
 import { DataTable } from '../../shared/data-table/data-table';
 import { Dialog } from '../../shared/dialog/dialog';
 import { TrackService } from '../../../services/track-service';
@@ -24,12 +25,22 @@ export class TrackHistory {
 
   private trackService = inject(TrackService);
   private dialog = viewChild.required(Dialog);
+  private canvas = viewChild.required<ElementRef>('chart');
 
   open(track: Track) {
     this.rows.set([]);
     this.dialog().open();
     this.trackService.getTrackHistory(this.playlistId(), track.id).subscribe(history => {
       this.rows.set(history.map(h => ({ ...h, created_at: formatDate(h.created_at, 'MMM d, y', 'en') })));
+      Chart.getChart(this.canvas().nativeElement)?.destroy();
+      new Chart(this.canvas().nativeElement, {
+        type: 'line',
+        data: {
+          labels: this.rows().map(r => r.created_at),
+          datasets: [{ data: history.map(h => h.to_position), borderColor: 'green' }],
+        },
+        options: { plugins: { legend: { display: false } } },
+      });
     });
   }
 }
