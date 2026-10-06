@@ -77,6 +77,10 @@ def create_track(playlist_id: int, json: TrackIn):
     if json.total is None:
         json.total = Book.get_by_id(json.book_id).pages
 
+    labels = []
+    if json.label_ids:
+        labels = Label.get_all(Label.id.in_(json.label_ids), Label.user_id == current_user.id)
+
     track = Track.create(
         playlist_id=playlist_id,
         position=json.position,
@@ -87,7 +91,7 @@ def create_track(playlist_id: int, json: TrackIn):
         active=json.active,
         notes=json.notes,
         rating=json.rating,
-        labels=json.label_ids,
+        labels=labels,
     )
 
     return TrackOut.json_(track), 201

@@ -22,14 +22,7 @@ def client():
 
 
 @pytest.fixture
-def client_book(client):
-    client.post("/books", json={"title": "Dune"})
-    return client
-
-
-@pytest.fixture
-def client_user(client_book):
-    client = client_book
+def client_user(client):
     client.post(
         "/user/register",
         json={"username": "testuser", "password": "testpassword"},
@@ -39,8 +32,15 @@ def client_user(client_book):
 
 
 @pytest.fixture
-def client_playlist(client_user):
+def client_book(client_user):
     client = client_user
+    client.post("/books", json={"title": "Dune"})
+    return client
+
+
+@pytest.fixture
+def client_playlist(client_book):
+    client = client_book
     r = client.post("/playlists", json={"name": "unamed", "description": "Empty."})
     assert r.status_code == 201
     r = client.get("/playlists")

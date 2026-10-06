@@ -47,7 +47,7 @@ def format_validation_error(exc: ValidationError) -> str:
     return "; ".join(parts)
 
 
-def reshape_validation(req, resp, req_validation_error: ValidationError, instance):
+def reshape_validation(req, resp, req_validation_error: ValidationError, instance, model_adapter):
     # error catcher for validation failures caught by pylance
     if req_validation_error:
         raise BadRequestError(format_validation_error(req_validation_error))
