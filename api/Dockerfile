@@ -29,5 +29,8 @@ ENV FLASK_APP=bkyz
 # For uv cache
 ENV PATH="/app/.venv/bin:$PATH" 
 
+ARG GIT_COMMIT
+ENV GIT_COMMIT=${GIT_COMMIT}
+
 EXPOSE 8000
 CMD ["sh", "-c", "flask db upgrade && gunicorn -c gunicorn_config.py bkyz:app"]

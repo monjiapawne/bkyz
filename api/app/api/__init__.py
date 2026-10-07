@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, current_app
 
 api = Blueprint("api", __name__)
 
@@ -6,7 +6,8 @@ api = Blueprint("api", __name__)
 @api.get("version")
 def api_version():
     # todo: dynamic
-    return {"version": "0.0.1"}
+    version = current_app.config["GIT_COMMIT"]
+    return {"version": version}
 
 
 from app.api.books import books as books_bp

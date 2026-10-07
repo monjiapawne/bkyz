@@ -6,7 +6,7 @@ from app import spec
 from app.api.books import BookOut
 from app.api.labels import LabelOut
 from app.api.schemas import Out, UTCDatetime
-from app.data import Book, Direction, Medium, Playlist, Track, Label
+from app.data import Book, Direction, Label, Medium, Playlist, Track
 from app.errors import NotFoundError
 
 tracks = Blueprint("tracks", __name__)
