@@ -8,13 +8,16 @@ def _str_to_bool(value: str) -> bool:
 
 class Config:
     STRICT = False
-    PROPAGATE_EXCEPTIONS = False
-    ENABLE_DOCS = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    # Security
     SESSION_COOKIE_SAMESITE = "Lax"
     SESSION_COOKIE_SECURE = False
     CORS_ALLOW_LIST = "http://localhost:4200"
-
+    # Debugging
+    ENABLE_DOCS = True
+    PROPAGATE_EXCEPTIONS = False
+    GIT_COMMIT = os.getenv("GIT_COMMIT", "unknown")
+    # Configuration
     SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "sqlite:///bkyz.db")
     SECRET_KEY = os.getenv("SECRET_KEY", "please_change_me_only_for_dev")
     # COVERS_DIR is the path to store the book covers, defaults to /instances/covers
