@@ -9,6 +9,7 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from pydantic import ValidationError
 from spectree import SpecTree
+from spectree.metadata import FunctionDecorator
 from sqlalchemy import MetaData
 
 from app.errors import BadRequestError, register_error_handlers
@@ -22,6 +23,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(name)s] %(levelname)s : %(message)s",
 )
+logger = logging.getLogger(__name__)
 
 # auto name all constraints
 naming_convention = {
@@ -47,9 +49,9 @@ def format_validation_error(exc: ValidationError) -> str:
     return "; ".join(parts)
 
 
-def reshape_validation(req, resp, req_validation_error: ValidationError, instance, model_adapter):
+def reshape_validation(req, resp, req_validation_error: Exception | None, instance, model_adapter):
     # error catcher for validation failures caught by pylance
-    if req_validation_error:
+    if isinstance(req_validation_error, ValidationError):
         raise BadRequestError(format_validation_error(req_validation_error))
 
 
@@ -83,6 +85,8 @@ def create_app(config_object=None):
     # must be after blueprints are registered
     config_docs(app)
 
+    logger.info(f"* started bkyz-api - commit version: {app.config['GIT_COMMIT']}")
+
     return app
 
 
@@ -92,7 +96,13 @@ def config_docs(app):
         return
 
     for endpoint, view in app.view_functions.items():
-        view.tags = [bp.name] if (bp := app.blueprints.get(endpoint.rpartition(".")[0])) else []
+        bp = app.blueprints.get(endpoint.rpartition(".")[0])
+        if bp:
+            # routes without @spec.validate have no metadata yet
+            meta = spec.get_function_metadata(view) or spec._function_metadata.setdefault(
+                view, FunctionDecorator()
+            )
+            meta.tags = [bp.name]
     spec.register(app)
     app.add_url_rule("/api/docs", "docs", app.view_functions["openapi_api/docs_swagger"])
 
