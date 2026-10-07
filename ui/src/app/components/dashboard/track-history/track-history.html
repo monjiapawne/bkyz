@@ -1,4 +1,11 @@
 <app-dialog heading="History">
     <canvas #chart class="shrink-0"></canvas>
+    <label class="flex items-center gap-2 text-sm text-ink">
+        <input type="checkbox" [checked]="showProjection()" (change)="toggleProjection()">
+        Projection
+    </label>
+    @if (finishDate()) {
+        <p class="text-sm text-ink">Expected completion: {{ finishDate() }}</p>
+    }
     <app-data-table [columns]="columns" [rows]="rows()" />
 </app-dialog>
