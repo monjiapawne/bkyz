@@ -1,4 +1,4 @@
-<div class="relative flex h-36 md:h-40 gap-3 px-4 py-3 hover:bg-muted-hover/50">
+<div class="relative flex h-32 md:h-36 gap-3 px-4 py-4 hover:bg-muted-hover/50">
     @if (reordering()) {
     <div class="shrink-0 flex flex-col gap-2 h-full">
         <button type="button" class="btn-move" (click)="move.emit('up')" aria-label="Move up"><app-icon name="up" class="size-6" /></button>
@@ -14,7 +14,7 @@
                     {{ book().title }}
                 </div>
                 <div class="w-full">
-                    <div class="text-sm md:text-base text-subtle truncate">
+                    <div class="text-xs text-subtle truncate">
                         {{ book().authors }}
                         @if (year()) {
                         <span>({{ year() }})</span>
@@ -25,13 +25,13 @@
                     }
                 </div>
                 <div class="w-full flex items-center gap-1.5 mt-1.5">
-                    <span class="text-bkyz font-bold text-xs md:text-sm leading-none">{{ track().medium | uppercase }}</span>
+                    <span class="text-bkyz font-bold text-[10px] md:text-xs leading-none">{{ track().medium | uppercase }}</span>
                     @for (label of track().labels; track label.id) {
                     <span class="tag">{{ label.name }}</span>
                     }
                 </div>
                 @if (track().notes) {
-                <p class="w-full mt-1 text-sm text-subtle italic line-clamp-1" [title]="track().notes">{{ track().notes }}</p>
+                <p class="w-full mt-1 text-sm text-subtle italic line-clamp-2" [title]="track().notes">{{ track().notes }}</p>
                 }
             </div>
 
