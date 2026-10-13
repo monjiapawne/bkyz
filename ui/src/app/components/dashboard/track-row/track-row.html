@@ -51,9 +51,12 @@
 
         @if (track().active) {
         <div class="shrink-0">
-            <div class="flex items-baseline justify-between font-sans text-xs md:text-sm pointer-coarse:text-base tabular-nums leading-none text-subtle mb-1">
+            <div class="h-1.5 w-full overflow-hidden bg-muted-hover">
+                <div class="h-full bg-bkyz transition-[width] duration-700 ease-out" [style.width.%]="progress()"></div>
+            </div>
+            <div class="flex items-baseline justify-between text-xs pointer-coarse:text-sm tabular-nums text-subtle mt-1">
                 <span class="flex items-center gap-2">
-                    <span class="font-semibold text-ink">{{ progress() }}%</span>
+                    <span class="font-semibold">{{ progress() }}%</span>
                     @if (track().streak) {
                     <span class="relative mr-1" [title]="track().streak + ' day streak'">
                         <app-icon name="flame" class="size-[1em]" />
@@ -67,17 +70,14 @@
                     @if (position() !== track().position) {
                     <button type="button" class="mr-2 text-bkyz hover:underline cursor-pointer" (click)="progressChange.emit(position())">Save</button>
                     }
-                    <label class="flex items-baseline gap-0.5 cursor-text">
-                        <input type="text" inputmode="numeric" class="box-content px-0.5 py-px leading-none text-ink bg-transparent border-b border-line text-center focus:outline-none focus:border-ink"
+                    <label class="flex items-baseline gap-1 cursor-text">
+                        <input type="text" inputmode="numeric" class="box-content p-0 bg-transparent border-b border-dotted border-subtle/50 text-center hover:border-subtle focus:outline-none focus:border-solid focus:border-ink"
                             [value]="position()" [style.width.ch]="(position() + '').length" (input)="position.set(+pos.value)" (click)="pos.setSelectionRange(pos.value.length, pos.value.length)" (keydown.enter)="progressChange.emit(position())" (keydown.escape)="position.set(track().position); pos.blur()" #pos />
-                        <span>/ {{ track().total }} {{ track().unit }}</span>
+                        <span>/ {{ track().total }}</span>
+                        <span class="text-subtle/70">{{ track().unit }}</span>
                     </label>
                 </div>
                 }
-            </div>
-
-            <div class="h-1.5 w-full overflow-hidden bg-muted-hover">
-                <div class="h-full bg-bkyz transition-[width] duration-700 ease-out" [style.width.%]="progress()"></div>
             </div>
         </div>
         }

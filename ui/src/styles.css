@@ -1,8 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Source+Serif+4:wght@400;600;700&display=swap');
 @import "tailwindcss";
 
 @theme {
   --font-serif: "Source Serif 4", Georgia, serif;
+  --font-sans: "Figtree", system-ui, sans-serif;
   --color-bkyz: #1f1e24;
   --color-bkyz-hover: #3a383f;
   --color-bkyz-light: #535158;
@@ -125,7 +126,7 @@
 body {
   background-color: var(--color-surface);
   color: var(--color-ink);
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-variant-numeric: lining-nums tabular-nums;
   font-weight: 400;
   font-size: 0.875rem;
