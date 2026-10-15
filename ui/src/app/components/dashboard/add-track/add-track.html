@@ -11,7 +11,6 @@
     @if (trackForm.value.unit === 'other') {
     <app-field label="Custom unit" name="customUnit" placeholder="e.g. sections" />
     }
-    <app-field label="Medium" name="medium" type="select" [options]="mediums" />
     @if (!trackForm.value.active) {
     <app-field label="Rating" name="rating" type="rating" />
     }

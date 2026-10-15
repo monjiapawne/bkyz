@@ -1,6 +1,6 @@
 <div class="group relative isolate flex h-32 md:h-36 gap-3 px-4 py-4 hover:bg-muted-hover/50">
     @if (mosaic()) {
-    <div class="absolute inset-y-0 left-0 w-1/3 -z-10 opacity-10 transition-opacity duration-300 group-hover:opacity-15 [mask-image:linear-gradient(to_right,black,transparent)] [image-rendering:pixelated] bg-size-[100%_100%]" [style.background-image]="mosaic()"></div>
+    <div class="absolute inset-y-0 left-0 w-1/3 -z-10 opacity-10 transition-opacity duration-300 group-hover:opacity-15 mask-[linear-gradient(to_right,black,transparent)] [image-rendering:pixelated] bg-size-[100%_100%]" [style.background-image]="mosaic()"></div>
     }
     @if (reordering()) {
     <div class="shrink-0 flex flex-col gap-2 h-full">
@@ -30,7 +30,6 @@
                     }
                 </div>
                 <div class="w-full flex items-center gap-1.5 mt-1.5">
-                    <span class="text-bkyz font-bold text-[10px] md:text-xs leading-none">{{ track().medium | uppercase }}</span>
                     @for (label of track().labels; track label.id) {
                     <span class="tag">{{ label.name }}</span>
                     }
