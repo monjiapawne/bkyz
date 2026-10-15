@@ -31,11 +31,6 @@ export class AddTrackComponent {
     { value: '%', label: 'Percent' },
     { value: 'other', label: 'Other' },
   ];
-  mediums = [
-    { value: 'physical', label: 'Physical' },
-    { value: 'ebook', label: 'E-book' },
-    { value: 'audiobook', label: 'Audiobook' },
-  ];
 
   labels = signal<Label[]>([]);
 
