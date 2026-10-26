@@ -19,17 +19,18 @@ export class PlaylistService {
     return this.http.get<PlaylistFull[]>(this.API_URL, { params });
   }
 
-  postPlaylist(name: string, description?: string) {
+  postPlaylist(name: string, description?: string, show_progress?: Playlist['show_progress']) {
     const body = {
       name: name,
+      show_progress,
       ...(description && {description})
     };
 
     return this.http.post<Playlist>(this.API_URL, body);
   }
 
-  patchPlaylist(id: number, name: string, description?: string) {
-    return this.http.patch<Playlist>(`${this.API_URL}/${id}`, { name, description });
+  patchPlaylist(id: number, name: string, description?: string, show_progress?: Playlist['show_progress']) {
+    return this.http.patch<Playlist>(`${this.API_URL}/${id}`, { name, description, show_progress });
   }
 
   movePlaylist(id: number, direction: 'up' | 'down') {

@@ -4,8 +4,10 @@ from typing import TYPE_CHECKING, Self
 from sqlalchemy import (
     ForeignKey,
     String,
+    Enum
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from enum import StrEnum, auto
 
 from app import db
 from app.data.base import CRUDMixin, SortOrderMixin
@@ -17,6 +19,11 @@ logger = logging.getLogger(__name__)
 if TYPE_CHECKING:
     from app.data.track import Track
 
+class ProgressViewOptions(StrEnum):
+    active = auto()
+    always = auto()
+    never = auto()
+
 
 class Playlist(SortOrderMixin, CRUDMixin, db.Model):
     """A playlist is a group of tracks."""
@@ -27,6 +34,7 @@ class Playlist(SortOrderMixin, CRUDMixin, db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(30))
     description: Mapped[str] = mapped_column(String(255))
+    show_progress: Mapped[bool] = mapped_column(Enum(ProgressViewOptions), server_default=ProgressViewOptions.active)
 
     user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"))
     user: Mapped["User | None"] = relationship(back_populates="playlists")

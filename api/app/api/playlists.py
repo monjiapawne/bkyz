@@ -6,6 +6,7 @@ from app import spec
 from app.api.schemas import Out, ViewQuery
 from app.api.tracks import TrackFullOut
 from app.data import Direction, Playlist
+from app.data.playlist import ProgressViewOptions
 
 playlist = Blueprint("playlists", __name__)
 
@@ -13,6 +14,7 @@ playlist = Blueprint("playlists", __name__)
 class PlaylistIn(BaseModel):
     name: str | None = Field(None, examples=["Future"])
     description: str | None = Field(None, examples=["Future books I'll read..."])
+    show_progress: ProgressViewOptions | None = Field(None, examples=[ProgressViewOptions.active])
 
     @model_validator(mode="after")
     def validate_fields(self):
@@ -32,6 +34,7 @@ class PlaylistOut(Out):
     description: str
     user_id: int
     sort_order: int
+    show_progress: ProgressViewOptions
 
 
 class PlaylistFullOut(PlaylistOut):
