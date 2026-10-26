@@ -13,6 +13,7 @@ import { TrackRowComponent } from './track-row/track-row';
 import { TrackHistory } from './track-history/track-history';
 import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
 import { Page } from '../shared/page/page';
+import { Dropdown } from '../shared/dropdown/dropdown';
 
 
 @Component({
@@ -26,7 +27,8 @@ import { Page } from '../shared/page/page';
     TrackRowComponent,
     TrackHistory,
     ConfirmDialog,
-    Page
+    Page,
+    Dropdown
   ],
   templateUrl: './dashboard.html',
 })
@@ -55,6 +57,8 @@ export class Dashboard {
 
   playlistId: WritableSignal<number> = signal(0);
   reordering = signal(false);
+  views = ['list', 'covers'] as const;
+  view = signal<typeof this.views[number]>('list');
   selectedBookId!: number;
 
   playlists: WritableSignal<PlaylistFull[]> = signal([]);
