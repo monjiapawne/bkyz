@@ -4,4 +4,5 @@ export interface Playlist {
     name: string;
     user_id: number;
     sort_order: number;
+    show_progress: 'active' | 'always' | 'never';
 }

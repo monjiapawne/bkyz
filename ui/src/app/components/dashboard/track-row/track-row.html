@@ -53,7 +53,7 @@
             </div>
         </div>
 
-        @if (track().active) {
+        @if (showProgress()) {
         <div class="shrink-0">
             <div class="h-1.5 w-full overflow-hidden bg-muted-hover">
                 <div class="h-full bg-bkyz transition-[width] duration-700 ease-out" [style.width.%]="progress()"></div>

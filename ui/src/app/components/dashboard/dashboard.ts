@@ -1,4 +1,4 @@
-import { Component, computed, signal, ViewChild, WritableSignal } from '@angular/core';
+import { Component, computed, effect, signal, ViewChild, WritableSignal } from '@angular/core';
 import { PlaylistService } from '../../services/playlist-service';
 import { PlaylistFull } from '../../interfaces/playlist-full';
 import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from '@angular/router';
@@ -50,7 +50,9 @@ export class Dashboard {
     private trackService: TrackService,
     private route: ActivatedRoute,
     private router: Router
-  ) { }
+  ) {
+    effect(() => localStorage.setItem('view', this.view()));
+  }
 
 
   @ViewChild('addTrackModal') addTrackModal!: AddTrackComponent;
@@ -58,7 +60,7 @@ export class Dashboard {
   playlistId: WritableSignal<number> = signal(0);
   reordering = signal(false);
   views = ['list', 'covers'] as const;
-  view = signal<typeof this.views[number]>('list');
+  view = signal(this.views.find(v => v === localStorage.getItem('view')) ?? 'list');
   selectedBookId!: number;
 
   playlists: WritableSignal<PlaylistFull[]> = signal([]);
@@ -130,6 +132,11 @@ export class Dashboard {
     this.trackService.deleteTrackFromPlaylist(this.playlistId(), track.id).subscribe(() => {
       this.updateTracks(tracks => tracks.filter(t => t.id !== track.id));
     });
+  }
+
+  showProgress(track: Track) {
+    const policy = this.playlist()?.show_progress ?? 'active';
+    return policy === 'always' || (policy === 'active' && track.active);
   }
 
   onMove(track: Track, direction: 'up' | 'down') {

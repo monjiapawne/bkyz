@@ -13,6 +13,7 @@ export class TrackRowComponent {
   track = input.required<Track>();
   book = input.required<Book>();
   reordering = input(false);
+  showProgress = input(false);
 
   edit = output<Track>();
   history = output<Track>();

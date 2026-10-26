@@ -37,7 +37,7 @@
         @for (track of tracks(); track track.id) {
         <button type="button" (click)="addTrackModal.open(track)" [title]="track.book.title" class="cursor-pointer">
             <img [src]="track.book.cover_url" [alt]="track.book.title" class="w-full aspect-2/3 object-cover">
-            <div class="h-1 mt-1 overflow-hidden bg-muted-hover">
+            <div class="h-1 mt-1 overflow-hidden bg-muted-hover" [class.invisible]="!showProgress(track)">
                 <div class="h-full bg-bkyz" [style.width.%]="track.position / track.total * 100"></div>
             </div>
         </button>
@@ -47,7 +47,7 @@
     @default {
     <div class="border border-line divide-y divide-line bg-surface">
         @for (track of tracks(); track track.id) {
-        <app-track-row class="block" [track]="track" [book]="track.book" [reordering]="reordering()" (edit)="addTrackModal.open($event)" (history)="trackHistory.open($event)" (move)="onMove(track, $event)" (progressChange)="onProgress(track, $event)"/>
+        <app-track-row class="block" [track]="track" [book]="track.book" [reordering]="reordering()" [showProgress]="showProgress(track)" (edit)="addTrackModal.open($event)" (history)="trackHistory.open($event)" (move)="onMove(track, $event)" (progressChange)="onProgress(track, $event)"/>
         } @empty {
         <div class="empty-state">No books yet</div>
         }

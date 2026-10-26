@@ -22,13 +22,20 @@ export class AddPlaylistComponent {
 
   playlistForm: FormGroup;
 
+  progressOptions = [
+    { value: 'active', label: 'Active tracks' },
+    { value: 'always', label: 'Always' },
+    { value: 'never', label: 'Never' }
+  ];
+
   constructor(
     private playlistService: PlaylistService,
     private fb: FormBuilder
   ) {
     this.playlistForm = this.fb.group({
       name: ['', Validators.required],
-      description: ['']
+      description: [''],
+      show_progress: ['active']
     });
   }
 
@@ -36,7 +43,8 @@ export class AddPlaylistComponent {
     this.editing = playlist ?? null;
     this.playlistForm.reset({
       name: playlist?.name ?? '',
-      description: playlist?.description ?? ''
+      description: playlist?.description ?? '',
+      show_progress: playlist?.show_progress ?? 'active'
     });
     this.dialog.open();
   }
@@ -48,7 +56,7 @@ export class AddPlaylistComponent {
   save = () => {
     const form = this.playlistForm.getRawValue();
     return this.editing
-      ? this.playlistService.patchPlaylist(this.editing.id, form.name, form.description)
-      : this.playlistService.postPlaylist(form.name, form.description);
+      ? this.playlistService.patchPlaylist(this.editing.id, form.name, form.description, form.show_progress)
+      : this.playlistService.postPlaylist(form.name, form.description, form.show_progress);
   };
 }
