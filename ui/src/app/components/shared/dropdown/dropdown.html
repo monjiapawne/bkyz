@@ -1,0 +1,14 @@
+<button type="button" class="btn-neutral gap-1" (click)="open.set(!open())" [attr.aria-expanded]="open()">
+    {{ label() }}
+    <app-icon name="down" class="size-3" />
+</button>
+@if (open()) {
+<div class="absolute right-0 top-full z-10 mt-1 min-w-full py-1 bg-surface border border-line shadow-md">
+    @for (option of options(); track option) {
+    <button type="button" (click)="select(option)" [class.bg-muted-hover]="option === value()"
+        class="block w-full px-3 py-1.5 text-sm text-left capitalize whitespace-nowrap hover:bg-muted-hover cursor-pointer">
+        {{ option }}
+    </button>
+    }
+</div>
+}

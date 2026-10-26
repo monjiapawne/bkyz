@@ -22,12 +22,29 @@
 
     @if (playlist()) {
     <ng-container actions>
+        @if (view() === 'list') {
         <button type="button" (click)="reordering.set(!reordering())" class="btn-neutral">{{ reordering() ? 'Done' : 'Reorder' }}</button>
+        }
+        <app-dropdown label="View" [options]="views" [(value)]="view" />
         <button type="button" (click)="addPlaylistModal.open(playlist())" class="btn-neutral">Edit</button>
         <button type="button" (click)="searchBookModal.open()" class="btn-primary">Add book</button>
     </ng-container>
     }
 
+    @switch (view()) {
+    @case ('covers') {
+    <div class="grid grid-cols-[repeat(auto-fill,4rem)] gap-3">
+        @for (track of tracks(); track track.id) {
+        <button type="button" (click)="addTrackModal.open(track)" [title]="track.book.title" class="cursor-pointer">
+            <img [src]="track.book.cover_url" [alt]="track.book.title" class="w-full aspect-2/3 object-cover">
+            <div class="h-1 mt-1 overflow-hidden bg-muted-hover">
+                <div class="h-full bg-bkyz" [style.width.%]="track.position / track.total * 100"></div>
+            </div>
+        </button>
+        }
+    </div>
+    }
+    @default {
     <div class="border border-line divide-y divide-line bg-surface">
         @for (track of tracks(); track track.id) {
         <app-track-row class="block" [track]="track" [book]="track.book" [reordering]="reordering()" (edit)="addTrackModal.open($event)" (history)="trackHistory.open($event)" (move)="onMove(track, $event)" (progressChange)="onProgress(track, $event)"/>
@@ -35,6 +52,8 @@
         <div class="empty-state">No books yet</div>
         }
     </div>
+    }
+    }
 
     <app-add-playlist #addPlaylistModal (playlistAdded)="onPlaylistAdded($event)" (playlistDeleted)="confirmPlaylist.open()"></app-add-playlist>
     <app-confirm-dialog #confirmPlaylist resourceName="playlist" (confirmed)="deletePlaylist()" />
