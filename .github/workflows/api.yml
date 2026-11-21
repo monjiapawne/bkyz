@@ -15,9 +15,10 @@ on:
     paths:
       - "api/**"
       - ".github/workflows/api.yml"
+  workflow_dispatch: # manual trigger
 
 jobs:
-  test: 
+  test:
     name: Test API
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -31,12 +32,12 @@ jobs:
       - uses: astral-sh/setup-uv@v10.3.1
         with:
           working-directory: api
-          enable-cache: true 
+          enable-cache: true
       - run: uv sync --locked
       - run: uv run ruff format --check
       - run: uv run ruff check --output-format=github
       - run: uv run pytest
-    
+
   docker:
     name: Build image
     runs-on: ubuntu-latest
