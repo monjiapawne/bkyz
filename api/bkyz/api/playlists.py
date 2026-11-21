@@ -2,11 +2,11 @@ from flask import Blueprint
 from flask_login import current_user, login_required
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from app.extensions import spec
-from app.api.schemas import Out, ViewQuery
-from app.api.tracks import TrackFullOut
-from app.data import Direction, Playlist
-from app.data.playlist import ProgressViewOptions
+from bkyz.api.schemas import Out, ViewQuery
+from bkyz.api.tracks import TrackFullOut
+from bkyz.data import Direction, Playlist
+from bkyz.data.playlist import ProgressViewOptions
+from bkyz.extensions import spec
 
 playlist = Blueprint("playlists", __name__)
 

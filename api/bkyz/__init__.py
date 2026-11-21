@@ -5,10 +5,10 @@ from pathlib import Path
 from flask import Flask
 from spectree.metadata import FunctionDecorator
 
-from app import auth  # noqa: F401 (register the flask-login callback)
-from app.api import api
-from app.errors import register_error_handlers
-from app.extensions import db, login_manager, migrate, spec
+from bkyz import auth  # noqa: F401 (register the flask-login callback)
+from bkyz.api import api
+from bkyz.errors import register_error_handlers
+from bkyz.extensions import db, login_manager, migrate, spec
 
 # Disable logging of requests like:
 # 127.0.0.1 - - [08/Aug/2026 10:13:40] "GET /api/v1/books/ HTTP/1.1" 200

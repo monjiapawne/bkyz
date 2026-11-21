@@ -1,5 +1,5 @@
-from app.data import User
-from app.extensions import db, login_manager
+from bkyz.data import User
+from bkyz.extensions import db, login_manager
 
 
 @login_manager.user_loader

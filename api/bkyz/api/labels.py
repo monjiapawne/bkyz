@@ -2,9 +2,9 @@ from flask import Blueprint
 from flask_login import current_user, login_required
 from pydantic import BaseModel, Field
 
-from app.extensions import spec
-from app.api.schemas import Out
-from app.data.label import Label
+from bkyz.api.schemas import Out
+from bkyz.data.label import Label
+from bkyz.extensions import spec
 
 labels = Blueprint("labels", __name__)
 

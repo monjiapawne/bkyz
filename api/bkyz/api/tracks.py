@@ -2,12 +2,12 @@ from flask import Blueprint
 from flask_login import current_user, login_required
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.extensions import spec
-from app.api.books import BookOut
-from app.api.labels import LabelOut
-from app.api.schemas import Out, UTCDatetime
-from app.data import Book, Direction, Label, Medium, Playlist, Track
-from app.errors import NotFoundError
+from bkyz.api.books import BookOut
+from bkyz.api.labels import LabelOut
+from bkyz.api.schemas import Out, UTCDatetime
+from bkyz.data import Book, Direction, Label, Medium, Playlist, Track
+from bkyz.errors import NotFoundError
+from bkyz.extensions import spec
 
 tracks = Blueprint("tracks", __name__)
 

@@ -13,12 +13,12 @@ from pydantic import (
 )
 from spectree import Response
 
-from app.extensions import spec
-from app.api.schemas import Out
-from app.data import Book
-from app.errors import BadRequestError
-from app.services.book import fetch_book
-from app.services.cover import fetch_cover
+from bkyz.api.schemas import Out
+from bkyz.data import Book
+from bkyz.errors import BadRequestError
+from bkyz.extensions import spec
+from bkyz.services.book import fetch_book
+from bkyz.services.cover import fetch_cover
 
 logger = logging.getLogger(__name__)
 

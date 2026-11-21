@@ -10,11 +10,11 @@ def api_version():
     return {"version": version}
 
 
-from app.api.books import books as books_bp
-from app.api.labels import labels as label_bp
-from app.api.playlists import playlist as playlists_bp
-from app.api.tracks import tracks as tracks_bp
-from app.api.users import users as user_bp
+from bkyz.api.books import books as books_bp
+from bkyz.api.labels import labels as label_bp
+from bkyz.api.playlists import playlist as playlists_bp
+from bkyz.api.tracks import tracks as tracks_bp
+from bkyz.api.users import users as user_bp
 
 api.register_blueprint(user_bp, url_prefix="/user")
 api.register_blueprint(books_bp, url_prefix="/books")

@@ -16,14 +16,14 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.extensions import db
-from app.data.base import CRUDMixin, SortOrderMixin
-from app.data.book import Book
-from app.data.playlist import Playlist
-from app.errors import NotFoundError
+from bkyz.data.base import CRUDMixin, SortOrderMixin
+from bkyz.data.book import Book
+from bkyz.data.playlist import Playlist
+from bkyz.errors import NotFoundError
+from bkyz.extensions import db
 
 if TYPE_CHECKING:
-    from app.data.label import Label
+    from bkyz.data.label import Label
 
 logger = logging.getLogger(__name__)
 

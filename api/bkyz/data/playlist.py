@@ -5,15 +5,15 @@ from typing import TYPE_CHECKING, Self
 from sqlalchemy import Enum, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.extensions import db
-from app.data.base import CRUDMixin, SortOrderMixin
-from app.data.user import User
-from app.errors import ForbiddenAsNotFound, NotFoundError
+from bkyz.data.base import CRUDMixin, SortOrderMixin
+from bkyz.data.user import User
+from bkyz.errors import ForbiddenAsNotFound, NotFoundError
+from bkyz.extensions import db
 
 logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
-    from app.data.track import Track
+    from bkyz.data.track import Track
 
 
 class ProgressViewOptions(StrEnum):

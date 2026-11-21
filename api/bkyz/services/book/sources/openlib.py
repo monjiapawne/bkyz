@@ -1,4 +1,4 @@
-from app.services.result import NotFoundError, fetch_result
+from bkyz.services.result import NotFoundError, fetch_result
 
 from ._base import BookClient
 

@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from spectree import SpecTree
 from sqlalchemy import MetaData
 
-from app.errors import reshape_validation
+from bkyz.errors import reshape_validation
 
 # Used by sqlalchemy to auto name contraints.
 naming_convention = {

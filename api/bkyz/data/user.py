@@ -9,13 +9,13 @@ from sqlalchemy import (
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from app.extensions import db
-from app.data.base import CRUDMixin
+from bkyz.data.base import CRUDMixin
+from bkyz.extensions import db
 
 logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
-    from app.data.playlist import Playlist
+    from bkyz.data.playlist import Playlist
 
 
 class User(CRUDMixin, UserMixin, db.Model):

@@ -1,7 +1,7 @@
 import pytest
 from flask.testing import FlaskClient
 
-from app import create_app, db
+from bkyz import create_app, db
 
 
 class APIClient(FlaskClient):

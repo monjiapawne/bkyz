@@ -1,4 +1,4 @@
-from app.services.result import FetchResult
+from bkyz.services.result import FetchResult
 
 from .sources.openlib import Openlib
 

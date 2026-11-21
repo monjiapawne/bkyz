@@ -4,11 +4,11 @@ from typing import TYPE_CHECKING, Self
 from sqlalchemy import Column, ForeignKey, String, Table, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.extensions import db
-from app.data.base import CRUDMixin
+from bkyz.data.base import CRUDMixin
+from bkyz.extensions import db
 
 if TYPE_CHECKING:
-    from app.data.track import Track
+    from bkyz.data.track import Track
 
 logger = logging.getLogger(__name__)
 

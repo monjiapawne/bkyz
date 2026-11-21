@@ -2,7 +2,7 @@ from functools import wraps
 
 from flask_login import current_user
 
-from app.errors import ForbiddenError, UnauthorizedError
+from bkyz.errors import ForbiddenError, UnauthorizedError
 
 
 def admin_required(func):

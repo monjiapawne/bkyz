@@ -11,11 +11,11 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.extensions import db
-from app.data.base import CRUDMixin
+from bkyz.data.base import CRUDMixin
+from bkyz.extensions import db
 
 if TYPE_CHECKING:
-    from app.data.user import User
+    from bkyz.data.user import User
 
 
 class FetchStatus(StrEnum):
