@@ -10,7 +10,7 @@ from sqlalchemy import (
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Mapped
 
-from app import db
+from app.extensions import db
 from app.errors import NotFoundError, ResourceExistsError
 
 logger = logging.getLogger(__name__)

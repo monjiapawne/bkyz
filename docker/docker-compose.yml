@@ -13,10 +13,14 @@ services:
       - SECRET_KEY=${SECRET_KEY:?SECRET_KEY must be set}
       - LOG_LEVEL=${LOG_LEVEL:-info}
       - ACCESS_LOG=${ACCESS_LOG:-false}
-      - COVER_PATH=${COVER_DIR:-/data/covers}
+      - ENABLE_DOCS=${ENABLE_DOCS:-false}
+      - TIMEZONE=${TIMEZONE:-UTC}
     volumes:
       - bkyz-api-covers:/data
-
+    depends_on:
+      db:
+        condition: service_healthy
+        
   ui:
     build:
       context: ../ui

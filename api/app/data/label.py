@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Self
 from sqlalchemy import Column, ForeignKey, String, Table, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app import db
+from app.extensions import db
 from app.data.base import CRUDMixin
 
 if TYPE_CHECKING:

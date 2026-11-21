@@ -24,5 +24,6 @@ def fetch_cover(covers_dir: str, book_id: int, isbn: str) -> None:
         # For now just skip, don't propegate
         pass
     else:
-        with open(covers_dir / f"{book_id}.jpg", "wb") as f:
-            f.write(r.content)
+        if r.ok:
+            with open(covers_dir / f"{book_id}.jpg", "wb") as f:
+                f.write(r.content)

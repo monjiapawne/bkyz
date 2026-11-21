@@ -9,7 +9,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from app import db
+from app.extensions import db
 from app.data.base import CRUDMixin
 
 logger = logging.getLogger(__name__)

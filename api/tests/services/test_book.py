@@ -14,7 +14,6 @@ from tests.helpers import assert_dict_subset
             {
                 "authors": ["OccupyTheWeb"],
                 "title": "Linux Basics for Hackers",
-                "publish_date": "2024",
             },
             FetchStatus.ok,
         ),

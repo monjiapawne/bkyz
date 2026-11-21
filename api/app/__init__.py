@@ -3,90 +3,41 @@ import os
 from pathlib import Path
 
 from flask import Flask
-from flask_cors import CORS
-from flask_login import LoginManager
-from flask_migrate import Migrate
-from flask_sqlalchemy import SQLAlchemy
-from pydantic import ValidationError
-from spectree import SpecTree
 from spectree.metadata import FunctionDecorator
-from sqlalchemy import MetaData
 
-from app.errors import BadRequestError, register_error_handlers
+from app import auth  # noqa: F401 (register the flask-login callback)
+from app.api import api
+from app.errors import register_error_handlers
+from app.extensions import db, login_manager, migrate, spec
 
 # Disable logging of requests like:
 # 127.0.0.1 - - [08/Aug/2026 10:13:40] "GET /api/v1/books/ HTTP/1.1" 200
 logging.getLogger("werkzeug").setLevel(logging.ERROR)
 logging.getLogger("alembic").setLevel(logging.WARNING)
-# Setup logging
 logging.basicConfig(
-    level=logging.INFO,
+    level=os.getenv("LOG_LEVEL", "info").upper(),
     format="%(asctime)s [%(name)s] %(levelname)s : %(message)s",
 )
 logger = logging.getLogger(__name__)
-
-# auto name all constraints
-naming_convention = {
-    "ix": "ix_%(column_0_label)s",
-    "uq": "uq_%(table_name)s_%(column_0_name)s",
-    "ck": "ck_%(table_name)s_%(constraint_name)s",
-    "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
-    "pk": "pk_%(table_name)s",
-}
-
-db = SQLAlchemy(metadata=MetaData(naming_convention=naming_convention))
-migrate = Migrate()
-login_manager = LoginManager()
-
-
-def format_validation_error(exc: ValidationError) -> str:
-    """Flatten pydantic's error list into one message."""
-    parts = []
-    for err in exc.errors():
-        field = ".".join(str(p) for p in err["loc"])
-        msg = err["msg"].removeprefix("Value error, ")
-        parts.append(f"{field}: {msg}" if field else msg)
-    return "; ".join(parts)
-
-
-def reshape_validation(req, resp, req_validation_error: Exception | None, instance, model_adapter):
-    # error catcher for validation failures caught by pylance
-    if isinstance(req_validation_error, ValidationError):
-        raise BadRequestError(format_validation_error(req_validation_error))
-
-
-spec = SpecTree(
-    "flask",
-    title="bkyz API",
-    version="0.1.0",
-    path="api/docs",
-    naming_strategy=lambda m: m.__name__,
-    before=reshape_validation,
-)
 
 
 def create_app(config_object=None):
     app = Flask(__name__)
     app.config.from_object(config_object or os.environ.get("APP_CONFIG", "config.Config"))
-    validate_config(app)
+    key = app.config["SECRET_KEY"]
+    if app.config["STRICT"] and (not key or key.startswith("please_change_me")):
+        raise RuntimeError("SECRET_KEY must be set in production")
 
     db.init_app(app)
     migrate.init_app(app, db)
-
-    config_cors(app)
+    login_manager.init_app(app)
     register_error_handlers(app)
-    config_flask_login(app)
     config_covers(app)
 
-    from app.api import api
-
     app.register_blueprint(api, url_prefix="/api/v1")
-
-    # must be after blueprints are registered
-    config_docs(app)
+    config_docs(app)  # must be after blueprints are registered
 
     logger.info(f"* started bkyz-api - commit version: {app.config['GIT_COMMIT']}")
-
     return app
 
 
@@ -105,23 +56,6 @@ def config_docs(app):
             meta.tags = [bp.name]
     spec.register(app)
     app.add_url_rule("/api/docs", "docs", app.view_functions["openapi_api/docs_swagger"])
-
-
-def config_flask_login(app):
-    login_manager.init_app(app)
-    from app.data import User
-
-    @login_manager.user_loader
-    def load_user(user_id: str):
-        return db.session.get(User, int(user_id))
-
-    @login_manager.unauthorized_handler
-    def unauthorized():
-        return {"error": "authenticated required"}, 401
-
-
-def config_cors(app):
-    CORS(app, supports_credentials=True, origins=app.config.get("CORS_ALLOW_LIST", []))
 
 
 def config_covers(app):

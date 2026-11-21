@@ -2,7 +2,7 @@ from flask import Blueprint
 from flask_login import current_user, login_required
 from pydantic import BaseModel, Field
 
-from app import spec
+from app.extensions import spec
 from app.api.schemas import Out
 from app.data.label import Label
 

@@ -4,7 +4,7 @@ from flask import Blueprint
 from flask_login import current_user, login_required, login_user, logout_user
 from pydantic import BaseModel, ConfigDict, Field
 
-from app import spec
+from app.extensions import spec
 from app.api.auth import admin_required
 from app.api.schemas import Out
 from app.data import User

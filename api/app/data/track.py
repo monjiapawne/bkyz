@@ -16,7 +16,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app import db
+from app.extensions import db
 from app.data.base import CRUDMixin, SortOrderMixin
 from app.data.book import Book
 from app.data.playlist import Playlist

@@ -2,7 +2,7 @@ from flask import Blueprint
 from flask_login import current_user, login_required
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from app import spec
+from app.extensions import spec
 from app.api.schemas import Out, ViewQuery
 from app.api.tracks import TrackFullOut
 from app.data import Direction, Playlist

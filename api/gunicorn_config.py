@@ -1,15 +1,13 @@
 from os import environ as env
 
+
+def _str_to_bool(value: str | None) -> bool:
+    return value is not None and value.strip().lower() in ("true", "1")
+
+
 # Config for gunicorn. This file is somewhat a helper to make environment variables
 # have sensible defaults and move the weight to here rather than in the .env
 # ref: https://gunicorn.org/reference/settings/#access_log_format
-
-
-def strasbool(v: str | None) -> bool:
-    if v is None:
-        return False
-    return v.lower() in ("true", "1")
-
 
 # Performance
 workers = int(env.get("WORKERS", "4"))
@@ -18,5 +16,5 @@ workers = int(env.get("WORKERS", "4"))
 bind = f":{int(env.get('PORT', '8000'))}"
 
 # Logging
-accesslog = "-" if strasbool(env.get("ACCESS_LOG")) else None
+accesslog = "-" if _str_to_bool(env.get("ACCESS_LOG", "")) else None
 loglevel = env.get("LOG_LEVEL", "info")

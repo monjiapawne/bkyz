@@ -1,6 +1,7 @@
 import logging
 
 from flask import request
+from pydantic import ValidationError
 from werkzeug.exceptions import HTTPException
 
 logger = logging.getLogger("api")
@@ -77,3 +78,19 @@ def register_error_handlers(app):
         if app.config["DEBUG"]:
             raise e
         return {"error": "internal server error"}, 500
+
+
+def format_validation_error(exc: ValidationError) -> str:
+    """Flatten pydantic's error list into one message."""
+    parts = []
+    for err in exc.errors():
+        field = ".".join(str(p) for p in err["loc"])
+        msg = err["msg"].removeprefix("Value error, ")
+        parts.append(f"{field}: {msg}" if field else msg)
+    return "; ".join(parts)
+
+
+def reshape_validation(req, resp, req_validation_error: Exception | None, instance, model_adapter):
+    # error catcher for validation failures caught by pylance
+    if isinstance(req_validation_error, ValidationError):
+        raise BadRequestError(format_validation_error(req_validation_error))

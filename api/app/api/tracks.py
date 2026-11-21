@@ -2,7 +2,7 @@ from flask import Blueprint
 from flask_login import current_user, login_required
 from pydantic import BaseModel, ConfigDict, Field
 
-from app import spec
+from app.extensions import spec
 from app.api.books import BookOut
 from app.api.labels import LabelOut
 from app.api.schemas import Out, UTCDatetime

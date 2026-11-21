@@ -18,14 +18,14 @@ COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-install-project --no-dev --group deploy --no-cache
 
 COPY app ./app
-COPY config.py bkyz.py gunicorn_config.py ./
+COPY config.py gunicorn_config.py ./
 COPY migrations ./migrations
 COPY assets ./assets
 
 RUN uv sync --frozen --no-dev --group deploy --no-cache
 
 USER bkyz-api
-ENV FLASK_APP=bkyz
+ENV FLASK_APP=app
 # For uv cache
 ENV PATH="/app/.venv/bin:$PATH" 
 
@@ -33,4 +33,5 @@ ARG GIT_COMMIT
 ENV GIT_COMMIT=${GIT_COMMIT}
 
 EXPOSE 8000
-CMD ["sh", "-c", "flask db upgrade && gunicorn -c gunicorn_config.py bkyz:app"]
+
+CMD ["sh", "-c", "flask db upgrade && gunicorn -c gunicorn_config.py 'app:create_app()'"]

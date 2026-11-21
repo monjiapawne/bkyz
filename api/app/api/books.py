@@ -13,7 +13,7 @@ from pydantic import (
 )
 from spectree import Response
 
-from app import spec
+from app.extensions import spec
 from app.api.schemas import Out
 from app.data import Book
 from app.errors import BadRequestError
