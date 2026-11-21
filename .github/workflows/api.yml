@@ -1,0 +1,35 @@
+name: Bkyz API
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - feature/**
+    paths:
+      - "api/**"
+      - ".github/workflows/api.yml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "api/**"
+      - ".github/workflows/api.yml"
+
+jobs:
+  test: 
+    name: Test API
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./api
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v10.3.1
+        with:
+          working-directory: api
+          enable-cache: true 
+      - run: uv sync --locked
+      - run: uv run pytest
