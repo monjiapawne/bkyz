@@ -1,5 +1,5 @@
 from flask import Blueprint
-from flask_login import current_user, login_required
+from flask_login import current_user
 from pydantic import BaseModel, Field
 
 from bkyz.api.schemas import Out
@@ -19,7 +19,6 @@ class LabelOut(Out):
 
 
 @labels.get("")
-@login_required
 def list_labels():
     return [LabelOut.json_(lbl) for lbl in Label.get_all_owned(current_user.id)]
 

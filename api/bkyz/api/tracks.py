@@ -1,5 +1,5 @@
 from flask import Blueprint
-from flask_login import current_user, login_required
+from flask_login import current_user
 from pydantic import BaseModel, ConfigDict, Field
 
 from bkyz.api.books import BookOut
@@ -52,7 +52,6 @@ class TrackFullOut(TrackOut):
 
 
 @tracks.get("")
-@login_required
 def list_tracks(playlist_id: int):
     """List all tracks of a playlist."""
     playlist = Playlist.get_one(Playlist.id == playlist_id, Playlist.user_id == current_user.id)
@@ -63,14 +62,12 @@ def list_tracks(playlist_id: int):
 
 
 @tracks.get("/<int:track_id>")
-@login_required
 def get_track(playlist_id: int, track_id: int):
     """Get a track."""
     return TrackOut.json_(Track.get_owned(track_id, current_user.id)), 200
 
 
 @tracks.post("")
-@login_required
 @spec.validate(json=TrackIn)
 def create_track(playlist_id: int, json: TrackIn):
     """Creates a track and adds it to the parent playlist."""
@@ -98,7 +95,6 @@ def create_track(playlist_id: int, json: TrackIn):
 
 
 @tracks.delete("/<int:track_id>")
-@login_required
 def delete_track(playlist_id: int, track_id: int):
     """Delete a track."""
     Track.get_owned(track_id, current_user.id).delete()
@@ -122,7 +118,6 @@ class TrackPatch(BaseModel):
 
 
 @tracks.patch("/<int:track_id>")
-@login_required
 @spec.validate(json=TrackPatch)
 def update_track(playlist_id: int, track_id: int, json: TrackPatch):
     track = Track.get_by_id(track_id)
@@ -150,7 +145,6 @@ class TrackProgressIn(BaseModel):
 
 
 @tracks.post("/<int:track_id>/progress")
-@login_required
 @spec.validate(json=TrackProgressIn)
 def add_progress(playlist_id: int, track_id: int, json: TrackProgressIn):
     """Adds progress to a track"""
@@ -160,7 +154,6 @@ def add_progress(playlist_id: int, track_id: int, json: TrackProgressIn):
 
 
 @tracks.get("/<int:track_id>/history")
-@login_required
 def list_track_history(playlist_id, track_id: int):
     track = Track.get_owned(track_id, current_user.id)  # Verify ownership
     return [TrackProgressOut.json_(record) for record in track.progress_log], 200
@@ -171,7 +164,6 @@ class TrackMoveIn(BaseModel):
 
 
 @tracks.post("/<int:track_id>/move")
-@login_required
 @spec.validate(json=TrackMoveIn)
 def move_track(playlist_id, track_id: int, json: TrackMoveIn):
     """Move the static sort position of a track"""

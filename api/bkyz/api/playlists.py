@@ -1,5 +1,5 @@
 from flask import Blueprint
-from flask_login import current_user, login_required
+from flask_login import current_user
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from bkyz.api.schemas import Out, ViewQuery
@@ -42,7 +42,6 @@ class PlaylistFullOut(PlaylistOut):
 
 
 @playlist.get("")
-@login_required
 @spec.validate(query=ViewQuery)
 def list_playlists(query: ViewQuery):
     """Get all playlists of the logged in user."""
@@ -53,14 +52,12 @@ def list_playlists(query: ViewQuery):
 
 
 @playlist.get("<int:playlist_id>")
-@login_required
 def get_playlist(playlist_id: int):
     playlist = Playlist.get_by_id(playlist_id)
     return PlaylistOut.json_(playlist), 202
 
 
 @playlist.post("")
-@login_required
 @spec.validate(json=PlaylistIn)
 def add_playlist(json: PlaylistIn):
     """Adds a new Playlist to the logged user."""
@@ -71,7 +68,6 @@ def add_playlist(json: PlaylistIn):
 
 
 @playlist.delete("<int:playlist_id>")
-@login_required
 def delete_playlist(playlist_id: int):
     """Delete a Playlist."""
     Playlist.get_owned(playlist_id, current_user.id).delete()
@@ -79,7 +75,6 @@ def delete_playlist(playlist_id: int):
 
 
 @playlist.patch("<int:playlist_id>")
-@login_required
 @spec.validate(json=PlaylistIn)
 def update_playlist(playlist_id: int, json: PlaylistIn):
     playlist = Playlist.get_by_id(playlist_id)
@@ -93,7 +88,6 @@ class PlaylistMoveIn(BaseModel):
 
 
 @playlist.post("/<int:playlist_id>/move")
-@login_required
 @spec.validate(json=PlaylistMoveIn)
 def move_track(playlist_id, json: PlaylistMoveIn):
     """Move the static sort position of a playlist"""

@@ -1,7 +1,7 @@
 import logging
 
 from flask import Blueprint
-from flask_login import current_user, login_required, login_user, logout_user
+from flask_login import current_user, login_user, logout_user
 from pydantic import BaseModel, ConfigDict, Field
 
 from bkyz.api.auth import admin_required
@@ -65,7 +65,6 @@ def register(json: RegisterIn):
 
 
 @users.get("<int:user_id>")
-@login_required
 def user_info(user_id: int):
     """Get a user's info."""
     user = User.get_one(User.id == user_id)
@@ -76,7 +75,6 @@ def user_info(user_id: int):
 
 
 @users.get("me")
-@login_required
 def current_user_info():
     """Get the current logged in user's info.
 
@@ -94,7 +92,6 @@ class UserPatch(BaseModel):
 
 @users.patch("<int:user_id>")
 @spec.validate(json=UserPatch)
-@login_required
 def update_user(json: UserPatch, user_id):
     """Update a user.
 
