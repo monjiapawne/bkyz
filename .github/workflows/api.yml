@@ -20,6 +20,7 @@ jobs:
   test: 
     name: Test API
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     defaults:
       run:
         working-directory: ./api
@@ -32,4 +33,14 @@ jobs:
           working-directory: api
           enable-cache: true 
       - run: uv sync --locked
+      - run: uv run ruff format --check
+      - run: uv run ruff check --output-format=github
       - run: uv run pytest
+    
+  docker:
+    name: Build image
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - run: docker build api
