@@ -4,6 +4,9 @@ from bkyz.data import FetchStatus
 from bkyz.services.book import fetch_book
 from tests.helpers import assert_dict_subset
 
+# Marks entire module as network requests (so they can be skipped)
+pytestmark = pytest.mark.network
+
 
 @pytest.mark.parametrize(
     ("name", "isbn", "exp_json", "exp_status"),

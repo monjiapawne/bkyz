@@ -6,18 +6,19 @@
 # Setup
 cd api
 uv venv
-source .venv/bin/activate
 uv sync
 
 # Upgrade database
-flask db upgrade
+uv run flask db upgrade
 
 # Run
-flask run
+uv run flask run
 
 # Test
 uv sync --group=test
-pytest
+uv run pytest # run tests that don't require network
+uv run pytest -m network # run test that require network
+uv run pytest -m 'network or not network' # run all
 ```
 
 ## Setup Commands

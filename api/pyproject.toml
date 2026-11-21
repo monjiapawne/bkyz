@@ -31,8 +31,10 @@ exclude = [
 extend-select = ["E501"]
 
 [tool.pytest.ini_options]
-log_cli = true
-log_cli_level = "WARNING"
+log_cli = false
+log_cli_level = "ERROR"
+addopts = "-m 'not network'"
+markers = ["network: calls real external services (Open Library)"]
 
 [tool.uv]
 add-bounds = "major"
