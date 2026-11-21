@@ -7,7 +7,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from bkyz.data.base import CRUDMixin, SortOrderMixin
 from bkyz.data.user import User
-from bkyz.errors import ForbiddenAsNotFound, NotFoundError
+from bkyz.errors import ForbiddenAsNotFound
 from bkyz.extensions import db
 
 logger = logging.getLogger(__name__)
@@ -47,8 +47,6 @@ class Playlist(SortOrderMixin, CRUDMixin, db.Model):
     @classmethod
     def get_owned(cls, playlist_id: int, user_id: int) -> Self:
         playlist = cls.get_by_id(playlist_id)
-        if playlist is None:
-            raise NotFoundError("playlist")
         if playlist.user_id != user_id:
             raise ForbiddenAsNotFound("playlist")
 

@@ -7,7 +7,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from bkyz.api.auth import admin_required
 from bkyz.api.schemas import Out
 from bkyz.data import User
-from bkyz.errors import ForbiddenAsNotFound, ForbiddenError, NotFoundError, UnauthorizedError
+from bkyz.errors import ForbiddenAsNotFound, ForbiddenError, UnauthorizedError
 from bkyz.extensions import spec
 
 logger = logging.getLogger(__name__)
@@ -33,7 +33,7 @@ class UserOut(Out):
 def login(json: UserIn):
     """Login as a user."""
     user = User.get_one(User.username == json.username)
-    if not user or not user.verify_password(json.password):
+    if not user.verify_password(json.password):
         raise UnauthorizedError("Invalid username or password")
 
     login_user(user, json.remember_me)
@@ -68,9 +68,6 @@ def register(json: RegisterIn):
 def user_info(user_id: int):
     """Get a user's info."""
     user = User.get_one(User.id == user_id)
-    if user is None:
-        raise NotFoundError("user")
-
     return UserOut.json_(user), 200
 
 

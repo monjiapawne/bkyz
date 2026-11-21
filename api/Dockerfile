@@ -26,7 +26,6 @@ RUN uv sync --frozen --no-dev --group deploy --no-cache
 
 USER bkyz-api
 ENV FLASK_APP=bkyz
-# For uv cache
 ENV PATH="/app/.venv/bin:$PATH" 
 
 ARG GIT_COMMIT

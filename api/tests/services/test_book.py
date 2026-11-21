@@ -25,7 +25,6 @@ pytestmark = pytest.mark.network
 )
 def test_fetch_book(name: str, isbn: str, exp_json: dict, exp_status: FetchStatus):
     r = fetch_book(isbn=isbn)
-    print(r.dict_)
     assert r.status == exp_status, f"status not matched, expected: {exp_status}, got {r.status}"
     assert_dict_subset(r.dict_, exp_json, name=name)
 

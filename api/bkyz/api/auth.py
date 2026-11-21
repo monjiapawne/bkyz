@@ -2,7 +2,7 @@ from functools import wraps
 
 from flask_login import current_user
 
-from bkyz.errors import ForbiddenError, UnauthorizedError
+from bkyz.errors import ForbiddenError
 
 
 def admin_required(func):
@@ -10,8 +10,6 @@ def admin_required(func):
 
     @wraps(func)
     def verify_admin(*args, **kwargs):
-        if not current_user.is_authenticated:
-            raise UnauthorizedError
         if not current_user.is_admin:
             raise ForbiddenError
 

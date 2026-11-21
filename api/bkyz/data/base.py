@@ -66,9 +66,7 @@ class CRUDMixin:
         Raises:
             NotFoundError if the id isn't found (could already have been deleted.)
         """
-        if (obj := cls.get_by_id(id)) is None:
-            raise NotFoundError("id", id)
-        obj.delete()
+        cls.get_by_id(id).delete()
 
     @classmethod
     def create(cls, **kwargs) -> Self:

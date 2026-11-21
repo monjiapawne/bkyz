@@ -67,13 +67,3 @@ def config_covers(app):
     if not placeholder.is_file():
         app.logger.warning(f"missing cover placeholder at {placeholder}")
     app.config["PLACEHOLDER_COVER"] = placeholder
-
-
-def validate_config(app):
-    """Fail fast when not in debug."""
-    if not app.config["STRICT"]:
-        return
-
-    key = app.config.get("SECRET_KEY")
-    if not key or key.startswith("please_change_me"):
-        raise RuntimeError("SECRET_KEY must be set outside of debug")

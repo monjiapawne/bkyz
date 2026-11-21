@@ -84,6 +84,7 @@ def test_get_book_queries(client_user, name: str, query_string: str, exp_len: in
     assert book_count == exp_len, f"expected len: {exp_len}, got {book_count}"
 
 
+@pytest.mark.network
 def test_create_book_integration(client_user):
     client = client_user
     r = client.post("/books", json={"isbn": "978-1718503540"})

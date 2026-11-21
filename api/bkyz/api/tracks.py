@@ -6,7 +6,6 @@ from bkyz.api.books import BookOut
 from bkyz.api.labels import LabelOut
 from bkyz.api.schemas import Out, UTCDatetime
 from bkyz.data import Book, Direction, Label, Medium, Playlist, Track
-from bkyz.errors import NotFoundError
 from bkyz.extensions import spec
 
 tracks = Blueprint("tracks", __name__)
@@ -55,9 +54,6 @@ class TrackFullOut(TrackOut):
 def list_tracks(playlist_id: int):
     """List all tracks of a playlist."""
     playlist = Playlist.get_one(Playlist.id == playlist_id, Playlist.user_id == current_user.id)
-    if playlist is None:
-        raise NotFoundError("playlist_id", playlist_id)
-
     return {"tracks": [TrackOut.json_(t) for t in playlist.tracks]}
 
 
